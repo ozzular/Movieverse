@@ -1,88 +1,52 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { tmdbApi } from '../services/tmdbApi'
 import { useGenres } from '../contexts/GenreContext'
 import { useSelectedMovie } from '../contexts/SelectedMovieContext'
 import MovieCard from '../components/MovieCard'
-import type { Movie, Genre } from '../types/index'
+import type { Movie } from '../types/index'
 
 const GenresPage: React.FC = () => {
   const navigate = useNavigate()
   const { genres, isLoading: genresLoading } = useGenres()
   const { selectedMovie, showHero, hideHero } = useSelectedMovie()
 
-  const [genrePreviews, setGenrePreviews] = useState<{ [genreId: number]: Movie[] }>({})
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [selectedGenre, setSelectedGenre] = useState<number | null>(null)
+  const [genreMovies, setGenreMovies] = useState<Movie[]>([])
+  const [loadingMovies, setLoadingMovies] = useState(false)
+  const [movieError, setMovieError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchGenrePreviews = async () => {
-      if (genres.length === 0) return
-
-      try {
-        setLoading(true)
-        setError(null)
-
-        const previewPromises = genres.slice(0, 12).map(async (genre) => {
-          try {
-            const movies = await tmdbApi.getMoviesByGenre(genre.id)
-            return { genreId: genre.id, movies: movies.slice(0, 3) }
-          } catch (err) {
-            console.error(`Error fetching preview for genre ${genre.id}:`, err)
-            return { genreId: genre.id, movies: [] }
-          }
-        })
-
-        const previews = await Promise.all(previewPromises)
-        const previewMap: { [genreId: number]: Movie[] } = {}
-
-        previews.forEach(preview => {
-          if (preview.movies.length > 0) {
-            previewMap[preview.genreId] = preview.movies
-          }
-        })
-
-        setGenrePreviews(previewMap)
-      } catch (err) {
-        console.error('Error fetching genre previews:', err)
-        setError('Failed to load genre previews')
-      } finally {
-        setLoading(false)
-      }
+  const handleGenreClick = async (genreId: number) => {
+    // If clicking the same genre, collapse it
+    if (selectedGenre === genreId) {
+      setSelectedGenre(null)
+      setGenreMovies([])
+      return
     }
 
-    fetchGenrePreviews()
-  }, [genres])
+    setSelectedGenre(genreId)
+    setLoadingMovies(true)
+    setMovieError(null)
 
-  const handleGenreClick = (genreId: number) => {
-    navigate(`/genre/${genreId}`)
+    try {
+      const movies = await tmdbApi.getMoviesByGenre(genreId)
+      setGenreMovies(movies)
+    } catch (err) {
+      console.error(`Error fetching movies for genre ${genreId}:`, err)
+      setMovieError('Failed to load movies for this genre')
+      setGenreMovies([])
+    } finally {
+      setLoadingMovies(false)
+    }
   }
 
   // Loading state
-  if (loading || genresLoading) {
+  if (genresLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-galaxy-purple mx-auto mb-4"></div>
           <p className="text-white text-lg">Loading genres...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Error state
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <p className="text-white text-xl mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-galaxy-red hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors"
-          >
-            Try Again
-          </button>
         </div>
       </div>
     )
@@ -173,79 +137,69 @@ const GenresPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Genres Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-            {genres.map((genre) => {
-              const previewMovies = genrePreviews[genre.id] || []
-
-              return (
-                <div
+          {/* Genres List - Text Only */}
+          <div className="glass-card rounded-xl p-6 mb-8">
+            <h2 className="text-2xl font-semibold text-white mb-6">Select a Genre</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              {genres.map((genre) => (
+                <button
                   key={genre.id}
                   onClick={() => handleGenreClick(genre.id)}
-                  className="bg-galaxy-gray/50 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:bg-galaxy-purple/20 hover:scale-105 border border-galaxy-purple/20 hover:border-galaxy-purple/50"
+                  className={`p-4 rounded-lg transition-all duration-300 font-medium text-center ${
+                    selectedGenre === genre.id
+                      ? 'bg-galaxy-purple text-white shadow-lg transform scale-105'
+                      : 'text-gray-300 hover:text-white hover:bg-galaxy-purple/30 border border-galaxy-purple/20 hover:border-galaxy-purple/50'
+                  }`}
                 >
-                  {/* Genre Title */}
-                  <h3 className="text-white text-lg font-semibold mb-3 text-center">
-                    {genre.name}
-                  </h3>
+                  {genre.name}
+                </button>
+              ))}
+            </div>
+          </div>
 
-                  {/* Preview Movies */}
-                  {previewMovies.length > 0 && (
-                    <div className="space-y-2">
-                      {previewMovies.slice(0, 2).map((movie) => (
-                        <div key={movie.id} className="relative">
-                          <img
-                            src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-                            alt={movie.title}
-                            className="w-full h-24 object-cover rounded"
-                            onError={(e) => {
-                              e.currentTarget.src = '/placeholder-movie.jpg'
-                            }}
-                          />
-                          <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-50 transition-all duration-300 rounded flex items-center justify-center">
-                            <div className="opacity-0 hover:opacity-100 transition-opacity duration-300">
-                              <p className="text-white text-xs text-center px-2 line-clamp-2">
-                                {movie.title}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-
-                      {/* Show count if more than 2 */}
-                      {previewMovies.length > 2 && (
-                        <div className="text-center">
-                          <span className="text-galaxy-purple text-sm font-medium">
-                            +{previewMovies.length - 2} more
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Empty state for genres without previews */}
-                  {previewMovies.length === 0 && (
-                    <div className="h-24 flex items-center justify-center">
-                      <span className="text-gray-500 text-sm">No preview</span>
-                    </div>
-                  )}
+          {/* Selected Genre Movies */}
+          {selectedGenre && (
+            <div className="glass-card rounded-xl p-6">
+              {loadingMovies ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-galaxy-purple mx-auto mb-4"></div>
+                  <p className="text-white text-lg">Loading movies...</p>
                 </div>
-              )
-            })}
-          </div>
-
-          {/* View All Genres Button */}
-          <div className="text-center mt-12">
-            <button
-              onClick={() => navigate('/genres/all')}
-              className="bg-galaxy-purple hover:bg-galaxy-red text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center space-x-2 mx-auto"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <span>View All Genres</span>
-            </button>
-          </div>
+              ) : movieError ? (
+                <div className="text-center py-8">
+                  <div className="text-red-500 text-4xl mb-4">⚠️</div>
+                  <p className="text-white text-lg mb-4">{movieError}</p>
+                  <button
+                    onClick={() => handleGenreClick(selectedGenre)}
+                    className="bg-galaxy-red hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              ) : genreMovies.length > 0 ? (
+                <>
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-2xl font-semibold text-white">
+                      {genres.find(g => g.id === selectedGenre)?.name} Movies
+                    </h3>
+                    <button
+                      onClick={() => handleGenreClick(selectedGenre)}
+                      className="text-gray-400 hover:text-white transition-colors"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                    {genreMovies.map((movie: Movie) => (
+                      <MovieCard key={movie.id} movie={movie} />
+                    ))}
+                  </div>
+                </>
+              ) : null}
+            </div>
+          )}
         </div>
       </div>
     </div>

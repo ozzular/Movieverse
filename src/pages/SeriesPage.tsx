@@ -112,15 +112,15 @@ const SeriesPage: React.FC = () => {
                   {selectedMovie.overview}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Link
-                    to={`/movie/${selectedMovie.id}`}
+                  <button
+                    onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(selectedMovie.title)}+trailer`, '_blank')}
                     className="bg-galaxy-red hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2"
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                     </svg>
                     <span>Watch Trailer</span>
-                  </Link>
+                  </button>
                   <button
                     onClick={hideHero}
                     className="border-2 border-galaxy-purple text-galaxy-purple hover:bg-galaxy-purple hover:text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300"

@@ -103,6 +103,7 @@ const FiltersPage: React.FC = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
+                    onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(selectedMovie.title)}+trailer`, '_blank')}
                     className="bg-galaxy-red hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2"
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -146,32 +147,30 @@ const FiltersPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Filter Sections */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Filters Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="bg-galaxy-gray/50 rounded-lg p-6 border border-galaxy-purple/20">
-                <h2 className="text-xl font-semibold text-white mb-6">Filter Options</h2>
-
-                {/* Genres Section */}
-                <div className="mb-8">
-                  <h3 className="text-lg font-medium text-white mb-4">Genres</h3>
+          {/* Horizontal Filter Layout */}
+          <div className="space-y-8">
+            {/* Filters Section - Row Layout */}
+            <div className="glass-card rounded-xl p-6">
+              <div className="flex flex-col lg:flex-row gap-8">
+                {/* Genres Column */}
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-white mb-4">Genres</h3>
                   {genresLoading ? (
                     <div className="animate-pulse space-y-2">
-                      {[...Array(5)].map((_, i) => (
-                        <div key={i} className="h-8 bg-galaxy-gray rounded"></div>
+                      {[...Array(3)].map((_, i) => (
+                        <div key={i} className="h-10 bg-galaxy-gray rounded"></div>
                       ))}
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2">
                       {genres.map((genre) => (
                         <button
                           key={genre.id}
                           onClick={() => toggleGenre(genre.id)}
-                          className={`p-2 text-sm rounded transition-all duration-300 text-left ${
+                          className={`p-3 text-sm rounded-lg transition-all duration-300 font-medium ${
                             filters.genres.includes(genre.id)
-                              ? 'bg-galaxy-purple text-white'
-                              : 'text-gray-300 hover:text-white hover:bg-galaxy-purple/20'
+                              ? 'bg-galaxy-purple text-white shadow-lg'
+                              : 'text-gray-300 hover:text-white hover:bg-galaxy-purple/30 border border-galaxy-purple/20 hover:border-galaxy-purple/50'
                           }`}
                         >
                           {genre.name}
@@ -181,14 +180,14 @@ const FiltersPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Release Year Section */}
-                <div className="mb-8">
-                  <h3 className="text-lg font-medium text-white mb-4">Release Year</h3>
+                {/* Release Year Column */}
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-white mb-4">Release Year</h3>
                   <div className="grid grid-cols-2 gap-2">
                     {['2024', '2020-2023', '2010-2019', '2000-2009', '1990-1999', 'Before 1990'].map((range) => (
                       <button
                         key={range}
-                        className="p-2 text-sm rounded transition-all duration-300 text-left text-gray-300 hover:text-white hover:bg-galaxy-purple/20"
+                        className="p-3 text-sm rounded-lg transition-all duration-300 font-medium text-gray-300 hover:text-white hover:bg-galaxy-purple/30 border border-galaxy-purple/20 hover:border-galaxy-purple/50"
                       >
                         {range}
                       </button>
@@ -196,18 +195,18 @@ const FiltersPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Regions Section */}
-                <div className="mb-8">
-                  <h3 className="text-lg font-medium text-white mb-4">Regions</h3>
-                  <div className="grid grid-cols-1 gap-2">
+                {/* Regions Column */}
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-white mb-4">Regions</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {['Hollywood', 'Bollywood', 'Europe', 'Asia', 'Latin America', 'Africa'].map((region) => (
                       <button
                         key={region}
                         onClick={() => toggleRegion(region)}
-                        className={`p-3 text-sm rounded-lg transition-all duration-300 text-left ${
+                        className={`p-3 text-sm rounded-lg transition-all duration-300 font-medium ${
                           filters.regions.includes(region)
-                            ? 'bg-galaxy-purple text-white'
-                            : 'text-gray-300 hover:text-white hover:bg-galaxy-purple/20'
+                            ? 'bg-galaxy-purple text-white shadow-lg'
+                            : 'text-gray-300 hover:text-white hover:bg-galaxy-purple/30 border border-galaxy-purple/20 hover:border-galaxy-purple/50'
                         }`}
                       >
                         {region}
@@ -216,16 +215,16 @@ const FiltersPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="space-y-3">
+                {/* Action Buttons Column */}
+                <div className="flex-shrink-0 flex flex-col justify-center gap-4">
                   <button
                     onClick={handleApplyFilters}
                     disabled={isApplyingFilters}
-                    className="w-full bg-galaxy-purple hover:bg-galaxy-red text-white py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2 disabled:opacity-50"
+                    className="glass-button bg-galaxy-purple hover:bg-galaxy-red text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50 flex items-center justify-center space-x-2"
                   >
                     {isApplyingFilters ? (
                       <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                         <span>Applying...</span>
                       </>
                     ) : (
@@ -240,7 +239,7 @@ const FiltersPage: React.FC = () => {
 
                   <button
                     onClick={clearAllFilters}
-                    className="w-full border-2 border-galaxy-red text-galaxy-red hover:bg-galaxy-red hover:text-white py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center space-x-2"
+                    className="glass-button border-2 border-galaxy-red text-galaxy-red hover:bg-galaxy-red hover:text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center space-x-2"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -251,8 +250,8 @@ const FiltersPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Results Section */}
-            <div className="lg:col-span-2">
+            {/* Results Section - Full Width */}
+            <div>
               {hasAppliedFilters ? (
                 <div>
                   <div className="flex items-center justify-between mb-6">
