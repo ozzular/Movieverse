@@ -5,6 +5,7 @@ import { GenreProvider } from './contexts/GenreContext'
 import { FavoritesProvider } from './contexts/FavoritesContext'
 import { FilterProvider } from './contexts/FilterContext'
 import { SelectedMovieProvider } from './contexts/SelectedMovieContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import LandingPage from './pages/LandingPage'
@@ -64,19 +65,21 @@ function AppRoutes() {
 
 function App() {
   return (
-    <SearchProvider>
-      <GenreProvider>
-        <FavoritesProvider>
-          <FilterProvider>
-            <SelectedMovieProvider>
-              <Router>
-                <AppRoutes />
-              </Router>
-            </SelectedMovieProvider>
-          </FilterProvider>
-        </FavoritesProvider>
-      </GenreProvider>
-    </SearchProvider>
+    <ThemeProvider>
+      <SearchProvider>
+        <GenreProvider>
+          <FavoritesProvider>
+            <FilterProvider>
+              <SelectedMovieProvider>
+                <Router>
+                  <AppRoutes />
+                </Router>
+              </SelectedMovieProvider>
+            </FilterProvider>
+          </FavoritesProvider>
+        </GenreProvider>
+      </SearchProvider>
+    </ThemeProvider>
   )
 }
 

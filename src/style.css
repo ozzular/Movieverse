@@ -148,4 +148,44 @@
     0% { opacity: 0.7; }
     100% { opacity: 1; }
   }
+
+  /* Dynamic Day/Night Theme Transitions */
+  .day-theme {
+    --primary-bg: linear-gradient(135deg, #0a0a1a 0%, #0f0f23 50%, #2a2235 100%);
+    --secondary-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    --accent-color: #60a5fa;
+    --text-primary: rgba(255, 255, 255, 0.95);
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --card-bg: rgba(255, 255, 255, 0.08);
+    --card-border: rgba(255, 255, 255, 0.1);
+  }
+
+  .night-theme {
+    --primary-bg: linear-gradient(135deg, #1a0b2e 0%, #0f0f23 50%, #2a1e35 100%);
+    --secondary-bg: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+    --accent-color: #c084fc;
+    --text-primary: rgba(255, 255, 255, 0.9);
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --card-bg: rgba(0, 0, 0, 0.3);
+    --card-border: rgba(134, 134, 134, 0.15);
+  }
+
+  .theme-transition {
+    transition: background 0.8s ease-in-out, color 0.5s ease-in-out;
+  }
+
+  /* Enhanced glassmorphism for day/night */
+  .day-glass {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .night-glass {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(134, 134, 134, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
 }

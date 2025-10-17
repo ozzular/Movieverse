@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useSearch } from '../contexts/SearchContext'
 import { useFavorites } from '../contexts/FavoritesContext'
 import MovieVerseLogo from './MovieVerseLogo'
+import SunMoonSwitch from './SunMoonSwitch'
 
 interface HeaderProps {
   onMenuClick: () => void
@@ -85,6 +86,8 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, sidebarOpen }) => {
                 </span>
               )}
             </Link>
+            {/* Theme Toggle */}
+            <SunMoonSwitch />
           </nav>
         </div>
       </div>
