@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
 
 type ThemeMode = 'day' | 'night' | 'auto'
 
@@ -27,8 +27,8 @@ interface ThemeProviderProps {
 }
 
 const fetchUserLocation = async () => {
-  const url = process.env.REACT_APP_GEOLOCATION_API
-  const apiKey = process.env.REACT_APP_RAPIDAPI_KEY
+  const url = import.meta.env.VITE_GEOLOCATION_API
+  const apiKey = import.meta.env.VITE_RAPIDAPI_KEY
 
   if (!url || !apiKey) {
     console.warn('Geolocation API keys not configured')
@@ -60,7 +60,7 @@ const fetchUserLocation = async () => {
   }
 }
 
-const calculateSunriseSunset = (lat: number, lng: number, date: Date = new Date()) => {
+const calculateSunriseSunset = (date: Date = new Date()) => {
   // Simplified calculation (in a real app, you'd use a proper astronomical library)
   // For demo purposes, we'll use approximate times based on season
 
@@ -97,11 +97,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       if (themeMode === 'auto') {
         const location = await fetchUserLocation()
         if (location) {
-          const { sunrise, sunset } = calculateSunriseSunset(
-            location.latitude,
-            location.longitude,
-            now
-          )
+          const { sunrise, sunset } = calculateSunriseSunset(now)
           setSunriseTime(sunrise)
           setSunsetTime(sunset)
 

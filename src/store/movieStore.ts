@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { Movie, Genre } from '../types'
+import type { Movie, Genre } from '../types'
 
 interface MovieState {
   // Search state
@@ -36,7 +36,7 @@ interface MovieState {
   clearError: () => void
 }
 
-export const useMovieStore = create<MovieState>((set, get) => ({
+export const useMovieStore = create<MovieState>((set) => ({
   // Initial state
   searchQuery: '',
   searchResults: [],

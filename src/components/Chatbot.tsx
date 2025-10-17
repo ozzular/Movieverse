@@ -29,7 +29,6 @@ const Chatbot: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const initialDelay = 3000 // Show after 3 seconds
-  const typewriterDelay = 2000 // Typewriter effect duration
 
   // Auto-show after initial delay when user is browsing
   useEffect(() => {

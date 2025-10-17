@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import FavoriteButton from './FavoriteButton'
+import StreamingBadges from './StreamingBadges'
 import { useSelectedMovie } from '../contexts/SelectedMovieContext'
 import type { Movie } from '../types/index'
 
@@ -61,6 +62,11 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         <h3 className="text-white text-sm font-medium line-clamp-2 hover:text-galaxy-purple transition-colors duration-300">
           {movie.title}
         </h3>
+      </div>
+
+      {/* Streaming Badges */}
+      <div className="mt-2">
+        <StreamingBadges movieId={movie.id} movieTitle={movie.title} />
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import MovieRow from '../components/MovieRow'
+import RegionalHighlights from '../components/RegionalHighlights'
 import { tmdbApi } from '../services/tmdbApi'
 import { useGenres } from '../contexts/GenreContext'
 import { useFilters } from '../contexts/FilterContext'
@@ -173,6 +174,9 @@ const Home: React.FC = () => {
       {/* Movie Sections */}
       <div className="py-8">
         <div className="container mx-auto px-4">
+          {/* Regional Content */}
+          <RegionalHighlights />
+
           {/* Trending Movies */}
           <MovieRow
             title="Trending Now"

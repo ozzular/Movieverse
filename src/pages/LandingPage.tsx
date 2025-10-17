@@ -9,7 +9,7 @@ const LandingPage: React.FC = () => {
     navigate('/app')
   }
 
-  const containerVariants = {
+const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -27,7 +27,7 @@ const LandingPage: React.FC = () => {
       y: 0,
       transition: {
         duration: 0.6,
-        ease: "easeOut"
+        ease: "easeInOut"
       }
     }
   }
