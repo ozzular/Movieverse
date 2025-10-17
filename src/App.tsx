@@ -8,6 +8,7 @@ import { SelectedMovieProvider } from './contexts/SelectedMovieContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
+import Chatbot from './components/Chatbot'
 import LandingPage from './pages/LandingPage'
 import Home from './pages/Home'
 import MovieDetails from './pages/MovieDetails'
@@ -32,26 +33,29 @@ function AppRoutes() {
   return (
     <div className="min-h-screen">
       {!isLandingPage && (
-        <div className="galaxy-gradient flex">
-          <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-          <div className="flex-1 flex flex-col lg:ml-0">
-            <Header onMenuClick={() => setSidebarOpen(true)} sidebarOpen={sidebarOpen} />
-            <main className="pb-20 flex-1">
-              <Routes>
-                <Route path="/app" element={<Home />} />
-                <Route path="/home" element={<Home />} />
-                <Route path="/movies" element={<MoviesPage />} />
-                <Route path="/series" element={<SeriesPage />} />
-                <Route path="/genres" element={<GenresPage />} />
-                <Route path="/filters" element={<FiltersPage />} />
-                <Route path="/search" element={<SearchResults />} />
-                <Route path="/movie/:id" element={<MovieDetails />} />
-                <Route path="/favorites" element={<Favorites />} />
-                <Route path="/genre/:genreId" element={<GenresPage />} />
-              </Routes>
-            </main>
+        <>
+          <div className="galaxy-gradient flex">
+            <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+            <div className="flex-1 flex flex-col lg:ml-0">
+              <Header onMenuClick={() => setSidebarOpen(true)} sidebarOpen={sidebarOpen} />
+              <main className="pb-20 flex-1">
+                <Routes>
+                  <Route path="/app" element={<Home />} />
+                  <Route path="/home" element={<Home />} />
+                  <Route path="/movies" element={<MoviesPage />} />
+                  <Route path="/series" element={<SeriesPage />} />
+                  <Route path="/genres" element={<GenresPage />} />
+                  <Route path="/filters" element={<FiltersPage />} />
+                  <Route path="/search" element={<SearchResults />} />
+                  <Route path="/movie/:id" element={<MovieDetails />} />
+                  <Route path="/favorites" element={<Favorites />} />
+                  <Route path="/genre/:genreId" element={<GenresPage />} />
+                </Routes>
+              </main>
+            </div>
           </div>
-        </div>
+          <Chatbot />
+        </>
       )}
 
       {isLandingPage && (
