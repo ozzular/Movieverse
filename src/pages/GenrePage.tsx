@@ -142,17 +142,26 @@ const GenresPage: React.FC = () => {
             <h2 className="text-2xl font-semibold text-white mb-6">Select a Genre</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
               {genres.map((genre) => (
-                <button
-                  key={genre.id}
-                  onClick={() => handleGenreClick(genre.id)}
-                  className={`p-4 rounded-lg transition-all duration-300 font-medium text-center ${
-                    selectedGenre === genre.id
-                      ? 'bg-galaxy-purple text-white shadow-lg transform scale-105'
-                      : 'text-gray-300 hover:text-white hover:bg-galaxy-purple/30 border border-galaxy-purple/20 hover:border-galaxy-purple/50'
-                  }`}
-                >
-                  {genre.name}
-                </button>
+                <div key={genre.id} className="relative">
+                  <button
+                    onClick={() => handleGenreClick(genre.id)}
+                    className={`p-4 rounded-lg transition-all duration-300 font-medium text-center ${
+                      selectedGenre === genre.id
+                        ? 'bg-galaxy-purple text-white shadow-lg transform scale-105'
+                        : 'text-gray-300 hover:text-white hover:bg-galaxy-purple/30 border border-galaxy-purple/20 hover:border-galaxy-purple/50'
+                    }`}
+                  >
+                    {genre.name}
+                  </button>
+                  {selectedGenre === genre.id && (
+                    <button
+                      onClick={() => setSelectedGenre(null)}
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-700 text-white rounded-full text-sm font-bold flex items-center justify-center shadow-lg"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
               ))}
             </div>
           </div>

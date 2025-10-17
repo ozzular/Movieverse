@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { SearchProvider } from './contexts/SearchContext'
 import { GenreProvider } from './contexts/GenreContext'
 import { FavoritesProvider } from './contexts/FavoritesContext'
@@ -7,6 +7,7 @@ import { FilterProvider } from './contexts/FilterContext'
 import { SelectedMovieProvider } from './contexts/SelectedMovieContext'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
+import LandingPage from './pages/LandingPage'
 import Home from './pages/Home'
 import MovieDetails from './pages/MovieDetails'
 import Favorites from './pages/Favorites'
@@ -16,9 +17,52 @@ import MoviesPage from './pages/MoviesPage'
 import SeriesPage from './pages/SeriesPage'
 import FiltersPage from './pages/FiltersPage'
 
-function App() {
+function AppRoutes() {
+  const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
+  // Show loading indicator while on landing page transition
+  if (location.pathname === '/landing' && location.search) {
+    // Handle any loading state if needed
+  }
+
+  const isLandingPage = location.pathname === '/'
+
+  return (
+    <div className="min-h-screen">
+      {!isLandingPage && (
+        <div className="galaxy-gradient flex">
+          <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+          <div className="flex-1 flex flex-col lg:ml-0">
+            <Header onMenuClick={() => setSidebarOpen(true)} sidebarOpen={sidebarOpen} />
+            <main className="pb-20 flex-1">
+              <Routes>
+                <Route path="/app" element={<Home />} />
+                <Route path="/home" element={<Home />} />
+                <Route path="/movies" element={<MoviesPage />} />
+                <Route path="/series" element={<SeriesPage />} />
+                <Route path="/genres" element={<GenresPage />} />
+                <Route path="/filters" element={<FiltersPage />} />
+                <Route path="/search" element={<SearchResults />} />
+                <Route path="/movie/:id" element={<MovieDetails />} />
+                <Route path="/favorites" element={<Favorites />} />
+                <Route path="/genre/:genreId" element={<GenresPage />} />
+              </Routes>
+            </main>
+          </div>
+        </div>
+      )}
+
+      {isLandingPage && (
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+        </Routes>
+      )}
+    </div>
+  )
+}
+
+function App() {
   return (
     <SearchProvider>
       <GenreProvider>
@@ -26,26 +70,7 @@ function App() {
           <FilterProvider>
             <SelectedMovieProvider>
               <Router>
-                <div className="min-h-screen galaxy-gradient flex">
-                  <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-                  <div className="flex-1 flex flex-col lg:ml-0">
-                    <Header onMenuClick={() => setSidebarOpen(true)} sidebarOpen={sidebarOpen} />
-                    <main className="pb-20 flex-1">
-                      <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/home" element={<Home />} />
-                        <Route path="/movies" element={<MoviesPage />} />
-                        <Route path="/series" element={<SeriesPage />} />
-                        <Route path="/genres" element={<GenresPage />} />
-                        <Route path="/filters" element={<FiltersPage />} />
-                        <Route path="/search" element={<SearchResults />} />
-                        <Route path="/movie/:id" element={<MovieDetails />} />
-                        <Route path="/favorites" element={<Favorites />} />
-                        <Route path="/genre/:genreId" element={<GenresPage />} />
-                      </Routes>
-                    </main>
-                  </div>
-                </div>
+                <AppRoutes />
               </Router>
             </SelectedMovieProvider>
           </FilterProvider>
