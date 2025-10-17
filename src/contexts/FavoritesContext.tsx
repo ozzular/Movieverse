@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { Movie } from '../types'
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import type { ReactNode } from 'react'
+import type { Movie } from '../types/index'
 
 interface FavoritesContextType {
   favorites: Movie[]

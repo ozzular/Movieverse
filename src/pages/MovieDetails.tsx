@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { tmdbApi } from '../services/tmdbApi'
-import { MovieDetails as MovieDetailsType } from '../types'
+import type { MovieDetails as MovieDetailsType } from '../types/index'
 
 const MovieDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>()

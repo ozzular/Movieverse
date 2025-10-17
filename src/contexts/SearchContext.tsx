@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react'
-import { Movie } from '../types'
+import React, { createContext, useContext, useState } from 'react'
+import type { ReactNode } from 'react'
+import type { Movie } from '../types/index'
 
 interface SearchContextType {
   searchQuery: string

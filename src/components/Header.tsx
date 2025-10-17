@@ -2,9 +2,14 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSearch } from '../contexts/SearchContext'
 import { useFavorites } from '../contexts/FavoritesContext'
-import GenreSelector from './GenreSelector'
+import MovieVerseLogo from './MovieVerseLogo'
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onMenuClick: () => void
+  sidebarOpen: boolean
+}
+
+const Header: React.FC<HeaderProps> = ({ onMenuClick, sidebarOpen }) => {
   const { searchQuery, setSearchQuery, performSearch } = useSearch()
   const { favorites } = useFavorites()
   const navigate = useNavigate()
@@ -21,9 +26,24 @@ const Header: React.FC = () => {
     <header className="sticky top-0 z-50 glass-morphism">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
+          {/* Sidebar Toggle */}
+          <button
+            onClick={onMenuClick}
+            className="p-2 text-white hover:text-galaxy-purple transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="text-2xl font-bold galaxy-purple glow-text">
+          <Link to="/" className="hidden sm:block">
+            <MovieVerseLogo size="sm" />
+          </Link>
+
+          {/* Mobile Logo Text */}
+          <Link to="/" className="sm:hidden">
+            <div className="text-xl font-bold galaxy-purple glow-text">
               MovieVerse
             </div>
           </Link>
@@ -66,11 +86,6 @@ const Header: React.FC = () => {
               )}
             </Link>
           </nav>
-        </div>
-
-        {/* Genre Filter */}
-        <div className="mt-4">
-          <GenreSelector />
         </div>
       </div>
     </header>

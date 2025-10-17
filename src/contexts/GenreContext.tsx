@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import type { ReactNode } from 'react'
 import { tmdbApi } from '../services/tmdbApi'
-import { Genre } from '../types'
+import type { Genre } from '../types/index'
 
 interface GenreContextType {
   genres: Genre[]
@@ -32,7 +33,7 @@ export const GenreProvider: React.FC<GenreProviderProps> = ({ children }) => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const genresData = await tmdbApi.getGenres()
+        const genresData = await tmdbApi.getGenres() as { genres: Genre[] }
         setGenres(genresData.genres)
       } catch (error) {
         console.error('Error fetching genres:', error)

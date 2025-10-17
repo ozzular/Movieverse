@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Movie, MovieDetails, MoviesResponse, SearchResponse } from '../types'
+import type { Movie, MovieDetails, MoviesResponse, SearchResponse } from '../types/index'
 
 // TMDb API Configuration
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY

@@ -19,18 +19,21 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ movie }) => {
     ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
     : `https://image.tmdb.org/t/p/original${movie.poster_path}`
 
+  const posterUrl = movie.poster_path
+    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+    : '/placeholder-movie.jpg'
+
   return (
-    <div className="relative h-screen w-full flex items-center justify-center">
-      {/* Background Image with Overlay */}
+    <div className="relative h-96 w-full overflow-hidden">
+      {/* Background Poster with Overlay */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
         <img
-          src={backdropUrl}
+          src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
           alt={movie.title}
           className="w-full h-full object-cover"
           onError={(e) => {
-            // Fallback to a dark gradient background
-            e.currentTarget.style.display = 'none'
+            e.currentTarget.src = `https://image.tmdb.org/t/p/original${movie.backdrop_path || '/placeholder-movie.jpg'}`
           }}
         />
         {/* Fallback gradient background */}
@@ -38,15 +41,15 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ movie }) => {
       </div>
 
       {/* Content */}
-      <div className="relative z-20 container mx-auto px-4">
+      <div className="relative z-20 container mx-auto px-4 py-8 h-full flex items-end">
         <div className="max-w-2xl">
           {/* Movie Title */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 glow-text">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 glow-text">
             {movie.title}
           </h1>
 
           {/* Movie Rating */}
-          <div className="flex items-center mb-6">
+          <div className="flex items-center mb-4">
             <div className="flex items-center space-x-2">
               <span className="text-galaxy-red text-xl font-semibold">
                 {movie.vote_average.toFixed(1)}
@@ -67,37 +70,30 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ movie }) => {
           </div>
 
           {/* Movie Overview */}
-          <p className="text-gray-200 text-lg mb-8 line-clamp-3 max-w-xl">
+          <p className="text-gray-200 text-base md:text-lg mb-6 line-clamp-3 max-w-2xl">
             {movie.overview}
           </p>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-3">
             <Link
               to={`/movie/${movie.id}`}
-              className="bg-galaxy-red hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors duration-300 flex items-center justify-center space-x-2"
+              className="bg-galaxy-red hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2"
             >
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
               </svg>
-              <span>Watch Now</span>
+              <span>Watch Trailer</span>
             </Link>
 
-            <button className="border-2 border-galaxy-purple text-galaxy-purple hover:bg-galaxy-purple hover:text-white px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center justify-center space-x-2">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button className="border-2 border-galaxy-purple text-galaxy-purple hover:bg-galaxy-purple hover:text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center space-x-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
               <span>Add to Favorites</span>
             </button>
           </div>
         </div>
-      </div>
-
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
       </div>
     </div>
   )

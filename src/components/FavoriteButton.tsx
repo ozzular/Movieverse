@@ -1,6 +1,6 @@
 import React from 'react'
 import { useFavorites } from '../contexts/FavoritesContext'
-import { Movie } from '../types'
+import type { Movie } from '../types/index'
 
 interface FavoriteButtonProps {
   movie: Movie

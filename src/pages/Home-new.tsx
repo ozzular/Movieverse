@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import HeroBanner from '../components/HeroBanner'
 import MovieRow from '../components/MovieRow'
 import { tmdbApi } from '../services/tmdbApi'
-import { Movie } from '../types'
+import type { Movie } from '../types/index'
 
 const Home: React.FC = () => {
   const [trendingMovies, setTrendingMovies] = useState<Movie[]>([])

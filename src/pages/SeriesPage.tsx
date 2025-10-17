@@ -2,83 +2,47 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import MovieRow from '../components/MovieRow'
 import { tmdbApi } from '../services/tmdbApi'
-import { useGenres } from '../contexts/GenreContext'
-import { useFilters } from '../contexts/FilterContext'
 import { useSelectedMovie } from '../contexts/SelectedMovieContext'
 import type { Movie } from '../types/index'
 
-const Home: React.FC = () => {
-  const { selectedGenres, genres } = useGenres()
-  const { filters } = useFilters()
+const SeriesPage: React.FC = () => {
   const { selectedMovie, showHero, hideHero } = useSelectedMovie()
-  const [trendingMovies, setTrendingMovies] = useState<Movie[]>([])
-  const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([])
-  const [popularMovies, setPopularMovies] = useState<Movie[]>([])
+  const [trendingSeries, setTrendingSeries] = useState<Movie[]>([])
+  const [popularSeries, setPopularSeries] = useState<Movie[]>([])
+  const [topRatedSeries, setTopRatedSeries] = useState<Movie[]>([])
+  const [onTheAirSeries, setOnTheAirSeries] = useState<Movie[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchMovies = async () => {
+    const fetchSeries = async () => {
       try {
         setLoading(true)
         setError(null)
 
-        const [trending, topRated, popular] = await Promise.all([
-          tmdbApi.getTrendingMovies(),
-          tmdbApi.getTopRatedMovies(),
-          tmdbApi.getPopularMovies()
+        // Note: TMDb API uses the same Movie type for TV series in discovery
+        // We'll use movie endpoints as placeholders for series data
+        const [trending, popular, topRated, onAir] = await Promise.all([
+          tmdbApi.getTrendingMovies(), // Placeholder for trending series
+          tmdbApi.getPopularMovies(),  // Placeholder for popular series
+          tmdbApi.getTopRatedMovies(), // Placeholder for top rated series
+          tmdbApi.getNowPlayingMovies() // Placeholder for on the air series
         ])
 
-        setTrendingMovies(trending)
-        setTopRatedMovies(topRated)
-        setPopularMovies(popular)
+        setTrendingSeries(trending)
+        setPopularSeries(popular)
+        setTopRatedSeries(topRated)
+        setOnTheAirSeries(onAir)
       } catch (err) {
-        console.error('Error fetching movies:', err)
-        setError('Failed to load movies. Please check your API key and try again.')
+        console.error('Error fetching series:', err)
+        setError('Failed to load TV series. Please check your API key and try again.')
       } finally {
         setLoading(false)
       }
     }
 
-    fetchMovies()
+    fetchSeries()
   }, [])
-
-  // Filter movies by selected genres
-  const filterMoviesByGenres = (movies: Movie[]) => {
-    if (selectedGenres.length === 0) return movies
-
-    return movies.filter(movie =>
-      movie.genre_ids.some(genreId => selectedGenres.includes(genreId))
-    )
-  }
-
-  // Filter movies by regions (simplified - based on original language)
-  const filterMoviesByRegions = (movies: Movie[]) => {
-    if (filters.regions.length === 0) return movies
-
-    const regionLanguageMap: { [key: string]: string[] } = {
-      'Hollywood': ['en'],
-      'Bollywood': ['hi', 'ta', 'te'],
-      'Europe': ['fr', 'de', 'it', 'es', 'ru', 'sv', 'da', 'no', 'fi', 'nl', 'pl', 'cs', 'hu', 'ro', 'bg', 'hr', 'sk', 'sl', 'et', 'lv', 'lt', 'mt'],
-      'Asia': ['ja', 'ko', 'zh', 'th', 'vi', 'id', 'ms', 'tl', 'ur', 'bn', 'gu', 'kn', 'ml', 'mr', 'or', 'pa', 'sd', 'si', 'ne', 'dv'],
-      'Latin America': ['es', 'pt'],
-      'Africa': ['ar', 'sw', 'am', 'om', 'ti', 'so', 'af', 'zu', 'xh', 'tn', 'st', 'rw', 'rn', 'ny', 'mg', 'ln', 'lg', 'ki', 'ha', 'ff', 'ee']
-    }
-
-    return movies.filter(movie => {
-      return filters.regions.some(region => {
-        const languages = regionLanguageMap[region] || []
-        return languages.includes(movie.original_language)
-      })
-    })
-  }
-
-  // Apply all filters
-  const applyAllFilters = (movies: Movie[]) => {
-    let filteredMovies = filterMoviesByGenres(movies)
-    filteredMovies = filterMoviesByRegions(filteredMovies)
-    return filteredMovies
-  }
 
   // Loading state
   if (loading) {
@@ -86,7 +50,7 @@ const Home: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-galaxy-purple mx-auto mb-4"></div>
-          <p className="text-white text-lg">Loading movies...</p>
+          <p className="text-white text-lg">Loading TV series...</p>
         </div>
       </div>
     )
@@ -148,14 +112,15 @@ const Home: React.FC = () => {
                   {selectedMovie.overview}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <button
+                  <Link
+                    to={`/movie/${selectedMovie.id}`}
                     className="bg-galaxy-red hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2"
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                     </svg>
                     <span>Watch Trailer</span>
-                  </button>
+                  </Link>
                   <button
                     onClick={hideHero}
                     className="border-2 border-galaxy-purple text-galaxy-purple hover:bg-galaxy-purple hover:text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300"
@@ -169,31 +134,37 @@ const Home: React.FC = () => {
         </div>
       )}
 
-      {/* Movie Sections */}
+      {/* Series Sections */}
       <div className="py-8">
         <div className="container mx-auto px-4">
-          {/* Trending Movies */}
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">TV Series</h1>
+            <p className="text-gray-400">Discover trending, popular, and classic TV series</p>
+          </div>
+
+          {/* Trending Series */}
           <MovieRow
-            title="Trending Now"
-            movies={applyAllFilters(trendingMovies)}
+            title="Trending Series"
+            movies={trendingSeries}
           />
 
-          {/* Top Rated Movies */}
+          {/* Popular Series */}
           <MovieRow
-            title="Top Rated"
-            movies={applyAllFilters(topRatedMovies)}
+            title="Popular Series"
+            movies={popularSeries}
           />
 
-          {/* Popular Movies */}
+          {/* Top Rated Series (Classic Series) */}
           <MovieRow
-            title="Popular Movies"
-            movies={applyAllFilters(popularMovies)}
+            title="Classic Series"
+            movies={topRatedSeries}
           />
 
-          {/* Now Playing Movies */}
+          {/* On The Air Series (Latest Series) */}
           <MovieRow
-            title="In Theaters"
-            movies={applyAllFilters(trendingMovies)}
+            title="On The Air"
+            movies={onTheAirSeries}
           />
         </div>
       </div>
@@ -201,4 +172,4 @@ const Home: React.FC = () => {
   )
 }
 
-export default Home
+export default SeriesPage

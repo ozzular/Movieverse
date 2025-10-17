@@ -2,18 +2,15 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import MovieRow from '../components/MovieRow'
 import { tmdbApi } from '../services/tmdbApi'
-import { useGenres } from '../contexts/GenreContext'
-import { useFilters } from '../contexts/FilterContext'
 import { useSelectedMovie } from '../contexts/SelectedMovieContext'
 import type { Movie } from '../types/index'
 
-const Home: React.FC = () => {
-  const { selectedGenres, genres } = useGenres()
-  const { filters } = useFilters()
+const MoviesPage: React.FC = () => {
   const { selectedMovie, showHero, hideHero } = useSelectedMovie()
   const [trendingMovies, setTrendingMovies] = useState<Movie[]>([])
-  const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([])
   const [popularMovies, setPopularMovies] = useState<Movie[]>([])
+  const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([])
+  const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -23,15 +20,17 @@ const Home: React.FC = () => {
         setLoading(true)
         setError(null)
 
-        const [trending, topRated, popular] = await Promise.all([
+        const [trending, popular, topRated, upcoming] = await Promise.all([
           tmdbApi.getTrendingMovies(),
+          tmdbApi.getPopularMovies(),
           tmdbApi.getTopRatedMovies(),
-          tmdbApi.getPopularMovies()
+          tmdbApi.getNowPlayingMovies() // Using now playing as "Latest Releases"
         ])
 
         setTrendingMovies(trending)
-        setTopRatedMovies(topRated)
         setPopularMovies(popular)
+        setTopRatedMovies(topRated)
+        setUpcomingMovies(upcoming)
       } catch (err) {
         console.error('Error fetching movies:', err)
         setError('Failed to load movies. Please check your API key and try again.')
@@ -42,43 +41,6 @@ const Home: React.FC = () => {
 
     fetchMovies()
   }, [])
-
-  // Filter movies by selected genres
-  const filterMoviesByGenres = (movies: Movie[]) => {
-    if (selectedGenres.length === 0) return movies
-
-    return movies.filter(movie =>
-      movie.genre_ids.some(genreId => selectedGenres.includes(genreId))
-    )
-  }
-
-  // Filter movies by regions (simplified - based on original language)
-  const filterMoviesByRegions = (movies: Movie[]) => {
-    if (filters.regions.length === 0) return movies
-
-    const regionLanguageMap: { [key: string]: string[] } = {
-      'Hollywood': ['en'],
-      'Bollywood': ['hi', 'ta', 'te'],
-      'Europe': ['fr', 'de', 'it', 'es', 'ru', 'sv', 'da', 'no', 'fi', 'nl', 'pl', 'cs', 'hu', 'ro', 'bg', 'hr', 'sk', 'sl', 'et', 'lv', 'lt', 'mt'],
-      'Asia': ['ja', 'ko', 'zh', 'th', 'vi', 'id', 'ms', 'tl', 'ur', 'bn', 'gu', 'kn', 'ml', 'mr', 'or', 'pa', 'sd', 'si', 'ne', 'dv'],
-      'Latin America': ['es', 'pt'],
-      'Africa': ['ar', 'sw', 'am', 'om', 'ti', 'so', 'af', 'zu', 'xh', 'tn', 'st', 'rw', 'rn', 'ny', 'mg', 'ln', 'lg', 'ki', 'ha', 'ff', 'ee']
-    }
-
-    return movies.filter(movie => {
-      return filters.regions.some(region => {
-        const languages = regionLanguageMap[region] || []
-        return languages.includes(movie.original_language)
-      })
-    })
-  }
-
-  // Apply all filters
-  const applyAllFilters = (movies: Movie[]) => {
-    let filteredMovies = filterMoviesByGenres(movies)
-    filteredMovies = filterMoviesByRegions(filteredMovies)
-    return filteredMovies
-  }
 
   // Loading state
   if (loading) {
@@ -148,14 +110,15 @@ const Home: React.FC = () => {
                   {selectedMovie.overview}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <button
+                  <Link
+                    to={`/movie/${selectedMovie.id}`}
                     className="bg-galaxy-red hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2"
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                     </svg>
                     <span>Watch Trailer</span>
-                  </button>
+                  </Link>
                   <button
                     onClick={hideHero}
                     className="border-2 border-galaxy-purple text-galaxy-purple hover:bg-galaxy-purple hover:text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300"
@@ -172,28 +135,34 @@ const Home: React.FC = () => {
       {/* Movie Sections */}
       <div className="py-8">
         <div className="container mx-auto px-4">
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">Movies</h1>
+            <p className="text-gray-400">Discover trending, popular, and classic movies</p>
+          </div>
+
           {/* Trending Movies */}
           <MovieRow
-            title="Trending Now"
-            movies={applyAllFilters(trendingMovies)}
-          />
-
-          {/* Top Rated Movies */}
-          <MovieRow
-            title="Top Rated"
-            movies={applyAllFilters(topRatedMovies)}
+            title="Trending Movies"
+            movies={trendingMovies}
           />
 
           {/* Popular Movies */}
           <MovieRow
             title="Popular Movies"
-            movies={applyAllFilters(popularMovies)}
+            movies={popularMovies}
           />
 
-          {/* Now Playing Movies */}
+          {/* Top Rated Movies (Classic Movies) */}
           <MovieRow
-            title="In Theaters"
-            movies={applyAllFilters(trendingMovies)}
+            title="Classic Movies"
+            movies={topRatedMovies}
+          />
+
+          {/* Now Playing Movies (Latest Releases) */}
+          <MovieRow
+            title="Latest Releases"
+            movies={upcomingMovies}
           />
         </div>
       </div>
@@ -201,4 +170,4 @@ const Home: React.FC = () => {
   )
 }
 
-export default Home
+export default MoviesPage
