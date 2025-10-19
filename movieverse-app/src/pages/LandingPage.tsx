@@ -1,333 +1,338 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { tmdbApi } from '../services/tmdbApi'
-import { useFavorites } from '../contexts/FavoritesContext'
-import { useTheme } from '../contexts/ThemeContext'
-import MovieVerseLogo from '../components/MovieVerseLogo'
-import SunMoonSwitch from '../components/SunMoonSwitch'
-import HeroBanner from '../components/HeroBanner'
-import MovieRow from '../components/MovieRow'
 import type { Movie } from '../types/index'
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate()
-  const { favorites } = useFavorites()
-  const { currentTheme } = useTheme()
-
   const [trendingMovies, setTrendingMovies] = useState<Movie[]>([])
-  const [popularMovies, setPopularMovies] = useState<Movie[]>([])
-  const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [currentMovieIndex, setCurrentMovieIndex] = useState(0)
 
   useEffect(() => {
-    const fetchMovies = async () => {
+    const fetchTrendingMovies = async () => {
       try {
-        setLoading(true)
-        const [trending, popular, topRated] = await Promise.all([
-          tmdbApi.getTrendingMovies(),
-          tmdbApi.getPopularMovies(),
-          tmdbApi.getTopRatedMovies()
-        ])
-
-        setTrendingMovies(trending)
-        setPopularMovies(popular)
-        setTopRatedMovies(topRated)
+        const movies = await tmdbApi.getTrendingMovies('US')
+        setTrendingMovies(movies.slice(0, 6))
+        setIsLoading(false)
       } catch (error) {
-        console.error('Error fetching movies:', error)
-      } finally {
-        setLoading(false)
+        console.error('Failed to fetch trending movies:', error)
+        setIsLoading(false)
       }
     }
-
-    fetchMovies()
+    fetchTrendingMovies()
   }, [])
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`)
-    }
+  const handleEnterVerse = () => {
+    navigate('/app')
   }
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        staggerChildren: 0.2
-      }
-    }
+  const handleMovieClick = (movie: Movie) => {
+    navigate(`/movie/${movie.id}`)
   }
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 }
-    }
-  }
+  // Auto-rotate through movies
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentMovieIndex(prev => (prev + 1) % trendingMovies.length)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [trendingMovies.length])
 
   return (
-    <div className={`min-h-screen ${currentTheme === 'day' ? 'day-theme' : 'night-theme'}`}>
-      {/* Navigation Bar - Sticky top, glassmorphism */}
-      <motion.header
-        className="sticky top-0 z-50 glassmorphism"
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <Link to="/" className="flex items-center">
-              <MovieVerseLogo size="md" />
-            </Link>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_40%,rgba(147,51,234,0.2),transparent_50%)]"></div>
+        <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_60%,rgba(59,130,246,0.2),transparent_50%)]"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
 
-            {/* Search Bar */}
-            <form onSubmit={handleSearch} className="flex-1 max-w-md mx-8">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search movies..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-galaxy-purple focus:ring-1 focus:ring-galaxy-purple"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-galaxy-purple hover:text-galaxy-red transition-colors"
+        {/* Floating particles */}
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-purple-400/30 rounded-full animate-pulse"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 2}s`,
+              animationDuration: `${2 + Math.random() * 3}s`
+            }}
+          ></div>
+        ))}
+      </div>
+
+      <div className="relative z-10">
+        {/* Hero Section */}
+        <motion.section
+          className="min-h-screen flex items-center justify-center px-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.5 }}
+        >
+          <div className="max-w-7xl w-full">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Left Content */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                className="space-y-8"
+              >
+                <div className="space-y-4">
+                  <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-white via-purple-100 to-purple-300 bg-clip-text text-transparent leading-tight">
+                    MovieVerse
+                  </h1>
+                  <p className="text-xl md:text-2xl text-gray-300 leading-relaxed font-light">
+                    Discover your cinematic universe. Unlimited entertainment at your fingertips.
+                  </p>
+                </div>
+
+                <motion.button
+                  onClick={handleEnterVerse}
+                  className="group relative px-12 py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-lg font-semibold text-white hover:from-purple-700 hover:to-blue-700 transform hover:scale-105 transition-all duration-300 shadow-2xl shadow-purple-500/25"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </button>
-              </div>
-            </form>
+                  <span className="relative z-10">Enter MovieVerse</span>
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                </motion.button>
+              </motion.div>
 
-            {/* Navigation Links */}
-            <nav className="hidden md:flex items-center space-x-6">
-              <Link
-                to="/app"
-                className="text-white hover:text-galaxy-purple transition-colors font-medium"
+              {/* Right Content - Movie Showcase */}
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="relative"
               >
-                Browse
-              </Link>
-              <Link
-                to="/favorites"
-                className="text-white hover:text-galaxy-purple transition-colors font-medium flex items-center space-x-1"
-              >
-                <span>Favorites</span>
-                {favorites.length > 0 && (
-                  <span className="bg-galaxy-red text-white text-xs rounded-full px-2 py-1">
-                    {favorites.length}
-                  </span>
+                <div className="relative h-96 w-full">
+                  <AnimatePresence mode="wait">
+                    {!isLoading && trendingMovies.length > 0 && (
+                      <motion.div
+                        key={currentMovieIndex}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.7 }}
+                        className="absolute inset-0 backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 p-8 shadow-2xl"
+                      >
+                        <div className="h-full flex items-center gap-6">
+                          <div className="flex-shrink-0">
+                            <img
+                              src={trendingMovies[currentMovieIndex]?.backdrop_path
+                                ? `https://image.tmdb.org/t/p/w780${trendingMovies[currentMovieIndex].backdrop_path}`
+                                : '/placeholder-movie.jpg'
+                              }
+                              alt={trendingMovies[currentMovieIndex]?.title || 'Movie'}
+                              className="w-48 h-32 object-cover rounded-xl shadow-lg"
+                              onError={(e) => {
+                                e.currentTarget.src = '/placeholder-movie.jpg'
+                              }}
+                            />
+                          </div>
+                          <div className="flex-1 space-y-3">
+                            <h3 className="text-xl font-semibold text-white">
+                              {trendingMovies[currentMovieIndex]?.title || 'Trending Movie'}
+                            </h3>
+                            <p className="text-gray-300 text-sm line-clamp-2">
+                              {trendingMovies[currentMovieIndex]?.overview || 'Discover amazing movies...'}
+                            </p>
+                            <div className="flex items-center gap-4 text-sm text-purple-300">
+                              <span className="flex items-center gap-1">
+                                ⭐ {trendingMovies[currentMovieIndex]?.vote_average?.toFixed(1) || 'N/A'}
+                              </span>
+                              <span>•</span>
+                              <span>{trendingMovies[currentMovieIndex]?.release_date?.split('-')[0] || 'N/A'}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Loading state */}
+                  {isLoading && (
+                    <div className="backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 p-8 shadow-2xl h-full flex items-center justify-center">
+                      <div className="text-white text-lg">Loading cinematic experiences...</div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Movie indicators */}
+                {!isLoading && trendingMovies.length > 0 && (
+                  <div className="flex justify-center gap-2 mt-6">
+                    {trendingMovies.slice(0, 5).map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentMovieIndex(index)}
+                        className={`w-3 h-3 rounded-full transition-colors duration-300 ${
+                          index === currentMovieIndex ? 'bg-purple-400' : 'bg-white/30'
+                        }`}
+                      />
+                    ))}
+                  </div>
                 )}
-              </Link>
-              <SunMoonSwitch />
-            </nav>
+              </motion.div>
+            </div>
           </div>
-        </div>
-      </motion.header>
+        </motion.section>
 
-      {/* Main Content */}
-      <div className="relative">
-        {/* Hero Section - Full width, 70vh */}
-        <HeroBanner className="mb-12" />
-
-        {/* Movie Sections */}
-        <motion.div
-          className="py-8"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+        {/* Featured Movies Section */}
+        <motion.section
+          className="py-20 px-6"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
         >
-          <div className="container mx-auto px-4">
-            {/* Trending Near You Section */}
-            <motion.section variants={itemVariants} className="mb-12">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-galaxy-purple/20 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-galaxy-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-white">Trending Now</h2>
-                    <p className="text-gray-400 text-sm">Popular movies right now</p>
-                  </div>
-                </div>
-                <Link
-                  to="/app"
-                  className="text-galaxy-purple hover:text-galaxy-red transition-colors font-medium"
-                >
-                  See All →
-                </Link>
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                Trending Now
+              </h2>
+              <p className="text-xl text-gray-300">
+                Discover the latest and most popular movies
+              </p>
+            </motion.div>
+
+            {!isLoading && trendingMovies.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {trendingMovies.slice(0, 6).map((movie, index) => (
+                  <motion.div
+                    key={movie.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    whileHover={{ y: -10 }}
+                    className="cursor-pointer"
+                    onClick={() => handleMovieClick(movie)}
+                  >
+                    <div className="backdrop-blur-xl bg-white/10 rounded-2xl overflow-hidden border border-white/20 shadow-xl transform hover:scale-105 transition-all duration-300">
+                      <div className="relative h-48 overflow-hidden">
+                        <img
+                          src={movie.poster_path
+                            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                            : '/placeholder-movie.jpg'
+                          }
+                          alt={movie.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = '/placeholder-movie.jpg'
+                          }}
+                        />
+                        <div className="absolute top-3 right-3 backdrop-blur-lg bg-black/50 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                          ⭐ {movie.vote_average?.toFixed(1) || 'N/A'}
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                          <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full font-medium transition-colors duration-300">
+                            View Details
+                          </button>
+                        </div>
+                      </div>
+                      <div className="p-6 space-y-2">
+                        <h3 className="text-white font-semibold text-lg line-clamp-2">
+                          {movie.title}
+                        </h3>
+                        <p className="text-gray-300 text-sm">
+                          {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
+            )}
 
-              <MovieRow
-                title=""
-                movies={trendingMovies.slice(0, 8)}
-              />
-            </motion.section>
-
-            {/* Popular Movies Section */}
-            <motion.section variants={itemVariants} className="mb-12">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-white">Popular Movies</h2>
-                  <p className="text-gray-400 text-sm">Most watched this month</p>
+            {!isLoading && trendingMovies.length === 0 && (
+              <div className="text-center py-16">
+                <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-8 border border-white/20 inline-block">
+                  <div className="text-gray-300 text-lg">Loading movie recommendations...</div>
                 </div>
-                <Link
-                  to="/movies"
-                  className="text-galaxy-purple hover:text-galaxy-red transition-colors font-medium"
-                >
-                  See All →
-                </Link>
               </div>
-
-              <MovieRow
-                title=""
-                movies={popularMovies.slice(0, 8)}
-              />
-            </motion.section>
-
-            {/* Top Rated Movies Section */}
-            <motion.section variants={itemVariants} className="mb-12">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-white">Top Rated</h2>
-                  <p className="text-gray-400 text-sm">Highest rated movies of all time</p>
-                </div>
-                <Link
-                  to="/movies"
-                  className="text-galaxy-purple hover:text-galaxy-red transition-colors font-medium"
-                >
-                  See All →
-                </Link>
-              </div>
-
-              <MovieRow
-                title=""
-                movies={topRatedMovies.slice(0, 8)}
-              />
-            </motion.section>
+            )}
           </div>
-        </motion.div>
+        </motion.section>
 
-        {/* Footer Section */}
+        {/* Footer */}
         <motion.footer
-          className="glassmorphism mt-16"
-          variants={itemVariants}
-          initial="hidden"
-          animate="visible"
+          className="py-12 px-6 bg-black/20 backdrop-blur-xl border-t border-white/10"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
         >
-          <div className="container mx-auto px-4 py-12">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* About Section */}
-              <div>
-                <div className="mb-4">
-                  <MovieVerseLogo size="sm" />
-                </div>
-                <p className="text-gray-300 text-sm mb-4">
-                  Your ultimate movie discovery platform. Find your next favorite film with our curated collections and personalized recommendations.
-                </p>
-                <p className="text-gray-400 text-xs">
-                  Made by [Your Name] • Final Year Project 2025
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+              {/* Logo & Brand */}
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                  MovieVerse
+                </h3>
+                <p className="text-gray-400 text-sm">
+                  Your cinematic universe awaits
                 </p>
               </div>
 
               {/* Quick Links */}
-              <div>
-                <h4 className="text-white font-semibold mb-4">Quick Links</h4>
-                <ul className="space-y-2">
-                  <li>
-                    <Link to="/app" className="text-gray-300 hover:text-white transition-colors text-sm">
-                      Home
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/movies" className="text-gray-300 hover:text-white transition-colors text-sm">
-                      Browse Movies
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/favorites" className="text-gray-300 hover:text-white transition-colors text-sm">
-                      My Favorites
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/filters" className="text-gray-300 hover:text-white transition-colors text-sm">
-                      Advanced Filters
-                    </Link>
-                  </li>
-                </ul>
+              <div className="space-y-2 text-center md:text-left">
+                <h4 className="text-white font-semibold mb-3">Quick Links</h4>
+                <div className="flex flex-col md:flex-row gap-4 text-gray-400 text-sm">
+                  <button
+                    onClick={handleEnterVerse}
+                    className="hover:text-purple-400 transition-colors duration-300"
+                  >
+                    Explore Movies
+                  </button>
+                  <button
+                    onClick={handleEnterVerse}
+                    className="hover:text-purple-400 transition-colors duration-300"
+                  >
+                    Trending Now
+                  </button>
+                </div>
               </div>
 
-              {/* Connect */}
-              <div>
-                <h4 className="text-white font-semibold mb-4">Connect</h4>
-                <div className="flex space-x-4">
-                  <a
-                    href="#"
-                    className="w-8 h-8 bg-galaxy-purple/20 rounded-full flex items-center justify-center text-galaxy-purple hover:bg-galaxy-purple hover:text-white transition-colors"
-                    title="GitHub"
-                  >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                    </svg>
-                  </a>
-                  <a
-                    href="#"
-                    className="w-8 h-8 bg-galaxy-purple/20 rounded-full flex items-center justify-center text-galaxy-purple hover:bg-galaxy-purple hover:text-white transition-colors"
-                    title="LinkedIn"
-                  >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                    </svg>
-                  </a>
-                  <a
-                    href="mailto:your.email@example.com"
-                    className="w-8 h-8 bg-galaxy-purple/20 rounded-full flex items-center justify-center text-galaxy-purple hover:bg-galaxy-purple hover:text-white transition-colors"
-                    title="Email"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </a>
+              {/* Contact & Credits */}
+              <div className="text-right space-y-2">
+                <div className="text-gray-400 text-sm">
+                  <div className="mb-2">
+                    <span className="block font-medium text-white mb-1">Made with ❤️ by</span>
+                    <span className="block text-purple-300 font-semibold">Peter Agbo</span>
+                  </div>
+                  <div className="space-y-1">
+                    <a
+                      href="https://github.com/ozzular"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block hover:text-purple-400 transition-colors duration-300"
+                    >
+                      GitHub: ozzular
+                    </a>
+                    <a
+                      href="mailto:work.peter.louis@gmail.com"
+                      className="block hover:text-purple-400 transition-colors duration-300"
+                    >
+                      work.peter.louis@gmail.com
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* API Attribution - REQUIRED */}
-            <div className="mt-8 pt-8 border-t border-white/10">
-              <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8">
-                <div className="flex items-center space-x-2">
-                  <img
-                    src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_long_1-8ba2ac31f354005783784c9200292620.svg"
-                    alt="TMDB Logo"
-                    className="h-6 brightness-0 invert"
-                    onClick={() => window.open('https://www.themoviedb.org', '_blank')}
-                    style={{ cursor: 'pointer' }}
-                  />
-                </div>
-                <div className="text-center md:text-left">
-                  <p className="text-xs text-gray-400">
-                    This product uses the TMDB API but is not endorsed or certified by TMDB.
-                  </p>
-                </div>
+            {/* Bottom Bar */}
+            <div className="border-t border-white/10 mt-8 pt-8 text-center">
+              <div className="text-gray-500 text-sm">
+                © {new Date().getFullYear()} MovieVerse. Bringing cinema to your screen.
               </div>
-            </div>
-
-            {/* Copyright */}
-            <div className="mt-8 text-center">
-              <p className="text-sm text-gray-400">
-                © 2025 MovieVerse | Made by [Your Name] | Final Year Project - [University Name]
-              </p>
             </div>
           </div>
         </motion.footer>
