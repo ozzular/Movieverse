@@ -59,6 +59,42 @@ export interface Collection {
   backdrop_path: string
 }
 
+// Cast and Crew types
+export interface Cast {
+  id: number
+  name: string
+  character: string
+  credit_id: string
+  order: number
+  profile_path: string | null
+  gender: number
+  cast_id?: number
+  adult: boolean
+  popularity: number
+  known_for_department: string
+  original_name: string
+}
+
+export interface Crew {
+  id: number
+  name: string
+  job: string
+  department: string
+  credit_id: string
+  profile_path: string | null
+  gender: number
+  adult: boolean
+  popularity: number
+  known_for_department: string
+  original_name: string
+}
+
+export interface CastCrewResponse {
+  id: number
+  cast: Cast[]
+  crew: Crew[]
+}
+
 // API Response types
 export interface MoviesResponse {
   page: number
@@ -86,6 +122,13 @@ export interface MovieRowProps {
 
 export interface HeroBannerProps {
   movie: Movie
+}
+
+// Streaming Provider types
+export interface StreamingProvider {
+  name: string
+  logo: string
+  url: string
 }
 
 // API Configuration

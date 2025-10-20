@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useFavorites } from '../contexts/FavoritesContext'
-import AdvancedFilter from './AdvancedFilter'
 import MovieVerseLogo from './MovieVerseLogo'
 
 interface SidebarProps {
@@ -12,6 +11,26 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { favorites } = useFavorites()
   const location = useLocation()
+  const [isCollapsed, setIsCollapsed] = useState(false)
+
+  // Load collapsed state from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('sidebar-collapsed')
+    if (saved) {
+      setIsCollapsed(JSON.parse(saved))
+    }
+  }, [])
+
+  // Save collapsed state to localStorage
+  const saveCollapsedState = (collapsed: boolean) => {
+    localStorage.setItem('sidebar-collapsed', JSON.stringify(collapsed))
+  }
+
+  const toggleCollapse = () => {
+    const newCollapsed = !isCollapsed
+    setIsCollapsed(newCollapsed)
+    saveCollapsedState(newCollapsed)
+  }
 
   const navItems = [
     {
@@ -52,11 +71,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     }
   ]
 
-  const bottomNavItems: [] = []
-
   return (
     <>
-      {/* Overlay */}
+      {/* Mobile Overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
@@ -66,81 +83,121 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <div className={`
-        fixed lg:fixed inset-y-0 left-0 z-50 w-80 lg:w-64 h-full
+        fixed lg:fixed inset-y-0 left-0 z-50 h-full
         bg-galaxy-gray/95 backdrop-blur-lg border-r border-galaxy-purple/20
-        transform transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:-translate-x-full'}
+        transform transition-all duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        ${isCollapsed ? 'lg:w-16' : 'lg:w-64 lg:translate-x-0'}
       `}>
-        <div className="flex flex-col h-full p-6">
-          {/* Logo */}
-          <div className="mb-8">
-            <MovieVerseLogo size="md" />
+        <div className={`flex flex-col h-full ${isCollapsed ? 'p-2' : 'p-6'}`}>
+          {/* Logo and Collapse Toggle */}
+          <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} mb-8`}>
+            {!isCollapsed && <MovieVerseLogo size="md" />}
+
+            {/* Collapse Toggle Button - Always visible */}
+            <button
+              onClick={toggleCollapse}
+              className="p-2 text-gray-400 hover:text-white hover:bg-galaxy-purple/20 rounded-lg transition-all duration-300"
+              title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              <svg
+                className={`w-5 h-5 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
 
           {/* Navigation */}
-          <nav className="mb-8">
+          <nav className={isCollapsed ? 'mb-4' : 'mb-8'}>
             <ul className="space-y-2">
               {navItems.map((item) => (
                 <li key={item.path}>
                   <Link
                     to={item.path}
-                    onClick={onClose}
+                    onClick={() => {
+                      // Close mobile sidebar when link is clicked
+                      if (window.innerWidth < 1024) {
+                        onClose()
+                      }
+                    }}
                     className={`
-                      flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300
+                      flex items-center ${isCollapsed ? 'justify-center px-2' : 'space-x-3 px-4'} py-3 rounded-lg transition-all duration-300 group relative
                       ${location.pathname === item.path
                         ? 'bg-galaxy-purple text-white'
                         : 'text-gray-300 hover:text-white hover:bg-galaxy-purple/20'
                       }
                     `}
+                    title={isCollapsed ? item.label : undefined}
                   >
                     {item.icon}
-                    <span className="font-medium">{item.label}</span>
-                    {item.path === '/favorites' && favorites.length > 0 && (
+                    {!isCollapsed && <span className="font-medium">{item.label}</span>}
+                    {item.path === '/favorites' && favorites.length > 0 && !isCollapsed && (
                       <span className="ml-auto bg-galaxy-red text-white text-xs rounded-full px-2 py-1">
                         {favorites.length}
                       </span>
+                    )}
+
+                    {/* Tooltip for collapsed state */}
+                    {isCollapsed && (
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                        {item.label}
+                        {item.path === '/favorites' && favorites.length > 0 && (
+                          <span className="ml-1 bg-galaxy-red text-white text-xs rounded-full px-1.5 py-0.5">
+                            {favorites.length}
+                          </span>
+                        )}
+                      </div>
                     )}
                   </Link>
                 </li>
               ))}
 
               {/* Divider */}
-              <li className="pt-4">
-                <div className="border-t border-galaxy-purple/20"></div>
-              </li>
-
-              {/* Bottom Navigation Items */}
-              {bottomNavItems.length > 0 && bottomNavItems.map((item) => (
-                <li key={item.path}>
-                  <Link
-                    to={item.path}
-                    onClick={onClose}
-                    className={`
-                      flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300
-                      ${location.pathname === item.path
-                        ? 'bg-galaxy-purple text-white'
-                        : 'text-gray-300 hover:text-white hover:bg-galaxy-purple/20'
-                      }
-                    `}
-                  >
-                    {item.icon}
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
+              {!isCollapsed && (
+                <li className="pt-4">
+                  <div className="border-t border-galaxy-purple/20"></div>
                 </li>
-              ))}
+              )}
             </ul>
           </nav>
 
-          {/* Advanced Filter */}
+          {/* Filters Link */}
           <div className="flex-1">
-            <h3 className="text-white text-lg font-semibold mb-4">Filters</h3>
-            <AdvancedFilter />
+            <Link
+              to="/filters"
+              onClick={() => {
+                if (window.innerWidth < 1024) {
+                  onClose()
+                }
+              }}
+              className={`
+                flex items-center ${isCollapsed ? 'justify-center px-2' : 'space-x-3 px-4'} py-3 rounded-lg transition-all duration-300 group relative
+                text-gray-300 hover:text-white hover:bg-galaxy-purple/20
+              `}
+              title={isCollapsed ? 'Advanced Filters' : undefined}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              {!isCollapsed && <span className="font-medium">Advanced Filters</span>}
+
+              {/* Tooltip for collapsed state */}
+              {isCollapsed && (
+                <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                  Advanced Filters
+                </div>
+              )}
+            </Link>
           </div>
 
-          {/* Close button for mobile */}
+          {/* Mobile Close Button */}
           <button
             onClick={onClose}
-            className="lg:hidden absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+            className="lg:hidden absolute top-4 right-4 p-2 text-gray-400 hover:text-white transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

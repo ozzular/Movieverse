@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { tmdbApi } from '../services/tmdbApi'
+import GeolocationModal from '../components/GeolocationModal'
 
 interface RegionalContent {
   trending: any[]
@@ -19,6 +20,8 @@ interface RegionContextValue {
   } | null
   isLoading: boolean
   refreshContent: () => Promise<void>
+  showLocationModal: boolean
+  setShowLocationModal: (show: boolean) => void
 }
 
 const RegionContext = createContext<RegionContextValue | undefined>(undefined)
@@ -100,11 +103,13 @@ export const RegionProvider: React.FC<RegionProviderProps> = ({ children }) => {
   const [regionalContent, setRegionalContent] = useState<RegionalContent | null>(null)
   const [userLocation, setUserLocation] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [showLocationModal, setShowLocationModal] = useState(false)
+  const [locationPermission, setLocationPermission] = useState<'granted' | 'denied' | 'unknown'>('unknown')
 
   const fetchRegionalContent = async (region: string) => {
     try {
       const [trending, popular, topRated] = await Promise.all([
-        tmdbApi.getTrendingMovies(),
+        tmdbApi.getTrendingMovies(region), // Use region-specific trending
         tmdbApi.getPopularMovies(),
         tmdbApi.getTopRatedMovies()
       ])
@@ -118,7 +123,7 @@ export const RegionProvider: React.FC<RegionProviderProps> = ({ children }) => {
     } catch (error) {
       console.error('Error fetching regional content:', error)
       return {
-        trending: await tmdbApi.getTrendingMovies(),
+        trending: await tmdbApi.getTrendingMovies(), // Fallback to global trending
         popular: await tmdbApi.getPopularMovies(),
         topRated: await tmdbApi.getTopRatedMovies(),
         region: 'US'
@@ -126,19 +131,50 @@ export const RegionProvider: React.FC<RegionProviderProps> = ({ children }) => {
     }
   }
 
-  const loadUserLocationAndContent = async () => {
+  const loadUserLocationAndContent = async (forceLocationRequest = false) => {
     try {
       setIsLoading(true)
-      const location = await fetchUserLocation()
-      setUserLocation(location)
 
-      const tmdbRegionCode = getTMDBRegionCode(location?.country || 'United States')
-      const content = await fetchRegionalContent(tmdbRegionCode)
+      // Check if user has already responded to location permission
+      const locationPreference = localStorage.getItem('movieverse-location-permission')
 
-      setRegionalContent({
-        ...content,
-        countryName: location?.country || 'United States'
-      })
+      if (locationPreference === 'denied' && !forceLocationRequest) {
+        // User previously denied location, use global content
+        const defaultContent = await fetchRegionalContent('US')
+        setRegionalContent({
+          ...defaultContent,
+          countryName: 'United States'
+        })
+        setUserLocation({ country: 'United States', region: 'US', city: 'Unknown', timezone: 'UTC' })
+        return
+      }
+
+      if (locationPreference === 'granted' || forceLocationRequest) {
+        // User granted permission, fetch location
+        const location = await fetchUserLocation()
+        if (location) {
+          setUserLocation(location)
+          const tmdbRegionCode = getTMDBRegionCode(location.country)
+          const content = await fetchRegionalContent(tmdbRegionCode)
+
+          setRegionalContent({
+            ...content,
+            countryName: location.country
+          })
+          setLocationPermission('granted')
+        } else {
+          // Location fetch failed, fallback to global
+          const defaultContent = await fetchRegionalContent('US')
+          setRegionalContent({
+            ...defaultContent,
+            countryName: 'United States'
+          })
+          setUserLocation({ country: 'United States', region: 'US', city: 'Unknown', timezone: 'UTC' })
+        }
+      } else {
+        // First time or unknown preference, show modal
+        setShowLocationModal(true)
+      }
     } catch (error) {
       console.error('Error loading regional data:', error)
       const defaultContent = await fetchRegionalContent('US')
@@ -150,6 +186,18 @@ export const RegionProvider: React.FC<RegionProviderProps> = ({ children }) => {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleLocationAllow = async () => {
+    setShowLocationModal(false)
+    localStorage.setItem('movieverse-location-permission', 'granted')
+    await loadUserLocationAndContent(true)
+  }
+
+  const handleLocationDeny = async () => {
+    setShowLocationModal(false)
+    localStorage.setItem('movieverse-location-permission', 'denied')
+    await loadUserLocationAndContent(false)
   }
 
   const refreshContent = async () => {
@@ -171,12 +219,19 @@ export const RegionProvider: React.FC<RegionProviderProps> = ({ children }) => {
     regionalContent,
     userLocation,
     isLoading,
-    refreshContent
+    refreshContent,
+    showLocationModal,
+    setShowLocationModal
   }
 
   return (
     <RegionContext.Provider value={value}>
       {children}
+      <GeolocationModal
+        isOpen={showLocationModal}
+        onAllow={handleLocationAllow}
+        onDeny={handleLocationDeny}
+      />
     </RegionContext.Provider>
   )
 }

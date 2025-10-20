@@ -1,0 +1,86 @@
+/* ========== THEME SYSTEM ========== */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg-gradient-light);
+  color: var(--color-text-primary);
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* Light theme (default) */
+:root {
+  --color-primary: #FF2E2E;
+  --color-bg: #1A1A1A;
+  --color-text-primary: #FFFFFF;
+  --color-text-muted: #B3B3B3;
+  --color-accent: #FF4444;
+  --color-glass-border: rgba(255, 255, 255, 0.2);
+  --color-glass-bg: rgba(255, 255, 255, 0.08);
+  --bg-gradient-light: linear-gradient(135deg, var(--color-primary) 0%, var(--color-bg) 100%);
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --color-primary: #B30000;
+  --color-bg: #000000;
+  --color-text-primary: #FFFFFF;
+  --color-text-muted: #8A8A8A;
+  --color-accent: #FF2E2E;
+  --color-glass-border: rgba(255, 255, 255, 0.15);
+  --color-glass-bg: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-bg) 100%);
+}
+
+/* CTA Button */
+.cta-btn {
+  background: var(--color-primary);
+  color: var(--color-text-primary);
+  padding: 0.8rem 1.6rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(255, 0, 0, 0.4);
+  transition: all 0.3s ease;
+}
+
+.cta-btn:hover {
+  box-shadow: 0 0 30px var(--color-accent);
+  transform: translateY(-2px);
+}
+
+/* Glass Panel */
+.glass-panel {
+  background: var(--color-glass-bg);
+  border: 1px solid var(--color-glass-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--color-glass-bg);
+  border: 1px solid var(--color-glass-border);
+  backdrop-filter: blur(12px);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  box-shadow: 0 0 25px var(--color-accent);
+  transform: translateY(-2px);
+}

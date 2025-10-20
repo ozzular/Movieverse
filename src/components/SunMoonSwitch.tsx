@@ -25,7 +25,7 @@ const SunMoonSwitch: React.FC<SunMoonSwitchProps> = ({ className = '' }) => {
     >
       {/* Background */}
       <motion.div
-        className="relative w-20 h-10 rounded-full bg-gradient-to-r from-purple-900/30 to-blue-900/30 backdrop-blur-sm"
+        className="relative w-14 h-7 rounded-full bg-gradient-to-r from-purple-900/30 to-blue-900/30 backdrop-blur-sm"
         animate={{
           background: currentTheme === 'day'
             ? 'linear-gradient(to right, rgb(219, 234, 254), rgb(147, 197, 253))' // Blue gradient for day
@@ -35,9 +35,9 @@ const SunMoonSwitch: React.FC<SunMoonSwitchProps> = ({ className = '' }) => {
       >
         {/* Toggle Button */}
         <motion.div
-          className="w-8 h-8 rounded-full shadow-lg flex items-center justify-center"
+          className="w-6 h-6 rounded-full shadow-lg flex items-center justify-center"
           animate={{
-            x: currentTheme === 'day' ? '4px' : '32px',
+            x: currentTheme === 'day' ? '4px' : '26px',
             background: currentTheme === 'day'
               ? 'radial-gradient(circle at 30% 30%, #fbbf24, #f59e0b)' // Sun colors
               : 'radial-gradient(circle at 30% 30%, #e5e7eb, #9ca3af)' // Moon colors

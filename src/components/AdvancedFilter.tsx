@@ -55,25 +55,25 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ className = '' }) => {
   }
 
   return (
-    <div className={`space-y-4 ${className}`}>
-      {/* Filter Category Buttons */}
-      <div className="flex flex-wrap gap-2">
+    <div className={`space-y-6 ${className}`}>
+      {/* Filter Category Buttons - Improved responsive layout */}
+      <div className="flex flex-wrap gap-3">
         {filterCategories.map((category) => (
           <div key={category.id} className="relative">
             <button
               onClick={() => setActiveFilter(activeFilter === category.id ? null : category.id as any)}
               className={`
-                flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300
+                flex items-center space-x-2 px-4 py-3 rounded-lg transition-all duration-300 glassmorphism
                 ${activeFilter === category.id
-                  ? 'bg-galaxy-purple text-white'
-                  : 'bg-galaxy-gray/50 text-gray-300 hover:text-white hover:bg-galaxy-purple/20'
+                  ? 'bg-galaxy-purple text-white border-galaxy-purple'
+                  : 'bg-white/5 text-gray-300 hover:text-white hover:bg-galaxy-purple/20 border-white/10'
                 }
               `}
             >
               {category.icon}
               <span className="font-medium">{category.label}</span>
               {category.count > 0 && (
-                <span className="bg-galaxy-red text-white text-xs rounded-full px-2 py-1">
+                <span className="bg-galaxy-red text-white text-xs rounded-full px-2 py-1 min-w-[1.5rem] text-center">
                   {category.count}
                 </span>
               )}
@@ -89,11 +89,11 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ className = '' }) => {
           </div>
         ))}
 
-        {/* Clear All Button */}
+        {/* Clear All Button - Enhanced styling */}
         {(selectedGenres.length > 0 || filters.regions.length > 0 || filters.releaseYearRange) && (
           <button
             onClick={clearAllFilters}
-            className="px-4 py-2 bg-galaxy-red/20 text-galaxy-red hover:bg-galaxy-red hover:text-white rounded-lg transition-all duration-300"
+            className="px-4 py-3 bg-galaxy-red/20 text-galaxy-red hover:bg-galaxy-red hover:text-white rounded-lg transition-all duration-300 glassmorphism border border-galaxy-red/20 hover:border-galaxy-red"
           >
             <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -103,22 +103,22 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ className = '' }) => {
         )}
       </div>
 
-      {/* Active Filters Display */}
+      {/* Active Filters Display - Enhanced layout */}
       {selectedGenres.length > 0 && (
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-400">Active filters:</span>
+        <div className="space-y-3">
+          <span className="text-sm text-gray-400 font-medium">Active genre filters:</span>
           <div className="flex flex-wrap gap-2">
             {genres
               .filter(genre => selectedGenres.includes(genre.id))
               .map(genre => (
                 <span
                   key={genre.id}
-                  className="px-3 py-1 bg-galaxy-purple/20 text-galaxy-purple text-sm rounded-full flex items-center space-x-1"
+                  className="px-3 py-2 bg-galaxy-purple/20 text-galaxy-purple text-sm rounded-full flex items-center space-x-2 glassmorphism border border-galaxy-purple/30"
                 >
                   <span>{genre.name}</span>
                   <button
                     onClick={() => toggleGenre(genre.id)}
-                    className="hover:text-white transition-colors"
+                    className="hover:text-white transition-colors p-1 rounded-full hover:bg-galaxy-purple/20"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -130,18 +130,19 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ className = '' }) => {
         </div>
       )}
 
-      {/* Genre Filter Panel */}
+      {/* Genre Filter Panel - Enhanced grid layout */}
       {activeFilter === 'genres' && (
-        <div className="p-4 bg-galaxy-gray/50 border border-galaxy-purple/30 rounded-lg backdrop-blur-sm">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-64 overflow-y-auto">
+        <div className="p-6 bg-black/40 backdrop-blur-lg border border-white/10 rounded-xl">
+          <h3 className="text-lg font-semibold text-white mb-4">Select Genres</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 max-h-80 overflow-y-auto">
             {genres.map((genre) => (
               <Link
                 key={genre.id}
                 to={`/genre/${genre.id}`}
-                className={`block p-3 text-sm rounded-lg transition-all duration-300 text-left ${
+                className={`block p-3 text-sm rounded-lg transition-all duration-300 text-center glassmorphism hover:scale-105 ${
                   selectedGenres.includes(genre.id)
-                    ? 'bg-galaxy-purple text-white'
-                    : 'text-gray-300 hover:text-white hover:bg-galaxy-purple/20'
+                    ? 'bg-galaxy-purple text-white border-galaxy-purple shadow-lg shadow-galaxy-purple/25'
+                    : 'bg-white/5 text-gray-300 hover:text-white hover:bg-galaxy-purple/20 border-white/10 hover:border-galaxy-purple/30'
                 }`}
               >
                 {genre.name}
@@ -151,34 +152,50 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ className = '' }) => {
         </div>
       )}
 
-      {/* Release Year Filter Panel */}
+      {/* Release Year Filter Panel - Enhanced layout */}
       {activeFilter === 'dates' && (
-        <div className="p-4 bg-galaxy-gray/50 border border-galaxy-purple/30 rounded-lg backdrop-blur-sm">
-          <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
-            {['2024', '2020-2023', '2010-2019', '2000-2009', '1990-1999', 'Before 1990'].map((range) => (
+        <div className="p-6 bg-black/40 backdrop-blur-lg border border-white/10 rounded-xl">
+          <h3 className="text-lg font-semibold text-white mb-4">Select Release Year</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {[
+              { label: '2024', range: '2024-2024' },
+              { label: '2020-2023', range: '2020-2023' },
+              { label: '2010-2019', range: '2010-2019' },
+              { label: '2000-2009', range: '2000-2009' },
+              { label: '1990-1999', range: '1990-1999' },
+              { label: 'Before 1990', range: '1900-1989' }
+            ].map((period) => (
               <button
-                key={range}
-                className="p-3 text-sm rounded-lg transition-all duration-300 text-left text-gray-300 hover:text-white hover:bg-galaxy-purple/20"
+                key={period.label}
+                className="p-3 text-sm rounded-lg transition-all duration-300 text-center glassmorphism hover:scale-105 bg-white/5 text-gray-300 hover:text-white hover:bg-galaxy-purple/20 border border-white/10 hover:border-galaxy-purple/30"
               >
-                {range}
+                {period.label}
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* Regions Filter Panel */}
+      {/* Regions Filter Panel - Enhanced grid layout */}
       {activeFilter === 'regions' && (
-        <div className="p-4 bg-galaxy-gray/50 border border-galaxy-purple/30 rounded-lg backdrop-blur-sm">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {['Hollywood', 'Bollywood', 'Europe', 'Asia', 'Latin America', 'Africa'].map((region) => (
+        <div className="p-6 bg-black/40 backdrop-blur-lg border border-white/10 rounded-xl">
+          <h3 className="text-lg font-semibold text-white mb-4">Select Regions</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {[
+              'Hollywood',
+              'Bollywood',
+              'Europe',
+              'Asia',
+              'Latin America',
+              'Africa'
+            ].map((region) => (
               <button
                 key={region}
                 onClick={() => toggleRegion(region)}
-                className={`p-3 text-sm rounded-lg transition-all duration-300 text-left ${
+                className={`p-3 text-sm rounded-lg transition-all duration-300 text-center glassmorphism hover:scale-105 ${
                   filters.regions.includes(region)
-                    ? 'bg-galaxy-purple text-white'
-                    : 'text-gray-300 hover:text-white hover:bg-galaxy-purple/20'
+                    ? 'bg-galaxy-purple text-white border-galaxy-purple shadow-lg shadow-galaxy-purple/25'
+                    : 'bg-white/5 text-gray-300 hover:text-white hover:bg-galaxy-purple/20 border-white/10 hover:border-galaxy-purple/30'
                 }`}
               >
                 {region}

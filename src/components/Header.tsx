@@ -4,6 +4,7 @@ import { useSearch } from '../contexts/SearchContext'
 import { useFavorites } from '../contexts/FavoritesContext'
 import MovieVerseLogo from './MovieVerseLogo'
 import SunMoonSwitch from './SunMoonSwitch'
+import SearchSuggestions from './SearchSuggestions'
 
 interface HeaderProps {
   onMenuClick: () => void
@@ -11,7 +12,13 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick, sidebarOpen }) => {
-  const { searchQuery, setSearchQuery, performSearch } = useSearch()
+  const {
+    searchQuery,
+    setSearchQuery,
+    performSearch,
+    showSuggestions,
+    setShowSuggestions
+  } = useSearch()
   const { favorites } = useFavorites()
   const navigate = useNavigate()
 
@@ -20,7 +27,22 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, sidebarOpen }) => {
     if (searchQuery.trim()) {
       await performSearch(searchQuery)
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`)
+      setShowSuggestions(false)
     }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }
+
+  const handleInputFocus = () => {
+    if (searchQuery.length >= 3) {
+      setShowSuggestions(true)
+    }
+  }
+
+  const handleSuggestionClose = () => {
+    setShowSuggestions(false)
   }
 
   return (
@@ -56,7 +78,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, sidebarOpen }) => {
                 type="text"
                 placeholder="Search movies..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleInputChange}
                 className="w-full px-4 py-2 bg-galaxy-gray/50 border border-galaxy-purple/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-galaxy-purple focus:ring-1 focus:ring-galaxy-purple"
               />
               <button
@@ -72,7 +94,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, sidebarOpen }) => {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-white hover:text-galaxy-purple transition-colors">
+            <Link to="/home" className="text-white hover:text-galaxy-purple transition-colors">
               Home
             </Link>
             <Link

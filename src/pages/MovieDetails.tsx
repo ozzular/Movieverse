@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { tmdbApi } from '../services/tmdbApi'
-import type { MovieDetails as MovieDetailsType } from '../types/index'
+import TrailerPlayer from '../components/TrailerPlayer'
+import StreamingAvailability from '../components/StreamingAvailability'
+import CastMember from '../components/CastMember'
+import { useFavorites } from '../contexts/FavoritesContext'
+import type { MovieDetails as MovieDetailsType, Cast, Crew } from '../types/index'
 
 const MovieDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
+
   const [movie, setMovie] = useState<MovieDetailsType | null>(null)
+  const [cast, setCast] = useState<Cast[]>([])
+  const [crew, setCrew] = useState<Crew[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -17,8 +26,16 @@ const MovieDetails: React.FC = () => {
         setLoading(true)
         setError(null)
 
-        const movieData = await tmdbApi.getMovieDetails(parseInt(id))
+        // Fetch movie details, cast, and crew in parallel
+        const [movieData, castCrewData] = await Promise.all([
+          tmdbApi.getMovieDetails(parseInt(id)),
+          fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${import.meta.env.VITE_TMDB_API_KEY}`)
+            .then(res => res.json())
+        ])
+
         setMovie(movieData)
+        setCast(castCrewData.cast || [])
+        setCrew(castCrewData.crew || [])
       } catch (err) {
         console.error('Error fetching movie details:', err)
         setError('Failed to load movie details')
@@ -29,6 +46,20 @@ const MovieDetails: React.FC = () => {
 
     fetchMovieDetails()
   }, [id])
+
+  const handleActorTap = (personId: number) => {
+    navigate(`/person/${personId}`)
+  }
+
+  const handleFavoriteToggle = () => {
+    if (!movie) return
+
+    if (isFavorite(movie.id)) {
+      removeFromFavorites(movie.id)
+    } else {
+      addToFavorites(movie)
+    }
+  }
 
   if (loading) {
     return (
@@ -134,24 +165,88 @@ const MovieDetails: React.FC = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-galaxy-red hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors duration-300 flex items-center justify-center space-x-2">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                </svg>
-                <span>Watch Trailer</span>
-              </button>
-
-              <button className="border-2 border-galaxy-purple text-galaxy-purple hover:bg-galaxy-purple hover:text-white px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center justify-center space-x-2">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {/* Action Buttons - Enhanced */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              <button
+                onClick={handleFavoriteToggle}
+                className={`border-2 px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center justify-center space-x-2 ${
+                  isFavorite(movie.id)
+                    ? 'bg-galaxy-red border-galaxy-red text-white'
+                    : 'border-galaxy-purple text-galaxy-purple hover:bg-galaxy-purple hover:text-white'
+                }`}
+              >
+                <svg className="w-6 h-6" fill={isFavorite(movie.id) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
-                <span>Add to Favorites</span>
+                <span>{isFavorite(movie.id) ? 'Remove from Favorites' : 'Add to Favorites'}</span>
               </button>
             </div>
           </div>
         </div>
+
+        {/* Auto Trailer Player */}
+        <div className="mb-12">
+          <TrailerPlayer
+            movieId={movie.id}
+            movieTitle={movie.title}
+            autoPlay={true}
+            className="max-w-4xl mx-auto"
+          />
+        </div>
+
+        {/* Where to Watch Section */}
+        <div className="mb-12">
+          <StreamingAvailability
+            movieTitle={movie.title}
+            releaseYear={new Date(movie.release_date).getFullYear()}
+            className="max-w-4xl mx-auto"
+          />
+        </div>
+
+        {/* Cast & Crew Section */}
+        {cast.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-white mb-6">Cast</h2>
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 justify-items-center">
+              {cast.slice(0, 12).map((person) => (
+                <CastMember
+                  key={person.id}
+                  person={person}
+                  onTap={handleActorTap}
+                  showRole={false}
+                  className="w-20"
+                />
+              ))}
+            </div>
+
+            {/* Show more cast members if available */}
+            {cast.length > 12 && (
+              <div className="text-center mt-6">
+                <button className="text-galaxy-purple hover:text-galaxy-red transition-colors font-medium">
+                  View Full Cast ({cast.length} members)
+                </button>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* Director & Key Crew */}
+        {crew.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-white mb-6">Crew</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {crew
+                .filter(member => ['Director', 'Writer', 'Producer', 'Cinematographer'].includes(member.job))
+                .slice(0, 4)
+                .map((member) => (
+                  <div key={member.id} className="bg-glassmorphism rounded-xl p-4 text-center">
+                    <h3 className="text-white font-semibold text-sm">{member.name}</h3>
+                    <p className="text-gray-400 text-xs">{member.job}</p>
+                  </div>
+                ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   )

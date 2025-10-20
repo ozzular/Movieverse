@@ -6,6 +6,7 @@ import { FavoritesProvider } from './contexts/FavoritesContext'
 import { FilterProvider } from './contexts/FilterContext'
 import { SelectedMovieProvider } from './contexts/SelectedMovieContext'
 import { ThemeProvider } from './contexts/ThemeContext'
+import ThemeWrapper from './components/ThemeWrapper'
 import { RegionProvider } from './contexts/RegionContext'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
@@ -20,72 +21,69 @@ import MoviesPage from './pages/MoviesPage'
 import SeriesPage from './pages/SeriesPage'
 import FiltersPage from './pages/FiltersPage'
 
-function AppRoutes() {
-  const location = useLocation()
+function Layout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  // Show loading indicator while on landing page transition
-  if (location.pathname === '/landing' && location.search) {
-    // Handle any loading state if needed
-  }
+  return (
+    <div className="galaxy-gradient flex min-h-screen">
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="flex-1 flex flex-col lg:ml-0">
+        <Header onMenuClick={() => setSidebarOpen(true)} sidebarOpen={sidebarOpen} />
+        <main className="pb-20 flex-1">
+          {children}
+        </main>
+      </div>
+      <Chatbot />
+    </div>
+  )
+}
 
+function AppRoutes() {
+  const location = useLocation()
   const isLandingPage = location.pathname === '/'
 
-  return (
-    <div className="min-h-screen">
-      {!isLandingPage && (
-        <>
-          <div className="galaxy-gradient flex">
-            <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-            <div className="flex-1 flex flex-col lg:ml-0">
-              <Header onMenuClick={() => setSidebarOpen(true)} sidebarOpen={sidebarOpen} />
-              <main className="pb-20 flex-1">
-                <Routes>
-                  <Route path="/app" element={<Home />} />
-                  <Route path="/home" element={<Home />} />
-                  <Route path="/movies" element={<MoviesPage />} />
-                  <Route path="/series" element={<SeriesPage />} />
-                  <Route path="/genres" element={<GenresPage />} />
-                  <Route path="/filters" element={<FiltersPage />} />
-                  <Route path="/search" element={<SearchResults />} />
-                  <Route path="/movie/:id" element={<MovieDetails />} />
-                  <Route path="/favorites" element={<Favorites />} />
-                  <Route path="/genre/:genreId" element={<GenresPage />} />
-                </Routes>
-              </main>
-            </div>
-          </div>
-          <Chatbot />
-        </>
-      )}
+  if (isLandingPage) {
+    return <LandingPage />
+  }
 
-      {isLandingPage && (
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-        </Routes>
-      )}
-    </div>
+  return (
+    <Layout>
+      <Routes>
+        <Route path="/app" element={<Home />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/movies" element={<MoviesPage />} />
+        <Route path="/series" element={<SeriesPage />} />
+        <Route path="/genres" element={<GenresPage />} />
+        <Route path="/filters" element={<FiltersPage />} />
+        <Route path="/search" element={<SearchResults />} />
+        <Route path="/movie/:id" element={<MovieDetails />} />
+        <Route path="/favorites" element={<Favorites />} />
+        <Route path="/genre/:genreId" element={<GenresPage />} />
+      </Routes>
+    </Layout>
   )
 }
 
 function App() {
   return (
     <ThemeProvider>
-      <RegionProvider>
-        <SearchProvider>
-          <GenreProvider>
-            <FavoritesProvider>
-              <FilterProvider>
-                <SelectedMovieProvider>
-                  <Router>
-                    <AppRoutes />
-                  </Router>
-                </SelectedMovieProvider>
-              </FilterProvider>
-            </FavoritesProvider>
-          </GenreProvider>
-        </SearchProvider>
-      </RegionProvider>
+      <ThemeWrapper>
+        <RegionProvider>
+          <SearchProvider>
+            <GenreProvider>
+              <FavoritesProvider>
+                <FilterProvider>
+                  <SelectedMovieProvider>
+                    <Router>
+                      <AppRoutes />
+                    </Router>
+                  </SelectedMovieProvider>
+                </FilterProvider>
+              </FavoritesProvider>
+            </GenreProvider>
+          </SearchProvider>
+        </RegionProvider>
+      </ThemeWrapper>
     </ThemeProvider>
   )
 }

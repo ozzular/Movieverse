@@ -28,8 +28,11 @@ class TMDbAPI {
   }
 
   // Get trending movies
-  async getTrendingMovies(): Promise<Movie[]> {
-    const data: MoviesResponse = await this.request('/trending/movie/week')
+  async getTrendingMovies(region?: string): Promise<Movie[]> {
+    const endpoint = region
+      ? `/trending/movie/week?region=${region}`
+      : '/trending/movie/week'
+    const data: MoviesResponse = await this.request(endpoint)
     return data.results
   }
 
