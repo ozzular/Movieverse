@@ -1,67 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { tmdbApi } from '../services/tmdbApi';
-import type { Movie } from '../types/index';
+import { useState, useEffect } from 'react'
+import HeroCarousel from './HeroCarousel'
+import { tmdbApi } from '../services/tmdbApi'
 
-const Hero: React.FC = () => {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [current, setCurrent] = useState(0);
-  const navigate = useNavigate();
+// Define Movie interface locally to avoid import issues
+interface Movie {
+  id: number
+  title: string
+  poster_path: string
+  backdrop_path: string
+  vote_average: number
+  overview: string
+  release_date: string
+  genre_ids: number[]
+  adult: boolean
+  original_language: string
+  original_title: string
+  popularity: number
+  video: boolean
+  vote_count: number
+}
+
+const Hero = () => {
+  const [featuredMovies, setFeaturedMovies] = useState<Movie[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const fetchMovies = async () => {
+    const fetchFeaturedMovies = async () => {
       try {
-        const popularMovies = await tmdbApi.getPopularMovies();
-        setMovies(popularMovies.slice(0, 5)); // Take top 5
+        setIsLoading(true)
+        // Get trending movies for the carousel
+        const trendingMovies = await tmdbApi.getTrendingMovies()
+        // Limit to 5 movies for carousel
+        setFeaturedMovies(trendingMovies.slice(0, 5))
       } catch (error) {
-        console.error('Failed to fetch movies:', error);
+        console.error('Failed to fetch featured movies:', error)
+        // Fallback to empty array - carousel will show loading state
+        setFeaturedMovies([])
+      } finally {
+        setIsLoading(false)
       }
-    };
-    fetchMovies();
-  }, []);
+    }
 
-  useEffect(() => {
-    if (movies.length === 0) return;
-    const timer = setInterval(() => {
-      setCurrent(prev => (prev + 1) % movies.length);
-    }, 4000); // Slide every 4 seconds
-    return () => clearInterval(timer);
-  }, [movies]);
+    fetchFeaturedMovies()
+  }, [])
 
-  return (
-    <div className="hero">
-      <div className="hero-carousel">
-        {movies.map((movie, index) => (
-          <motion.div
-            key={movie.id}
-            className="hero-slide"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: index === current ? 1 : 0 }}
-            transition={{ duration: 1 }}
-            style={{
-              backgroundImage: movie.backdrop_path ? `url(${tmdbApi.getBackdropUrl(movie.backdrop_path)})` : 'none',
-            }}
-          />
-        ))}
-      </div>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="glass-panel hero-content"
-      >
-        <h1>Welcome to MovieVerse</h1>
-        <p>Discover your cinematic universe. Unlimited entertainment at your fingertips.</p>
-        <button
-          className="cta-btn"
-          onClick={() => navigate('/home')}
-        >
-          Enter MovieVerse
-        </button>
-      </motion.div>
-    </div>
-  );
-};
+  return <HeroCarousel movies={featuredMovies} />
+}
 
-export default Hero;
+export default Hero

@@ -1,71 +1,121 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import FavoriteButton from './FavoriteButton'
-import { useSelectedMovie } from '../contexts/SelectedMovieContext'
-import type { Movie } from '../types/index'
+import { Play, Plus, Heart } from "lucide-react";
+import { Button } from "./ui/button";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useFavorites } from "../contexts/FavoritesContext";
+
+// Define Movie interface locally to completely bypass import issues
+interface Movie {
+  id: number;
+  title: string;
+  poster_path: string;
+  backdrop_path: string;
+  vote_average: number;
+  overview: string;
+  release_date: string;
+  genre_ids: number[];
+  adult: boolean;
+  original_language: string;
+  original_title: string;
+  popularity: number;
+  video: boolean;
+  vote_count: number;
+}
 
 interface MovieCardProps {
-  movie: Movie
+  movie: Movie;
+  title?: string;
+  image?: string;
+  rating?: string;
+  genre?: string;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
-  const { showHero } = useSelectedMovie()
-  const posterUrl = movie.poster_path
-    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-    : '/placeholder-movie.jpg'
+const MovieCard = ({ movie, title, image, rating, genre }: MovieCardProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+  const favorited = isFavorite(movie.id);
 
-  const handleCardClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    showHero(movie)
-  }
+  const handlePlayClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/movie/${movie.id}`);
+  };
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (favorited) {
+      removeFromFavorites(movie.id);
+    } else {
+      addToFavorites(movie);
+    }
+  };
 
   return (
-    <div className="movie-card cursor-pointer relative" onClick={handleCardClick}>
-      <Link to={`/movie/${movie.id}`} className="block">
-        <div className="relative overflow-hidden rounded-lg bg-galaxy-gray hover:shadow-lg hover:shadow-galaxy-purple/20 transition-all duration-300">
-          {/* Movie Poster */}
-          <img
-            src={posterUrl}
-            alt={movie.title}
-            className="w-full h-64 object-cover transition-transform duration-300 hover:scale-105"
-            onError={(e) => {
-              e.currentTarget.src = '/placeholder-movie.jpg'
-            }}
-          />
+    <div
+      className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 cursor-pointer"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={() => navigate(`/movie/${movie.id}`)}
+    >
+      <div className="aspect-[2/3] relative">
+        <img
+          src={image || `https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+          alt={title || movie.title}
+          className="w-full h-full object-cover transition-all duration-300"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = 'https://via.placeholder.com/300x450/1f2937/ffffff?text=No+Image';
+          }}
+        />
 
-          {/* Overlay on hover */}
-          <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-70 transition-all duration-300 flex items-center justify-center">
-            <div className="opacity-0 hover:opacity-100 transition-opacity duration-300 text-center p-4 transform translate-y-4 hover:translate-y-0">
-              <p className="text-white text-sm line-clamp-3">
-                {movie.overview}
-              </p>
-            </div>
-          </div>
-
-          {/* Rating Badge */}
-          <div className="absolute top-2 right-2 bg-black bg-opacity-80 rounded-full px-2 py-1 backdrop-blur-sm">
-            <span className="text-galaxy-red text-sm font-semibold">
-              {movie.vote_average.toFixed(1)}
-            </span>
-          </div>
-
-          {/* Favorite Button */}
-          <div className="absolute top-2 left-2 opacity-0 hover:opacity-100 transition-all duration-300 transform -translate-y-2 hover:translate-y-0">
-            <FavoriteButton movie={movie} />
-          </div>
+        {/* Favorite indicator */}
+        <div className="absolute top-3 right-3 z-20">
+          <Button
+            size="icon"
+            variant="ghost"
+            className={`w-8 h-8 rounded-full transition-all duration-300 ${
+              favorited
+                ? 'bg-red-500/90 text-white hover:bg-red-600'
+                : 'bg-black/50 text-white hover:bg-black/70 backdrop-blur-sm'
+            }`}
+            onClick={handleFavoriteClick}
+          >
+            <Heart className={`h-4 w-4 ${favorited ? 'fill-current' : ''}`} />
+          </Button>
         </div>
-      </Link>
 
-      {/* Movie Title */}
-      <div className="mt-2">
-        <h3 className="text-white text-sm font-medium line-clamp-2 hover:text-galaxy-purple transition-colors duration-300">
-          {movie.title}
-        </h3>
+        <div className={`absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent transition-opacity duration-300 ${
+          isHovered ? 'opacity-100' : 'opacity-0'
+        }`} />
+
+        <div className={`absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300 p-6 ${
+          isHovered ? 'opacity-100' : 'opacity-0'
+        }`}>
+          <div className="flex gap-2 mb-4">
+            <Button
+              size="icon"
+              className="glass-card hover:bg-primary hover:text-primary-foreground"
+              onClick={handlePlayClick}
+            >
+              <Play className="h-5 w-5" />
+            </Button>
+            <Button
+              size="icon"
+              className={`glass-card hover:bg-red-500 hover:text-white transition-colors ${
+                favorited ? 'bg-red-500 text-white' : ''
+              }`}
+              onClick={handleFavoriteClick}
+            >
+              <Heart className={`h-4 w-4 ${favorited ? 'fill-current' : ''}`} />
+            </Button>
+          </div>
+          <h3 className="text-lg font-bold text-center mb-2 text-white">{title}</h3>
+          <p className="text-sm text-gray-300">{genre}</p>
+          <p className="text-sm text-yellow-400 font-semibold mt-1">⭐ {rating}</p>
+        </div>
       </div>
-
-      {/* Streaming availability moved to detail page only */}
     </div>
-  )
-}
+  );
+};
 
-export default MovieCard
+export default MovieCard;

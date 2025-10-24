@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { tmdbApi } from '../services/tmdbApi'
-import type { Genre } from '../types/index'
+import type { Genre } from '@/types'
 
 interface GenreContextType {
   genres: Genre[]

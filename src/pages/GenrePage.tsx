@@ -4,7 +4,7 @@ import { tmdbApi } from '../services/tmdbApi'
 import { useGenres } from '../contexts/GenreContext'
 import { useSelectedMovie } from '../contexts/SelectedMovieContext'
 import MovieCard from '../components/MovieCard'
-import type { Movie } from '../types/index'
+import type { Movie } from '@/types'
 
 const GenresPage: React.FC = () => {
   const navigate = useNavigate()

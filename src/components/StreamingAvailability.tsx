@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { justWatchApi } from '../services/justWatchApi'
-import type { StreamingProvider } from '../types/index'
+import type { StreamingProvider } from '@/types'
 
 interface StreamingAvailabilityProps {
   movieTitle: string

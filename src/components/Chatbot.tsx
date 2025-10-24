@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { tmdbApi } from '../services/tmdbApi'
-import type { Movie } from '../types/index'
+import type { Movie } from '@/types'
 
 interface ChatMessage {
   id: string

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react'
 import type { ReactNode } from 'react'
-import type { Movie } from '../types/index'
+import type { Movie } from '@/types'
 
 interface SearchSuggestion {
   id: number

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import MovieRow from '../components/MovieRow'
 import { tmdbApi } from '../services/tmdbApi'
 import { useSelectedMovie } from '../contexts/SelectedMovieContext'
-import type { Movie } from '../types/index'
+import type { Movie } from '@/types'
 
 const SeriesPage: React.FC = () => {
   const { selectedMovie, showHero, hideHero } = useSelectedMovie()

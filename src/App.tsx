@@ -11,7 +11,7 @@ import { RegionProvider } from './contexts/RegionContext'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import Chatbot from './components/Chatbot'
-import LandingPage from './pages/LandingPage'
+import IndexGlass from './pages/IndexGlass'
 import Home from './pages/Home'
 import MovieDetails from './pages/MovieDetails'
 import Favorites from './pages/Favorites'
@@ -20,12 +20,14 @@ import GenresPage from './pages/GenrePage'
 import MoviesPage from './pages/MoviesPage'
 import SeriesPage from './pages/SeriesPage'
 import FiltersPage from './pages/FiltersPage'
+import HelpCenter from './pages/HelpCenter'
+import PrivacyPolicy from './pages/PrivacyPolicy'
 
 function Layout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="galaxy-gradient flex min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex-1 flex flex-col lg:ml-0">
         <Header onMenuClick={() => setSidebarOpen(true)} sidebarOpen={sidebarOpen} />
@@ -43,7 +45,7 @@ function AppRoutes() {
   const isLandingPage = location.pathname === '/'
 
   if (isLandingPage) {
-    return <LandingPage />
+    return <IndexGlass />
   }
 
   return (
@@ -59,6 +61,8 @@ function AppRoutes() {
         <Route path="/movie/:id" element={<MovieDetails />} />
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/genre/:genreId" element={<GenresPage />} />
+        <Route path="/help" element={<HelpCenter />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
       </Routes>
     </Layout>
   )

@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import MovieRow from '../components/MovieRow'
 import RegionalHighlights from '../components/RegionalHighlights'
+import HeroCarousel from '../components/HeroCarousel'
+import MovieVerseLogo from '../components/MovieVerseLogo'
+import SunMoonSwitch from '../components/SunMoonSwitch'
+import Chatbot from '../components/Chatbot'
 import { tmdbApi } from '../services/tmdbApi'
 import { useGenres } from '../contexts/GenreContext'
 import { useFilters } from '../contexts/FilterContext'
 import { useSelectedMovie } from '../contexts/SelectedMovieContext'
-import type { Movie } from '../types/index'
+import type { Movie } from '@/types'
 
 const Home: React.FC = () => {
   const { selectedGenres, genres } = useGenres()
@@ -17,6 +21,7 @@ const Home: React.FC = () => {
   const [popularMovies, setPopularMovies] = useState<Movie[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [featuredMovies, setFeaturedMovies] = useState<Movie[]>([])
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -33,6 +38,8 @@ const Home: React.FC = () => {
         setTrendingMovies(trending)
         setTopRatedMovies(topRated)
         setPopularMovies(popular)
+        // Set featured movies for hero carousel
+        setFeaturedMovies(trending.slice(0, 5))
       } catch (err) {
         console.error('Error fetching movies:', err)
         setError('Failed to load movies. Please check your API key and try again.')
@@ -112,7 +119,34 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-b from-red-950/20 via-red-900/10 to-background">
+      {/* Header Section */}
+      <header className="sticky top-0 z-50 glass-morphism bg-gradient-to-r from-red-900/20 via-red-800/20 to-red-900/20 backdrop-blur-lg border-b border-red-800/30">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link to="/" className="hidden sm:block">
+              <MovieVerseLogo size="sm" />
+            </Link>
+
+            {/* Mobile Logo Text */}
+            <Link to="/" className="sm:hidden">
+              <div className="text-xl font-bold bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
+                MovieVerse
+              </div>
+            </Link>
+
+            {/* Theme Toggle */}
+            <SunMoonSwitch className="scale-75 md:scale-100" />
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      {!selectedMovie && featuredMovies.length > 0 && (
+        <HeroCarousel movies={featuredMovies} />
+      )}
+
       {/* Dynamic Hero Section */}
       {selectedMovie && (
         <div className="relative">
@@ -120,23 +154,23 @@ const Home: React.FC = () => {
           <img
             src={`https://image.tmdb.org/t/p/original${selectedMovie.backdrop_path || selectedMovie.poster_path}`}
             alt={selectedMovie.title}
-            className="w-full h-96 object-cover"
+            className="w-full h-96 md:h-[500px] object-cover"
           />
           <div className="absolute inset-0 z-20 flex items-end">
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-6 md:py-8">
               <div className="max-w-2xl">
-                <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 glow-text">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
                   {selectedMovie.title}
                 </h1>
                 <div className="flex items-center mb-4">
-                  <span className="text-galaxy-red text-xl font-semibold mr-2">
+                  <span className="text-red-400 text-lg md:text-xl font-semibold mr-2">
                     {selectedMovie.vote_average.toFixed(1)}
                   </span>
-                  <div className="flex text-galaxy-red">
+                  <div className="flex text-red-400">
                     {[...Array(5)].map((_, i) => (
                       <svg
                         key={i}
-                        className={`w-5 h-5 ${i < Math.floor(selectedMovie.vote_average / 2) ? 'text-galaxy-red' : 'text-gray-600'}`}
+                        className={`w-4 h-4 md:w-5 md:h-5 ${i < Math.floor(selectedMovie.vote_average / 2) ? 'text-red-400' : 'text-gray-600'}`}
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -145,22 +179,22 @@ const Home: React.FC = () => {
                     ))}
                   </div>
                 </div>
-                <p className="text-gray-200 text-lg mb-6 line-clamp-3">
+                <p className="text-gray-200 text-base md:text-lg mb-4 md:mb-6 line-clamp-2 md:line-clamp-3">
                   {selectedMovie.overview}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(selectedMovie.title)}+trailer`, '_blank')}
-                    className="bg-galaxy-red hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2"
+                    className="bg-red-600 hover:bg-red-700 text-white px-4 md:px-6 py-2.5 md:py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center space-x-2 text-sm md:text-base"
                   >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                     </svg>
                     <span>Watch Trailer</span>
                   </button>
                   <button
                     onClick={hideHero}
-                    className="border-2 border-galaxy-purple text-galaxy-purple hover:bg-galaxy-purple hover:text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300"
+                    className="border-2 border-red-500 text-red-400 hover:bg-red-500/20 hover:text-white px-4 md:px-6 py-2.5 md:py-3 rounded-lg font-semibold transition-all duration-300 text-sm md:text-base"
                   >
                     Close
                   </button>
@@ -172,7 +206,7 @@ const Home: React.FC = () => {
       )}
 
       {/* Movie Sections */}
-      <div className="py-8">
+      <div className="py-4 md:py-8">
         <div className="container mx-auto px-4">
           {/* Regional Content */}
           <RegionalHighlights />
@@ -202,6 +236,9 @@ const Home: React.FC = () => {
           />
         </div>
       </div>
+
+      {/* Chatbot */}
+      <Chatbot />
     </div>
   )
 }

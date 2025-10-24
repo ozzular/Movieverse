@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { tmdbApi } from '../services/tmdbApi'
-import type { Movie } from '../types/index'
+import type { Movie } from '@/types'
 
 interface HeroBannerProps {
   className?: string

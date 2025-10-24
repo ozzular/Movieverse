@@ -5,7 +5,7 @@ import TrailerPlayer from '../components/TrailerPlayer'
 import StreamingAvailability from '../components/StreamingAvailability'
 import CastMember from '../components/CastMember'
 import { useFavorites } from '../contexts/FavoritesContext'
-import type { MovieDetails as MovieDetailsType, Cast, Crew } from '../types/index'
+import type { MovieDetails as MovieDetailsType, Cast, Crew } from '@/types'
 
 const MovieDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>()

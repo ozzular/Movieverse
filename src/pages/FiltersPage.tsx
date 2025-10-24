@@ -4,7 +4,7 @@ import { useGenres } from '../contexts/GenreContext'
 import { useFilters } from '../contexts/FilterContext'
 import { useSelectedMovie } from '../contexts/SelectedMovieContext'
 import MovieCard from '../components/MovieCard'
-import type { Movie } from '../types/index'
+import type { Movie } from '@/types'
 
 const FiltersPage: React.FC = () => {
   const navigate = useNavigate()

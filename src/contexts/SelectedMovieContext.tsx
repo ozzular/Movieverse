@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react'
 import type { ReactNode } from 'react'
-import type { Movie } from '../types/index'
+import type { Movie } from '@/types'
 
 interface SelectedMovieContextType {
   selectedMovie: Movie | null

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { useSearch } from '../contexts/SearchContext'
 import MovieCard from '../components/MovieCard'
-import type { Movie } from '../types/index'
+import type { Movie } from '@/types'
 
 const SearchResults: React.FC = () => {
   const [searchParams] = useSearchParams()
