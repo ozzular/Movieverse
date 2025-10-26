@@ -5,8 +5,17 @@ interface Movie {
   id: number
   title: string
   poster_path: string
+  backdrop_path: string
   vote_average: number
   overview: string
+  release_date: string
+  genre_ids: number[]
+  adult: boolean
+  original_language: string
+  original_title: string
+  popularity: number
+  video: boolean
+  vote_count: number
 }
 
 interface MovieRowProps {
@@ -30,9 +39,9 @@ const MovieRow: React.FC<MovieRowProps> = ({ title, movies }) => {
   }
 
   return (
-    <div className="mb-8">
+    <div className="w-full py-8">
       {/* Section Title */}
-      <h2 className="text-white text-xl md:text-2xl font-semibold mb-4">
+      <h2 className="text-white text-xl md:text-2xl font-semibold mb-6 px-40">
         {title}
       </h2>
 

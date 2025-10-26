@@ -1,173 +1,213 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import MovieRow from '../components/MovieRow'
-import { tmdbApi } from '../services/tmdbApi'
-import { useSelectedMovie } from '../contexts/SelectedMovieContext'
+import Navbar from '../components/Navbar'
+import Sidebar from '../components/Sidebar'
 import type { Movie } from '@/types'
 
-const SeriesPage: React.FC = () => {
-  const { selectedMovie, showHero, hideHero } = useSelectedMovie()
-  const [trendingSeries, setTrendingSeries] = useState<Movie[]>([])
+// Netflix-style Series Page
+const SeriesPage = () => {
+  const navigate = useNavigate()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [popularSeries, setPopularSeries] = useState<Movie[]>([])
   const [topRatedSeries, setTopRatedSeries] = useState<Movie[]>([])
-  const [onTheAirSeries, setOnTheAirSeries] = useState<Movie[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [trendingSeries, setTrendingSeries] = useState<Movie[]>([])
+  const [airingTodaySeries, setAiringTodaySeries] = useState<Movie[]>([])
 
   useEffect(() => {
-    const fetchSeries = async () => {
+    const fetchSeriesData = async () => {
       try {
         setLoading(true)
-        setError(null)
 
-        // Note: TMDb API uses the same Movie type for TV series in discovery
-        // We'll use movie endpoints as placeholders for series data
-        const [trending, popular, topRated, onAir] = await Promise.all([
-          tmdbApi.getTrendingMovies(), // Placeholder for trending series
-          tmdbApi.getPopularMovies(),  // Placeholder for popular series
-          tmdbApi.getTopRatedMovies(), // Placeholder for top rated series
-          tmdbApi.getNowPlayingMovies() // Placeholder for on the air series
+        const [
+          popularResponse,
+          topRatedResponse,
+          trendingResponse,
+          airingTodayResponse
+        ] = await Promise.all([
+          fetchTVShows('popular'),
+          fetchTVShows('top_rated'),
+          fetchTVShows('trending'),
+          fetchTVShows('airing_today')
         ])
 
-        setTrendingSeries(trending)
-        setPopularSeries(popular)
-        setTopRatedSeries(topRated)
-        setOnTheAirSeries(onAir)
-      } catch (err) {
-        console.error('Error fetching series:', err)
-        setError('Failed to load TV series. Please check your API key and try again.')
+        setPopularSeries(popularResponse.slice(0, 12))
+        setTopRatedSeries(topRatedResponse.slice(0, 12))
+        setTrendingSeries(trendingResponse.slice(0, 12))
+        setAiringTodaySeries(airingTodayResponse.slice(0, 12))
+      } catch (error) {
+        console.error('Failed to fetch series:', error)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchSeries()
+    fetchSeriesData()
   }, [])
 
-  // Loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-galaxy-purple mx-auto mb-4"></div>
-          <p className="text-white text-lg">Loading TV series...</p>
-        </div>
-      </div>
-    )
+  const fetchTVShows = async (category: string): Promise<Movie[]> => {
+    try {
+      const API_KEY = import.meta.env.VITE_TMDB_API_KEY
+
+      if (!API_KEY) {
+        throw new Error('TMDB API key not configured')
+      }
+
+      let url = ''
+      switch (category) {
+        case 'trending':
+          url = `https://api.themoviedb.org/3/trending/tv/day?api_key=${API_KEY}`
+          break
+        case 'popular':
+          url = `https://api.themoviedb.org/3/tv/popular?api_key=${API_KEY}`
+          break
+        case 'top_rated':
+          url = `https://api.themoviedb.org/3/tv/top_rated?api_key=${API_KEY}`
+          break
+        case 'airing_today':
+          url = `https://api.themoviedb.org/3/tv/airing_today?api_key=${API_KEY}`
+          break
+        default:
+          url = `https://api.themoviedb.org/3/tv/popular?api_key=${API_KEY}`
+      }
+
+      const response = await fetch(url, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch TV shows: ${category}`)
+      }
+
+      const data = await response.json()
+
+      // Convert TV show data to match Movie interface format
+      return (data.results || []).map((series: any) => ({
+        id: series.id,
+        title: series.name || series.title,
+        poster_path: series.poster_path,
+        backdrop_path: series.backdrop_path,
+        vote_average: series.vote_average,
+        overview: series.overview,
+        release_date: series.first_air_date || series.release_date,
+        genre_ids: series.genre_ids || [],
+        adult: series.adult || false,
+        original_language: series.original_language,
+        original_title: series.original_name || series.original_title,
+        popularity: series.popularity,
+        video: false,
+        vote_count: series.vote_count
+      }))
+    } catch (error) {
+      console.error(`Failed to fetch TV shows: ${category}`, error)
+      return []
+    }
   }
 
-  // Error state
-  if (error) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <p className="text-white text-xl mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-galaxy-red hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors"
-          >
-            Try Again
-          </button>
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
+        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+        <div className="lg:ml-16">
+          <Navbar />
         </div>
+
+        <main className="lg:ml-16 pt-20 px-4">
+          <div className="text-center py-16">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-cyan-400 mx-auto mb-4"></div>
+            <p className="text-gray-400">Loading TV series...</p>
+          </div>
+        </main>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen">
-      {/* Dynamic Hero Section */}
-      {selectedMovie && (
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent z-10" />
-          <img
-            src={`https://image.tmdb.org/t/p/original${selectedMovie.backdrop_path || selectedMovie.poster_path}`}
-            alt={selectedMovie.title}
-            className="w-full h-96 object-cover"
-          />
-          <div className="absolute inset-0 z-20 flex items-end">
-            <div className="container mx-auto px-4 py-8">
-              <div className="max-w-2xl">
-                <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 glow-text">
-                  {selectedMovie.title}
-                </h1>
-                <div className="flex items-center mb-4">
-                  <span className="text-galaxy-red text-xl font-semibold mr-2">
-                    {selectedMovie.vote_average.toFixed(1)}
-                  </span>
-                  <div className="flex text-galaxy-red">
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        className={`w-5 h-5 ${i < Math.floor(selectedMovie.vote_average / 2) ? 'text-galaxy-red' : 'text-gray-600'}`}
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-                <p className="text-gray-200 text-lg mb-6 line-clamp-3">
-                  {selectedMovie.overview}
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <button
-                    onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(selectedMovie.title)}+trailer`, '_blank')}
-                    className="bg-galaxy-red hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                    </svg>
-                    <span>Watch Trailer</span>
-                  </button>
-                  <button
-                    onClick={hideHero}
-                    className="border-2 border-galaxy-purple text-galaxy-purple hover:bg-galaxy-purple hover:text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
+    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
+      {/* Sidebar */}
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+
+      {/* Navbar */}
+      <div className="lg:ml-16">
+        <Navbar />
+      </div>
+
+      <main className="lg:ml-16 pt-20">
+        {/* Hero Section */}
+        <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
+          {trendingSeries.length > 0 && (
+            <div
+              className="absolute inset-0 bg-cover bg-center scale-105"
+              style={{
+                backgroundImage: `url(${trendingSeries[0]?.backdrop_path ?
+                  `https://image.tmdb.org/t/p/original${trendingSeries[0].backdrop_path}` :
+                  '/public/hero-bg.jpg'})`,
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-black/30 to-black/50" />
+            </div>
+          )}
+
+          <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+              TV Series
+            </h1>
+            <p className="text-xl text-gray-300 leading-relaxed">
+              Discover the best TV series, dramas, comedies, and more from around the world.
+              From critically acclaimed shows to binge-worthy series.
+            </p>
+          </div>
+        </section>
+
+        {/* TV Series Categories */}
+        <section className="relative z-20 bg-gradient-to-b from-black via-gray-900 to-black">
+          <div className="w-full py-8">
+            <MovieRow title="Trending TV Shows" movies={trendingSeries} />
+            <MovieRow title="Popular TV Shows" movies={popularSeries} />
+            <MovieRow title="Top Rated TV Shows" movies={topRatedSeries} />
+            <MovieRow title="Airing Today" movies={airingTodaySeries} />
+          </div>
+        </section>
+
+        {/* Genre Sections */}
+        <section className="relative z-10 bg-gradient-to-b from-gray-900 to-black py-16">
+          <div className="max-w-7xl mx-auto px-8">
+            <h2 className="text-3xl font-bold text-white mb-8">Browse by Genre</h2>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {[
+                { name: 'Action & Adventure', color: 'from-red-500 to-orange-500' },
+                { name: 'Comedy', color: 'from-yellow-400 to-orange-500' },
+                { name: 'Drama', color: 'from-blue-500 to-purple-500' },
+                { name: 'Sci-Fi & Fantasy', color: 'from-purple-500 to-pink-500' },
+                { name: 'Crime', color: 'from-gray-600 to-gray-800' },
+                { name: 'Mystery', color: 'from-indigo-500 to-purple-500' },
+                { name: 'Romance', color: 'from-pink-500 to-red-500' },
+                { name: 'Documentary', color: 'from-green-500 to-teal-500' }
+              ].map((genre) => (
+                <button
+                  key={genre.name}
+                  onClick={() => navigate(`/search?q=tv+${genre.name.toLowerCase().replace('&', '').replace(' ', '+')}`)}
+                  className={`relative overflow-hidden rounded-xl p-6 text-left transition-all duration-300 hover:scale-105 group`}
+                  style={{
+                    background: `linear-gradient(135deg, rgb(31 41 55 / 0.5), rgb(55 65 81 / 0.5))`,
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                  }}
+                >
+                  <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <h3 className="text-white font-semibold text-lg mb-2 relative z-10">{genre.name}</h3>
+                  <p className="text-gray-400 text-sm relative z-10">Explore {genre.name.toLowerCase()} series</p>
+                </button>
+              ))}
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Series Sections */}
-      <div className="py-8">
-        <div className="container mx-auto px-4">
-          {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">TV Series</h1>
-            <p className="text-gray-400">Discover trending, popular, and classic TV series</p>
-          </div>
-
-          {/* Trending Series */}
-          <MovieRow
-            title="Trending Series"
-            movies={trendingSeries}
-          />
-
-          {/* Popular Series */}
-          <MovieRow
-            title="Popular Series"
-            movies={popularSeries}
-          />
-
-          {/* Top Rated Series (Classic Series) */}
-          <MovieRow
-            title="Classic Series"
-            movies={topRatedSeries}
-          />
-
-          {/* On The Air Series (Latest Series) */}
-          <MovieRow
-            title="On The Air"
-            movies={onTheAirSeries}
-          />
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   )
 }

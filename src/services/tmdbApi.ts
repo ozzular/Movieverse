@@ -13,6 +13,9 @@ if (!API_KEY) {
 
 // API Service Class
 class TMDbAPI {
+  // Cache for genres to avoid repeated API calls
+  private genresCache: { id: number; name: string }[] | null = null
+
   private async request<T>(endpoint: string): Promise<T> {
     try {
       const response = await axios.get(`${BASE_URL}${endpoint}`, {
@@ -92,6 +95,19 @@ class TMDbAPI {
   // Get genres list
   async getGenres() {
     return await this.request('/genre/movie/list')
+  }
+
+  // Get genre names from genre IDs
+  async getGenreNames(genreIds: number[]): Promise<string[]> {
+    if (!this.genresCache) {
+      const data = await this.getGenres()
+      this.genresCache = data.genres
+    }
+
+    return genreIds.map(id => {
+      const genre = this.genresCache?.find(g => g.id === id)
+      return genre?.name || 'Unknown'
+    })
   }
 
   // Utility functions for image URLs

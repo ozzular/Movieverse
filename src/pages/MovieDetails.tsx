@@ -117,25 +117,25 @@ const MovieDetails: React.FC = () => {
             {/* Genres */}
             <div className="flex flex-wrap gap-2 mb-6">
               {movie.genres.map((genre) => (
-                <span
-                  key={genre.id}
-                  className="px-3 py-1 bg-galaxy-purple/20 border border-galaxy-purple/30 rounded-full text-galaxy-purple text-sm"
-                >
-                  {genre.name}
-                </span>
+              <span
+                key={genre.id}
+                className="px-3 py-1 bg-red-600/20 border border-red-600/30 rounded-full text-red-400 text-sm"
+              >
+                {genre.name}
+              </span>
               ))}
             </div>
 
             {/* Rating */}
             <div className="flex items-center mb-6">
-              <span className="text-2xl font-bold text-galaxy-red mr-2">
+              <span className="text-2xl font-bold text-red-500 mr-2">
                 {movie.vote_average.toFixed(1)}
               </span>
-              <div className="flex text-galaxy-red">
+              <div className="flex text-red-400">
                 {[...Array(5)].map((_, i) => (
                   <svg
                     key={i}
-                    className={`w-6 h-6 ${i < Math.floor(movie.vote_average / 2) ? 'text-galaxy-red' : 'text-gray-600'}`}
+                    className={`w-6 h-6 ${i < Math.floor(movie.vote_average / 2) ? 'text-red-400' : 'text-gray-600'}`}
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -171,8 +171,8 @@ const MovieDetails: React.FC = () => {
                 onClick={handleFavoriteToggle}
                 className={`border-2 px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center justify-center space-x-2 ${
                   isFavorite(movie.id)
-                    ? 'bg-galaxy-red border-galaxy-red text-white'
-                    : 'border-galaxy-purple text-galaxy-purple hover:bg-galaxy-purple hover:text-white'
+                    ? 'bg-red-600 border-red-600 text-white'
+                    : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
                 }`}
               >
                 <svg className="w-6 h-6" fill={isFavorite(movie.id) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
@@ -222,7 +222,7 @@ const MovieDetails: React.FC = () => {
             {/* Show more cast members if available */}
             {cast.length > 12 && (
               <div className="text-center mt-6">
-                <button className="text-galaxy-purple hover:text-galaxy-red transition-colors font-medium">
+                <button className="text-red-500 hover:text-red-400 transition-colors font-medium">
                   View Full Cast ({cast.length} members)
                 </button>
               </div>

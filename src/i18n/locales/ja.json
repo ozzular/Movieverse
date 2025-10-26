@@ -1,0 +1,15 @@
+{
+  "nav": {
+    "home": "ホーム",
+    "movies": "映画",
+    "genres": "ジャンル",
+    "about": "について",
+    "settings": "設定"
+  },
+  "home": {
+    "trending": "今トレンド",
+    "popular": "MovieVerseで人気",
+    "topRated": "高評価",
+    "comingSoon": "近日公開"
+  }
+}

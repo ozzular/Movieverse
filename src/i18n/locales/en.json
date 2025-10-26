@@ -1,0 +1,81 @@
+{
+  "nav": {
+    "home": "Home",
+    "movies": "Movies",
+    "genres": "Genres",
+    "about": "About",
+    "settings": "Settings"
+  },
+  "search": {
+    "placeholder": "Search movies...",
+    "button": "Search"
+  },
+  "home": {
+    "trending": "Trending Now",
+    "popular": "Popular on MovieVerse",
+    "topRated": "Top Rated",
+    "comingSoon": "Coming Soon"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Customize your MovieVerse experience",
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "location": "Location",
+    "regionForTrending": "Region for Trending Content",
+    "preferences": "Preferences",
+    "notifications": "Get notified about new releases",
+    "autoplay": "Auto-play Trailers",
+    "autoplayDesc": "Automatically play trailers when available",
+    "disabled": "Disabled",
+    "contentRating": "Content Rating",
+    "contentRatingDesc": "Filter mature content",
+    "pg13": "PG-13",
+    "language": "Language",
+    "saveSettings": "Save Settings",
+    "light": "Light",
+    "dark": "Dark",
+    "auto": "Auto",
+    "detectLocation": "Detect My Location"
+  },
+  "about": {
+    "title": "About MovieVerse",
+    "subtitle": "An educational graduation project showcasing modern web development",
+    "description": "MovieVerse is a comprehensive movie discovery platform built as a graduation project to demonstrate proficiency in modern web development technologies including React, TypeScript, and advanced UI/UX design.",
+    "modernTech": "Modern Tech Stack",
+    "apiIntegration": "API Integration",
+    "glassDesign": "Glassmorphism Design",
+    "responsive": "Responsive Design",
+    "performance": "Performance Optimized",
+    "accessible": "WCAG Compliant",
+    "techDesc": "Built with React, TypeScript, and Tailwind CSS",
+    "apiDesc": "Real-time data from TMDB and JustWatch APIs",
+    "designDesc": "Modern UI with backdrop blur and transparency effects",
+    "responsiveDesc": "Mobile-first approach with cross-device compatibility",
+    "perfDesc": "Lazy loading, code splitting, and optimized bundles",
+    "accDesc": "WCAG compliant with keyboard navigation support",
+    "connect": "Connect & Contribute",
+    "repo": "GitHub Repository"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "share": "Share",
+    "watchNow": "Watch Now",
+    "moreInfo": "More Info",
+    "trailer": "Trailer",
+    "cast": "Cast",
+    "crew": "Crew",
+    "similar": "Similar Movies",
+    "genres": "Genres",
+    "rating": "Rating",
+    "releaseDate": "Release Date",
+    "duration": "Duration"
+  }
+}

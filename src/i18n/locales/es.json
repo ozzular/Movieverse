@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "movies": "Películas",
+    "genres": "Géneros",
+    "about": "Acerca de",
+    "settings": "Configuración"
+  },
+  "search": {
+    "placeholder": "Buscar películas...",
+    "button": "Buscar"
+  },
+  "home": {
+    "trending": "Tendencias Ahora",
+    "popular": "Popular en MovieVerse",
+    "topRated": "Mejor Valoradas",
+    "comingSoon": "Próximamente"
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Personaliza tu experiencia en MovieVerse",
+    "appearance": "Apariencia",
+    "theme": "Tema",
+    "location": "Ubicación",
+    "regionForTrending": "Región para Contenido Tendencia",
+    "preferences": "Preferencias",
+    "language": "Idioma",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "auto": "Automático"
+  }
+}

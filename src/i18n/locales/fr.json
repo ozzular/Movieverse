@@ -1,0 +1,15 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "movies": "Films",
+    "genres": "Genres",
+    "about": "À propos",
+    "settings": "Paramètres"
+  },
+  "home": {
+    "trending": "Tendances Actuelles",
+    "popular": "Populaire sur MovieVerse",
+    "topRated": "Mieux Notés",
+    "comingSoon": "Bientôt Disponible"
+  }
+}

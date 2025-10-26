@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import MovieCard from './MovieCard'
+import { Button } from './ui/button'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { tmdbApi } from '../services/tmdbApi'
 
 // Define Movie interface locally to completely bypass import issues
@@ -23,6 +25,7 @@ interface Movie {
 const FeaturedMovies = () => {
   const [movies, setMovies] = useState<Movie[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const carouselRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const fetchFeaturedMovies = async () => {
@@ -30,8 +33,8 @@ const FeaturedMovies = () => {
         setIsLoading(true)
         // Get popular movies for the featured section
         const popularMovies = await tmdbApi.getPopularMovies()
-        // Show 6 movies in a grid layout
-        setMovies(popularMovies.slice(0, 6))
+        // Show 15 movies in horizontal carousel
+        setMovies(popularMovies.slice(0, 15))
       } catch (error) {
         console.error('Failed to fetch featured movies:', error)
         setMovies([])
@@ -43,25 +46,63 @@ const FeaturedMovies = () => {
     fetchFeaturedMovies()
   }, [])
 
+  const scrollLeft = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: -320, behavior: 'smooth' })
+    }
+  }
+
+  const scrollRight = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: 320, behavior: 'smooth' })
+    }
+  }
+
   if (isLoading) {
     return (
-      <section className="py-24 relative bg-gradient-to-b from-background via-background/95 to-background">
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background to-background/80 pointer-events-none" />
+      <section className="py-24 relative rounded-2xl mx-4 md:mx-8">
         <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center mb-12 glass-card p-6 rounded-xl max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3 animate-fade-in bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent">
+          <div className="text-center mb-12 p-6 border-2 border-white/20 bg-white/10 backdrop-blur-sm rounded-xl max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 animate-fade-in text-white">
               Featured Movies
             </h2>
             <p className="text-gray-400 text-base max-w-xl mx-auto leading-relaxed">
               Discover our handpicked selection of popular movies
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-            {[...Array(6)].map((_, index) => (
-              <div key={index} className="animate-pulse">
-                <div className="aspect-[2/3] bg-muted rounded-2xl"></div>
+
+          {/* Carousel Container with Loading Skeletons */}
+          <div className="relative">
+            {/* Left Navigation Arrow */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 backdrop-blur-sm hover:bg-black/70 hover:scale-110 transition-transform text-white rounded-xl"
+              disabled={true}
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </Button>
+
+            {/* Right Navigation Arrow */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 backdrop-blur-sm hover:bg-black/70 hover:scale-110 transition-transform text-white rounded-xl"
+              disabled={true}
+            >
+              <ChevronRight className="w-6 h-6" />
+            </Button>
+
+            {/* Carousel Scroll Container */}
+            <div className="overflow-x-auto scrollbar-hide">
+              <div className="flex space-x-6 p-4 min-w-max">
+                {[...Array(15)].map((_, index) => (
+                  <div key={index} className="animate-pulse">
+                    <div className="aspect-[2/3] w-48 bg-gray-700 rounded-xl flex-shrink-0"></div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
@@ -69,11 +110,10 @@ const FeaturedMovies = () => {
   }
 
   return (
-    <section className="py-24 relative bg-gradient-to-b from-background via-background/95 to-background">
-      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background to-background/80 pointer-events-none" />
+    <section className="py-24 relative rounded-2xl mx-4 md:mx-8 my-8">
       <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-12 glass-card p-6 rounded-xl max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-3 animate-fade-in bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent">
+        <div className="text-center mb-12 p-6 border-2 border-white/20 bg-white/10 backdrop-blur-sm rounded-xl max-w-3xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold mb-3 animate-fade-in text-white">
             Featured Movies
           </h2>
           <p className="text-gray-400 text-base max-w-xl mx-auto leading-relaxed">
@@ -81,17 +121,45 @@ const FeaturedMovies = () => {
           </p>
         </div>
 
-        <div className="glass-card p-6 rounded-lg">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-            {movies.map((movie, index) => (
-              <div
-                key={movie.id}
-                className="animate-scale-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <MovieCard movie={movie} />
-              </div>
-            ))}
+        {/* Carousel Container */}
+        <div className="relative">
+          {/* Left Navigation Arrow */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={scrollLeft}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 backdrop-blur-sm hover:bg-black/70 hover:scale-110 transition-transform text-white rounded-xl"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </Button>
+
+          {/* Right Navigation Arrow */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={scrollRight}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 backdrop-blur-sm hover:bg-black/70 hover:scale-110 transition-transform text-white rounded-xl"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </Button>
+
+          {/* Carousel Scroll Container */}
+          <div
+            ref={carouselRef}
+            className="overflow-x-auto scrollbar-hide scroll-smooth"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            <div className="flex space-x-6 p-4 min-w-max">
+              {movies.map((movie, index) => (
+                <div
+                  key={movie.id}
+                  className="animate-scale-in flex-shrink-0 w-48"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <MovieCard movie={movie} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

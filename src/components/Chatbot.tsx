@@ -212,9 +212,7 @@ const Chatbot: React.FC = () => {
             <div className="bg-galaxy-purple/20 px-4 py-3 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-galaxy-purple rounded-full flex items-center justify-center">
-                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                  </svg>
+                  <span className="text-white font-bold text-lg">💬</span>
                 </div>
                 <div>
                   <h3 className="text-white font-semibold">MovieChat</h3>

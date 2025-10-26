@@ -1,8 +1,9 @@
-import { Play, Plus, Heart } from "lucide-react";
+import { Play, Plus, Heart, Clock, Calendar, Star } from "lucide-react";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFavorites } from "../contexts/FavoritesContext";
+import { tmdbApi } from "../services/tmdbApi";
 
 // Define Movie interface locally to completely bypass import issues
 interface Movie {
@@ -32,9 +33,24 @@ interface MovieCardProps {
 
 const MovieCard = ({ movie, title, image, rating, genre }: MovieCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [genreNames, setGenreNames] = useState<string[]>([]);
   const navigate = useNavigate();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const favorited = isFavorite(movie.id);
+
+  // Fetch genre names
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const names = await tmdbApi.getGenreNames(movie.genre_ids);
+        setGenreNames(names);
+      } catch (error) {
+        console.error('Failed to fetch genre names:', error);
+        setGenreNames([]);
+      }
+    };
+    fetchGenres();
+  }, [movie.genre_ids]);
 
   const handlePlayClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -84,34 +100,85 @@ const MovieCard = ({ movie, title, image, rating, genre }: MovieCardProps) => {
           </Button>
         </div>
 
-        <div className={`absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent transition-opacity duration-300 ${
-          isHovered ? 'opacity-100' : 'opacity-0'
+        {/* Enhanced gradient overlay */}
+        <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent transition-opacity duration-500 ${
+          isHovered ? 'opacity-100' : 'opacity-80'
         }`} />
 
-        <div className={`absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300 p-6 ${
-          isHovered ? 'opacity-100' : 'opacity-0'
+        {/* Movie metadata overlay - top */}
+        <div className={`absolute top-0 left-0 right-0 p-3 transition-transform duration-300 ${
+          isHovered ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'
         }`}>
-          <div className="flex gap-2 mb-4">
-            <Button
-              size="icon"
-              className="glass-card hover:bg-primary hover:text-primary-foreground"
-              onClick={handlePlayClick}
-            >
-              <Play className="h-5 w-5" />
-            </Button>
-            <Button
-              size="icon"
-              className={`glass-card hover:bg-red-500 hover:text-white transition-colors ${
-                favorited ? 'bg-red-500 text-white' : ''
-              }`}
-              onClick={handleFavoriteClick}
-            >
-              <Heart className={`h-4 w-4 ${favorited ? 'fill-current' : ''}`} />
-            </Button>
+          <div className="flex items-center justify-between">
+            <div className="flex gap-2">
+              {/* Movie Rating */}
+              <div className="bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1">
+                <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                <span className="text-xs font-semibold text-white">
+                  {movie.vote_average.toFixed(1)}
+                </span>
+              </div>
+
+              {/* Release Year */}
+              <div className="bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1">
+                <Calendar className="w-3 h-3 text-gray-300" />
+                <span className="text-xs text-white">
+                  {new Date(movie.release_date).getFullYear()}
+                </span>
+              </div>
+            </div>
+
+            {/* Runtime placeholder - TMDB API doesn't provide runtime in basic calls */}
+            <div className="bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1">
+              <Clock className="w-3 h-3 text-gray-300" />
+              <span className="text-xs text-white">2h</span>
+            </div>
           </div>
-          <h3 className="text-lg font-bold text-center mb-2 text-white">{title}</h3>
-          <p className="text-sm text-gray-300">{genre}</p>
-          <p className="text-sm text-yellow-400 font-semibold mt-1">⭐ {rating}</p>
+        </div>
+
+        {/* Movie title and genre ribbons - bottom */}
+        <div className={`absolute bottom-0 left-0 right-0 p-4 transition-transform duration-300 ${
+          isHovered ? 'translate-y-0' : 'translate-y-4'
+        }`}>
+          {/* Movie Title */}
+          <h3 className="text-lg font-bold text-white mb-2 line-clamp-1">
+            {title || movie.title}
+          </h3>
+
+          {/* Genre tags */}
+          <div className="flex flex-wrap gap-1 mb-3">
+            {genreNames.slice(0, 2).map((genreName) => (
+              <span
+                key={genreName}
+                className="bg-white/10 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full font-medium border border-white/20"
+              >
+                {genreName}
+              </span>
+            ))}
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex items-center justify-between">
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                className="glass-card bg-black/30 text-white hover:bg-white/10 backdrop-blur-sm rounded-full w-8 h-8 p-0 transition-all duration-200 hover:scale-105"
+                onClick={handlePlayClick}
+              >
+                <Play className="w-4 h-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="glass-card hover:bg-red-600 hover:text-white rounded-full w-8 h-8 p-0 transition-all duration-200 hover:scale-110"
+                onClick={handleFavoriteClick}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Rating display removed - now only shown on detail pages */}
+          </div>
         </div>
       </div>
     </div>
