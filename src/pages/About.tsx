@@ -1,10 +1,9 @@
-import React from 'react'
 import { Github, Mail, Code, Database, Palette, Globe, Zap } from 'lucide-react'
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-20">
-      <div className="container mx-auto px-4 py-12">
+    <div className="min-h-screen">
+      <div className="container mx-auto px-4 py-12 ml-20">
         {/* Header Section */}
         <div className="text-center mb-16">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
@@ -16,7 +15,7 @@ const About = () => {
         </div>
 
         {/* Project Overview */}
-        <div className="glass-card mb-16 p-8 rounded-xl">
+        <div className="glass-effect mb-16 p-8 rounded-xl">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-white mb-4">Educational Project</h2>
             <p className="text-lg text-gray-300 leading-relaxed">
@@ -28,7 +27,7 @@ const About = () => {
 
         {/* Tech Stack Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          <div className="glass-card p-6 rounded-xl text-center group hover:scale-105 transition-transform">
+          <div className="glass-effect p-6 rounded-xl text-center group hover-scale hover-lift">
             <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
               <Code className="w-6 h-6 text-white" />
             </div>
@@ -36,7 +35,7 @@ const About = () => {
             <p className="text-gray-300">Built with React, TypeScript, and Tailwind CSS</p>
           </div>
 
-          <div className="glass-card p-6 rounded-xl text-center group hover:scale-105 transition-transform">
+          <div className="glass-effect p-6 rounded-xl text-center group hover-scale hover-lift">
             <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
               <Database className="w-6 h-6 text-white" />
             </div>
@@ -44,7 +43,7 @@ const About = () => {
             <p className="text-gray-300">Real-time data from TMDB and JustWatch APIs</p>
           </div>
 
-          <div className="glass-card p-6 rounded-xl text-center group hover:scale-105 transition-transform">
+          <div className="glass-effect p-6 rounded-xl text-center group hover-scale hover-lift">
             <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
               <Palette className="w-6 h-6 text-white" />
             </div>
@@ -52,7 +51,7 @@ const About = () => {
             <p className="text-gray-300">Modern UI with backdrop blur and transparency effects</p>
           </div>
 
-          <div className="glass-card p-6 rounded-xl text-center group hover:scale-105 transition-transform">
+          <div className="glass-effect p-6 rounded-xl text-center group hover-scale hover-lift">
             <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
               <Globe className="w-6 h-6 text-white" />
             </div>
@@ -60,7 +59,7 @@ const About = () => {
             <p className="text-gray-300">Mobile-first approach with cross-device compatibility</p>
           </div>
 
-          <div className="glass-card p-6 rounded-xl text-center group hover:scale-105 transition-transform">
+          <div className="glass-effect p-6 rounded-xl text-center group hover-scale hover-lift">
             <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
               <Zap className="w-6 h-6 text-white" />
             </div>
@@ -68,7 +67,7 @@ const About = () => {
             <p className="text-gray-300">Lazy loading, code splitting, and optimized bundles</p>
           </div>
 
-          <div className="glass-card p-6 rounded-xl text-center group hover:scale-105 transition-transform">
+          <div className="glass-effect p-6 rounded-xl text-center group hover-scale hover-lift">
             <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
               <span className="text-lg font-bold text-white">●</span>
             </div>
@@ -85,7 +84,7 @@ const About = () => {
               href="https://github.com/ozzular/Movieverse"
               target="_blank"
               rel="noopener noreferrer"
-              className="glass-card p-4 rounded-xl flex items-center space-x-2 hover:scale-105 transition-transform group"
+              className="glass-effect p-4 rounded-xl flex items-center space-x-2 hover-scale hover-lift group"
             >
               <Github className="w-6 h-6 text-white group-hover:text-gray-300 transition-colors" />
               <span className="text-white font-medium">GitHub Repository</span>
@@ -93,7 +92,7 @@ const About = () => {
 
             <a
               href="mailto:contact@movieverse.dev"
-              className="glass-card p-4 rounded-xl flex items-center space-x-2 hover:scale-105 transition-transform group"
+              className="glass-effect p-4 rounded-xl flex items-center space-x-2 hover-scale hover-lift group"
             >
               <Mail className="w-6 h-6 text-white group-hover:text-gray-300 transition-colors" />
               <span className="text-white font-medium">Contact</span>

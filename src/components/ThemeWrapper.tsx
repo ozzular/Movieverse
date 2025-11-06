@@ -1,42 +1,25 @@
 import React, { useEffect } from 'react'
-import { useTheme } from '../contexts/ThemeContext'
 
 interface ThemeWrapperProps {
   children: React.ReactNode
 }
 
 const ThemeWrapper: React.FC<ThemeWrapperProps> = ({ children }) => {
-  const { currentTheme } = useTheme()
-
   useEffect(() => {
-    // Apply theme class to document root element (html) as specified
+    // Force dark theme for the app (Netflix-style single dark theme)
     const root = document.documentElement
+    root.classList.add('dark')
 
-    if (currentTheme === 'night') {
-      root.classList.add('dark')
-    } else {
-      root.classList.remove('dark')
-    }
+    // Ensure body has dark theme class for compatibility
+    document.body.classList.add('night-theme')
 
-    // Apply theme class to document body for compatibility
-    document.body.className = currentTheme === 'day' ? 'day-theme' : 'night-theme'
-
-    // Apply background styles
-    const gradient = currentTheme === 'day'
-      ? 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%)'
-      : 'linear-gradient(135deg, #0a0a1a 0%, #0f0f23 50%, #2a2235 100%)';
-
-    document.body.style.background = gradient;
-    document.body.style.transition = 'background 0.8s ease-in-out';
-
-    // Cleanup function to remove styles when component unmounts
+    // Leave visual styling to CSS variables defined in theme.css
     return () => {
-      document.documentElement.classList.remove('dark')
-      document.body.className = ''
-      document.body.style.background = ''
-      document.body.style.transition = ''
+      // cleanup if unmounting
+      root.classList.remove('dark')
+      document.body.classList.remove('night-theme')
     }
-  }, [currentTheme])
+  }, [])
 
   return <>{children}</>
 }

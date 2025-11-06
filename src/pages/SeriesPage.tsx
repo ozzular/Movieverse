@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MovieRow from '../components/MovieRow'
-import Navbar from '../components/Navbar'
-import Sidebar from '../components/Sidebar'
+// Navbar and Sidebar are provided by the app layout; remove local imports to avoid duplication
 import type { Movie } from '@/types'
 
 // Netflix-style Series Page
 const SeriesPage = () => {
   const navigate = useNavigate()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  // ...existing code...
   const [loading, setLoading] = useState(true)
   const [popularSeries, setPopularSeries] = useState<Movie[]>([])
   const [topRatedSeries, setTopRatedSeries] = useState<Movie[]>([])
@@ -110,13 +109,8 @@ const SeriesPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
-        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
-        <div className="lg:ml-16">
-          <Navbar />
-        </div>
-
-        <main className="lg:ml-16 pt-20 px-4">
+      <div className="min-h-screen">
+        <main className="pt-20 px-4">
           <div className="text-center py-16">
             <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-cyan-400 mx-auto mb-4"></div>
             <p className="text-gray-400">Loading TV series...</p>
@@ -127,16 +121,8 @@ const SeriesPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
-      {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
-
-      {/* Navbar */}
-      <div className="lg:ml-16">
-        <Navbar />
-      </div>
-
-      <main className="lg:ml-16 pt-20">
+    <div className="min-h-screen">
+      <main className="pt-20">
         {/* Hero Section */}
         <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
           {trendingSeries.length > 0 && (
@@ -148,11 +134,11 @@ const SeriesPage = () => {
                   '/public/hero-bg.jpg'})`,
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-black/30 to-black/50" />
+              {/* Remove per-page gradient overlay; global background is set in ThemeWrapper */}
             </div>
           )}
 
-          <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+          <div className="relative z-10 text-center w-full px-4">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
               TV Series
             </h1>
@@ -164,7 +150,7 @@ const SeriesPage = () => {
         </section>
 
         {/* TV Series Categories */}
-        <section className="relative z-20 bg-gradient-to-b from-black via-gray-900 to-black">
+  <section className="relative z-20">
           <div className="w-full py-8">
             <MovieRow title="Trending TV Shows" movies={trendingSeries} />
             <MovieRow title="Popular TV Shows" movies={popularSeries} />
@@ -174,8 +160,8 @@ const SeriesPage = () => {
         </section>
 
         {/* Genre Sections */}
-        <section className="relative z-10 bg-gradient-to-b from-gray-900 to-black py-16">
-          <div className="max-w-7xl mx-auto px-8">
+  <section className="relative z-10 py-16">
+          <div className="w-full px-8">
             <h2 className="text-3xl font-bold text-white mb-8">Browse by Genre</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -192,16 +178,11 @@ const SeriesPage = () => {
                 <button
                   key={genre.name}
                   onClick={() => navigate(`/search?q=tv+${genre.name.toLowerCase().replace('&', '').replace(' ', '+')}`)}
-                  className={`relative overflow-hidden rounded-xl p-6 text-left transition-all duration-300 hover:scale-105 group`}
-                  style={{
-                    background: `linear-gradient(135deg, rgb(31 41 55 / 0.5), rgb(55 65 81 / 0.5))`,
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)'
-                  }}
+                  className="relative overflow-hidden rounded-xl p-6 text-left transition-all duration-300 hover:scale-105 group bg-[var(--glass)] backdrop-blur-[24px] border border-[var(--glass-border)]"
                 >
                   <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <h3 className="text-white font-semibold text-lg mb-2 relative z-10">{genre.name}</h3>
-                  <p className="text-gray-400 text-sm relative z-10">Explore {genre.name.toLowerCase()} series</p>
+                  <p className="text-[var(--text-secondary)] text-sm relative z-10">Explore {genre.name.toLowerCase()} series</p>
                 </button>
               ))}
             </div>

@@ -1,15 +1,11 @@
-import Navbar from "../components/Navbar"
-import Footer from "../components/FooterNew"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
 import { Shield, Eye, Database, Cookie, Mail, Github } from 'lucide-react'
 
 const PrivacyPolicy = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background/95 to-background">
-      <Navbar />
-
-      <div className="pt-24 pb-16">
-        <div className="container mx-auto px-6">
+    <div className="min-h-screen">
+      <div className="pb-16">
+        <div className="container mx-auto px-6 ml-20">
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent">
@@ -22,9 +18,9 @@ const PrivacyPolicy = () => {
 
           {/* Privacy Information */}
           <div className="max-w-4xl mx-auto space-y-8">
-            <Card className="glass-card border-gray-800">
+            <Card className="glass-effect border-border">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Eye className="w-6 h-6 text-primary" />
                   Information We Collect
                 </CardTitle>
@@ -45,9 +41,9 @@ const PrivacyPolicy = () => {
               </CardContent>
             </Card>
 
-            <Card className="glass-card border-gray-800">
+            <Card className="glass-effect border-border">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Database className="w-6 h-6 text-primary" />
                   Data Usage
                 </CardTitle>
@@ -73,9 +69,9 @@ const PrivacyPolicy = () => {
               </CardContent>
             </Card>
 
-            <Card className="glass-card border-gray-800">
+            <Card className="glass-effect border-border">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Cookie className="w-6 h-6 text-primary" />
                   Third-Party Services
                 </CardTitle>
@@ -98,9 +94,9 @@ const PrivacyPolicy = () => {
               </CardContent>
             </Card>
 
-            <Card className="glass-card border-gray-800">
+            <Card className="glass-effect border-border">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Shield className="w-6 h-6 text-primary" />
                   Data Protection
                 </CardTitle>
@@ -122,9 +118,9 @@ const PrivacyPolicy = () => {
               </CardContent>
             </Card>
 
-            <Card className="glass-card border-gray-800">
+            <Card className="glass-effect border-border">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Mail className="w-6 h-6 text-primary" />
                   Contact Information
                 </CardTitle>
@@ -139,7 +135,7 @@ const PrivacyPolicy = () => {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <a
                     href="mailto:work.peter.louis@gmail.com"
-                    className="flex items-center gap-3 p-4 glass-card hover:scale-105 transition-transform text-gray-300 hover:text-white"
+                    className="flex items-center gap-3 p-4 glass-effect hover-scale hover-lift text-muted-foreground hover:text-foreground"
                   >
                     <Mail className="w-5 h-5 text-primary" />
                     <span>work.peter.louis@gmail.com</span>
@@ -148,7 +144,7 @@ const PrivacyPolicy = () => {
                     href="https://github.com/ozzular"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-4 glass-card hover:scale-105 transition-transform text-gray-300 hover:text-white"
+                    className="flex items-center gap-3 p-4 glass-effect hover-scale hover-lift text-muted-foreground hover:text-foreground"
                   >
                     <Github className="w-5 h-5 text-primary" />
                     <span>GitHub Profile</span>
@@ -162,9 +158,9 @@ const PrivacyPolicy = () => {
               </CardContent>
             </Card>
 
-            <Card className="glass-card border-gray-800">
+            <Card className="glass-effect border-border">
               <CardHeader>
-                <CardTitle className="text-white">Last Updated</CardTitle>
+                <CardTitle className="text-foreground">Last Updated</CardTitle>
                 <CardDescription className="text-gray-400">
                   Privacy policy version information
                 </CardDescription>
@@ -178,8 +174,6 @@ const PrivacyPolicy = () => {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   )
 }

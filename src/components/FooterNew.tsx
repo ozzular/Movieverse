@@ -15,7 +15,7 @@ const Footer = () => {
   }
 
   return (
-    <footer className="relative py-16 bg-gradient-to-b from-background via-background/95 to-black">
+    <footer className="relative py-16" style={{ background: 'var(--landing-gradient)' }}>
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent" />
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -24,11 +24,11 @@ const Footer = () => {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-gray-800 to-gray-900 flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-sm">M</span>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h3 className="text-2xl font-bold text-white">
                 MovieVerse
               </h3>
             </div>
-            <p className="text-gray-400 leading-relaxed">
+            <p className="text-gray-300 leading-relaxed">
               Your ultimate destination for discovering amazing movies and TV shows.
               Explore the universe of cinema with us.
             </p>
@@ -41,7 +41,7 @@ const Footer = () => {
           </div>
 
           <div className="space-y-6">
-            <h4 className="font-semibold text-lg text-gray-900 dark:text-white">Discover</h4>
+            <h4 className="font-semibold text-lg text-white">Discover</h4>
             <ul className="space-y-3">
               <li>
                 <button
@@ -79,7 +79,7 @@ const Footer = () => {
           </div>
 
           <div className="space-y-6">
-            <h4 className="font-semibold text-lg text-gray-900 dark:text-white">Support</h4>
+            <h4 className="font-semibold text-lg text-white">Support</h4>
             <ul className="space-y-3">
               <li>
                 <button
@@ -101,7 +101,7 @@ const Footer = () => {
           </div>
 
           <div className="space-y-6">
-            <h4 className="font-semibold text-lg text-gray-900 dark:text-white">Contact Us</h4>
+            <h4 className="font-semibold text-lg text-white">Contact Us</h4>
             <div className="space-y-4">
               <a
                 href="mailto:work.peter.louis@gmail.com"

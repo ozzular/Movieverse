@@ -38,23 +38,20 @@ const TrailerPlayer: React.FC<TrailerPlayerProps> = ({
 
     try {
       // Use the TMDB API service instead of direct fetch
-      const videosData = await tmdbApi.getMovieVideos(movieId)
+      const videosData: any = await tmdbApi.getMovieVideos(movieId)
 
       // Filter for official trailer from YouTube
-      const trailer = videosData.results.find(
-        (video) =>
-          video.type === 'Trailer' &&
-          video.site === 'YouTube' &&
-          video.official === true
+      const trailer = videosData.results.find((video: any) =>
+        video.type === 'Trailer' &&
+        video.site === 'YouTube' &&
+        video.official === true
       )
 
       if (trailer) {
         setTrailerKey(trailer.key)
       } else {
         // Fallback to any YouTube trailer if no official one found
-        const anyTrailer = videosData.results.find(
-          (video) => video.type === 'Trailer' && video.site === 'YouTube'
-        )
+        const anyTrailer = videosData.results.find((video: any) => video.type === 'Trailer' && video.site === 'YouTube')
 
         if (anyTrailer) {
           setTrailerKey(anyTrailer.key)
@@ -72,8 +69,8 @@ const TrailerPlayer: React.FC<TrailerPlayerProps> = ({
 
   if (!trailerKey && !loading && !error) {
     return (
-      <div className={`flex items-center justify-center bg-gray-900 rounded-lg ${className}`}
-           style={{ aspectRatio: '16/9' }}>
+   <div className={`flex items-center justify-center bg-[var(--glass)] backdrop-blur-[24px] rounded-lg ${className}`}
+     style={{ aspectRatio: '16/9' }}>
         <motion.button
           onClick={fetchTrailer}
           className="bg-galaxy-purple hover:bg-galaxy-red text-white px-6 py-3 rounded-full font-semibold transition-colors flex items-center space-x-2"
@@ -91,8 +88,8 @@ const TrailerPlayer: React.FC<TrailerPlayerProps> = ({
 
   if (loading) {
     return (
-      <div className={`flex items-center justify-center bg-gray-900 rounded-lg ${className}`}
-           style={{ aspectRatio: '16/9' }}>
+   <div className={`flex items-center justify-center bg-[var(--glass)] backdrop-blur-[24px] rounded-lg ${className}`}
+     style={{ aspectRatio: '16/9' }}>
         <motion.div
           className="flex flex-col items-center space-y-3"
           initial={{ opacity: 0 }}
@@ -107,10 +104,10 @@ const TrailerPlayer: React.FC<TrailerPlayerProps> = ({
 
   if (error) {
     return (
-      <div className={`flex items-center justify-center bg-gray-900 rounded-lg ${className}`}
-           style={{ aspectRatio: '16/9' }}>
+   <div className={`flex items-center justify-center bg-[var(--glass)] backdrop-blur-[24px] rounded-lg ${className}`}
+     style={{ aspectRatio: '16/9' }}>
         <div className="text-center">
-          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-3 mx-auto">
+          <div className="w-16 h-16 bg-[var(--accent)]/20 rounded-full flex items-center justify-center mb-3 mx-auto">
             <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
@@ -132,7 +129,7 @@ const TrailerPlayer: React.FC<TrailerPlayerProps> = ({
   return (
     <AnimatePresence>
       <motion.div
-        className={`bg-black rounded-lg overflow-hidden ${className}`}
+        className={`bg-[var(--glass)] backdrop-blur-[24px] rounded-lg overflow-hidden ${className}`}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}

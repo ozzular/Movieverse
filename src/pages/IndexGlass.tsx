@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import FeaturedMovies from "../components/FeaturedMovies";
 import CTASection from "../components/CTASection";
 import Footer from "../components/FooterNew";
 import MovieCard from "../components/MovieCard";
-import { Button } from "../components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import Navbar from "../components/Navbar";
+// ...existing code...
 import { tmdbApi } from "../services/tmdbApi";
 
 // Movie interface for multiple sections
@@ -54,27 +53,29 @@ const IndexGlass = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 via-gray-800/20 to-black">
-      <Navbar />
+    // Rely on global landing gradient for consistent background; use full-bleed gradient
+    <div className="min-h-screen" style={{ background: 'var(--landing-gradient)' }}>
+  {/* Restore navbar on landing page (hamburger hidden) */}
+  <Navbar isSidebarOpen={false} onSidebarToggle={() => {}} hideHamburger={true} />
       <Hero />
       <FeaturedMovies />
 
       {/* Trending Now Section */}
-      <section className="py-16 relative rounded-2xl mx-4 md:mx-8 section-transition">
-        <div className="container mx-auto px-6 relative z-10">
+      <section className="py-16 relative section-transition">
+        <div className="w-full px-6 relative z-10 max-w-none">
           <div className="text-center mb-12">
-            <div className="p-6 border-2 border-red-500/30 bg-red-500/10 backdrop-blur-sm rounded-xl max-w-3xl mx-auto card-glass">
+            <div className="p-6 border-2 border-[var(--accent)]/30 bg-[var(--accent)]/10 backdrop-blur-[24px] w-full card-glass">
               <h2 className="text-3xl md:text-4xl font-bold mb-3 text-white animate-fade-in">
                 Trending Now
               </h2>
-              <p className="text-red-300 text-base max-w-xl mx-auto leading-relaxed">
+              <p className="text-[var(--accent)] text-base w-full leading-relaxed">
                 The hottest movies everyone's talking about
               </p>
             </div>
           </div>
 
           {/* Horizontal Scroll Container */}
-          <div className="overflow-x-auto scrollbar-hide">
+          <div className="overflow-x-auto scrollbar-hide w-full">
             <div className="flex space-x-6 pb-4">
               {trendingMovies.map((movie, index) => (
                 <div
@@ -91,21 +92,21 @@ const IndexGlass = () => {
       </section>
 
       {/* Popular Movies Section */}
-      <section className="py-16 relative rounded-2xl mx-4 md:mx-8 section-transition">
-        <div className="container mx-auto px-6 relative z-10">
+      <section className="py-16 relative section-transition">
+        <div className="w-full px-6 relative z-10 max-w-none">
           <div className="text-center mb-12">
-            <div className="p-6 border-2 border-yellow-500/30 bg-yellow-500/10 backdrop-blur-sm rounded-xl max-w-3xl mx-auto card-glass">
+            <div className="p-6 border-2 border-[var(--accent)]/30 bg-[var(--accent)]/10 backdrop-blur-[24px] w-full card-glass">
               <h2 className="text-3xl md:text-4xl font-bold mb-3 text-white animate-fade-in">
                 Popular Movies
               </h2>
-              <p className="text-yellow-300 text-base max-w-xl mx-auto leading-relaxed">
+              <p className="text-[var(--accent)] text-base w-full leading-relaxed">
                 The most beloved films of all time
               </p>
             </div>
           </div>
 
           {/* Horizontal Scroll Container */}
-          <div className="overflow-x-auto scrollbar-hide">
+          <div className="overflow-x-auto scrollbar-hide w-full">
             <div className="flex space-x-6 pb-4">
               {popularMovies.map((movie, index) => (
                 <div
@@ -122,10 +123,10 @@ const IndexGlass = () => {
       </section>
 
       {/* Top Rated Movies Section */}
-      <section className="py-16 relative rounded-2xl mx-4 md:mx-8 section-transition">
-        <div className="container mx-auto px-6 relative z-10">
+      <section className="py-16 relative section-transition">
+        <div className="w-full px-6 relative z-10 max-w-none">
           <div className="text-center mb-12">
-            <div className="p-6 border-2 border-green-500/30 bg-green-500/10 backdrop-blur-sm rounded-xl max-w-3xl mx-auto card-glass">
+            <div className="p-6 border-2 border-[var(--accent)]/30 bg-[var(--accent)]/10 backdrop-blur-[24px] w-full card-glass">
               <h2 className="text-3xl md:text-4xl font-bold mb-3 text-white animate-fade-in">
                 Top Rated Movies
               </h2>
@@ -136,7 +137,7 @@ const IndexGlass = () => {
           </div>
 
           {/* Horizontal Scroll Container */}
-          <div className="overflow-x-auto scrollbar-hide">
+          <div className="overflow-x-auto scrollbar-hide w-full">
             <div className="flex space-x-6 pb-4">
               {topRatedMovies.map((movie, index) => (
                 <div

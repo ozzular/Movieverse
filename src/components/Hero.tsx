@@ -44,7 +44,23 @@ const Hero = () => {
     fetchFeaturedMovies()
   }, [])
 
-  return <HeroCarousel movies={featuredMovies} />
+  return (
+    <div className="relative w-full min-h-screen -mt-[var(--nav-height)]">
+      <div className="absolute inset-0">
+        {/* Top gradient overlay for navbar */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-transparent h-[120px]"></div>
+        {/* Bottom gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--bg-gradient-start)]"></div>
+      </div>
+      <HeroCarousel movies={featuredMovies} />
+      {/* Content wrapper - ensures content is below navbar */}
+      <div className="absolute inset-0 flex items-end pt-[var(--nav-height)]">
+        <div className="w-full px-4 md:px-6 pb-12 md:pb-16">
+          {/* Hero content goes here */}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default Hero

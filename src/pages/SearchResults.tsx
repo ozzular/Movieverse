@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import MovieCard from '../components/MovieCard'
-import Navbar from '../components/Navbar'
-import Sidebar from '../components/Sidebar'
+// Navbar and Sidebar are provided by the app layout; remove local imports to avoid duplication
 
 const SearchResults: React.FC = () => {
   const location = useLocation()
@@ -23,7 +22,6 @@ const SearchResults: React.FC = () => {
   const [currentQuery, setCurrentQuery] = useState(query)
 
   const observerRef = useRef<IntersectionObserver>()
-  const loadMoreTriggerRef = useRef<HTMLDivElement>(null)
 
   // Search function
   useEffect(() => {
@@ -130,7 +128,7 @@ const SearchResults: React.FC = () => {
     <>
       {Array.from({ length: 6 }).map((_, index) => (
         <div key={index} className="animate-pulse">
-          <div className="bg-gray-800 h-64 rounded-lg mb-4"></div>
+          <div className="bg-[var(--glass)] h-64 rounded-lg mb-4 backdrop-blur-[24px]"></div>
           <div className="h-4 bg-gray-700 rounded mb-2"></div>
           <div className="h-3 bg-gray-700 rounded w-1/2"></div>
         </div>
@@ -139,16 +137,8 @@ const SearchResults: React.FC = () => {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Navbar */}
-      <div className="lg:ml-16">
-        <Navbar />
-      </div>
-
-      <main className="lg:ml-16 pt-20 px-4">
+    <div className="min-h-screen">
+      <main className="pt-20 px-4">
         {/* Search Header */}
         <div className="max-w-4xl mx-auto mb-8">
           <div className="flex items-center space-x-3 mb-6">

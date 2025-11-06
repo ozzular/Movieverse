@@ -100,7 +100,7 @@ const StreamingBadges: React.FC<StreamingBadgesProps> = ({ movieId, movieTitle, 
           platform: 'apple',
           name: 'Apple TV+',
           icon: '🍎',
-          color: '#000000',
+          color: '#111111',
           url: movieData.streamingInfo?.apple?.us?.link
         },
         'hulu': {

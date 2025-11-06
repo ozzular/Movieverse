@@ -1,32 +1,32 @@
-import React, { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
+import { Button } from "./ui/button";
+import { useEffect, useState } from "react";
 
-const ThemeToggle: React.FC = () => {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+export const ThemeToggle = () => {
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
 
-  // Load theme on mount
   useEffect(() => {
-    const savedTheme = (localStorage.getItem("theme") as "light" | "dark") || "light";
-    setTheme(savedTheme);
-    document.documentElement.setAttribute("data-theme", savedTheme);
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle("light", savedTheme === "light");
+    }
   }, []);
 
-  // Toggle between light and dark
-  const handleToggle = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
-    document.documentElement.setAttribute("data-theme", newTheme);
     localStorage.setItem("theme", newTheme);
+    document.documentElement.classList.toggle("light", newTheme === "light");
   };
 
   return (
-    <button
-      onClick={handleToggle}
-      className="theme-toggle"
-      aria-label="Toggle theme"
-    >
-      {theme === "light" ? "🌙" : "☀️"}
-    </button>
+    <Button variant="outline" size="icon" onClick={toggleTheme}>
+      {theme === "dark" ? (
+        <Sun className="w-4 h-4" />
+      ) : (
+        <Moon className="w-4 h-4" />
+      )}
+    </Button>
   );
 };
-
-export default ThemeToggle;

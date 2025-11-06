@@ -76,13 +76,30 @@ class TMDbAPI {
   }
 
   // Get movie videos (trailers, teasers)
-  async getMovieVideos(id: number) {
-    return await this.request(`/movie/${id}/videos`)
+  async getMovieVideos(id: number): Promise<any> {
+    const data: any = await this.request(`/movie/${id}/videos`)
+    return data
   }
 
   // Get similar movies
   async getSimilarMovies(id: number): Promise<Movie[]> {
     const data: MoviesResponse = await this.request(`/movie/${id}/similar`)
+    return data.results
+  }
+
+  // TV Series methods
+  async getPopularTVSeries(): Promise<Movie[]> {
+    const data: MoviesResponse = await this.request('/tv/popular')
+    return data.results
+  }
+
+  async getTopRatedTV(): Promise<Movie[]> {
+    const data: MoviesResponse = await this.request('/tv/top_rated')
+    return data.results
+  }
+
+  async getTrendingTV(): Promise<Movie[]> {
+    const data: MoviesResponse = await this.request('/trending/tv/week')
     return data.results
   }
 

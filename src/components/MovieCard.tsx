@@ -69,6 +69,7 @@ const MovieCard = ({ movie, title, image, rating, genre }: MovieCardProps) => {
   return (
     <div
       className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 cursor-pointer"
+      style={{ minWidth: 'var(--card-min-width)', maxWidth: 'var(--card-max-width)' }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => navigate(`/movie/${movie.id}`)}
@@ -85,18 +86,14 @@ const MovieCard = ({ movie, title, image, rating, genre }: MovieCardProps) => {
         />
 
         {/* Favorite indicator */}
-        <div className="absolute top-3 right-3 z-20">
+          <div className="absolute top-3 right-3 z-20">
           <Button
             size="icon"
             variant="ghost"
-            className={`w-8 h-8 rounded-full transition-all duration-300 ${
-              favorited
-                ? 'bg-red-500/90 text-white hover:bg-red-600'
-                : 'bg-black/50 text-white hover:bg-black/70 backdrop-blur-sm'
-            }`}
+            className={`w-8 h-8 rounded-full transition-all duration-300 ${favorited ? 'bg-[var(--accent)] text-white' : 'bg-black/50 text-white hover:bg-black/70 backdrop-blur-sm'}`}
             onClick={handleFavoriteClick}
           >
-            <Heart className={`h-4 w-4 ${favorited ? 'fill-current' : ''}`} />
+            <Heart className={`h-4 w-4 ${favorited ? 'text-white' : ''}`} />
           </Button>
         </div>
 

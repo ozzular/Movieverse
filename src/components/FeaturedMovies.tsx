@@ -60,13 +60,13 @@ const FeaturedMovies = () => {
 
   if (isLoading) {
     return (
-      <section className="py-24 relative rounded-2xl mx-4 md:mx-8">
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center mb-12 p-6 border-2 border-white/20 bg-white/10 backdrop-blur-sm rounded-xl max-w-3xl mx-auto">
+      <section className="py-24 relative w-full">
+        <div className="w-full px-24 relative z-10">
+          <div className="text-center mb-12 p-6 border-2 border-[var(--glass-border)] bg-[var(--glass)] backdrop-blur-[24px] rounded-xl w-full">
             <h2 className="text-3xl md:text-4xl font-bold mb-3 animate-fade-in text-white">
               Featured Movies
             </h2>
-            <p className="text-gray-400 text-base max-w-xl mx-auto leading-relaxed">
+            <p className="text-[var(--text-secondary)] text-base w-full leading-relaxed">
               Discover our handpicked selection of popular movies
             </p>
           </div>
@@ -110,13 +110,13 @@ const FeaturedMovies = () => {
   }
 
   return (
-    <section className="py-24 relative rounded-2xl mx-4 md:mx-8 my-8">
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-12 p-6 border-2 border-white/20 bg-white/10 backdrop-blur-sm rounded-xl max-w-3xl mx-auto">
+    <section className="py-24 relative w-full my-8">
+      <div className="w-full px-24 relative z-10">
+  <div className="text-center mb-12 p-6 border-2 border-[var(--glass-border)] bg-[var(--glass)] backdrop-blur-[24px] rounded-xl w-full">
           <h2 className="text-3xl md:text-4xl font-bold mb-3 animate-fade-in text-white">
             Featured Movies
           </h2>
-          <p className="text-gray-400 text-base max-w-xl mx-auto leading-relaxed">
+          <p className="text-[var(--text-secondary)] text-base w-full leading-relaxed">
             Discover our handpicked selection of popular movies
           </p>
         </div>
