@@ -1,8 +1,14 @@
-import Navbar from "../components/Navbar"
-import Footer from "../components/FooterNew"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
-import { Button } from "../components/ui/button"
-import { BookOpen, Code, Database, Users, Mail, Github } from 'lucide-react'
+import Navbar from "../components/Navbar";
+import Footer from "../components/FooterNew";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { BookOpen, Code, Database, Users, Mail, Github } from "lucide-react";
 
 const HelpCenter = () => {
   return (
@@ -17,7 +23,9 @@ const HelpCenter = () => {
               Help Center
             </h1>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              Welcome to the MovieVerse Help Center. This is an educational project showcasing modern web development techniques and movie database integration.
+              Welcome to the MovieVerse Help Center. This is an educational
+              project showcasing modern web development techniques and movie
+              database integration.
             </p>
           </div>
 
@@ -35,11 +43,14 @@ const HelpCenter = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-gray-300 leading-relaxed">
-                  MovieVerse is an educational project built to demonstrate modern web development practices including:
+                  MovieVerse is an educational project built to demonstrate
+                  modern web development practices including:
                 </p>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
                   <li>React 18 with TypeScript for type-safe development</li>
-                  <li>Vite for fast build tooling and development experience</li>
+                  <li>
+                    Vite for fast build tooling and development experience
+                  </li>
                   <li>Tailwind CSS for utility-first styling</li>
                   <li>shadcn/ui components for consistent UI elements</li>
                   <li>TMDB API integration for real movie data</li>
@@ -61,7 +72,9 @@ const HelpCenter = () => {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h4 className="font-semibold text-white mb-2">Frontend Technologies</h4>
+                    <h4 className="font-semibold text-white mb-2">
+                      Frontend Technologies
+                    </h4>
                     <ul className="text-gray-300 space-y-1">
                       <li>• React 18 with hooks</li>
                       <li>• TypeScript for type safety</li>
@@ -70,7 +83,9 @@ const HelpCenter = () => {
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-white mb-2">Key Features</h4>
+                    <h4 className="font-semibold text-white mb-2">
+                      Key Features
+                    </h4>
                     <ul className="text-gray-300 space-y-1">
                       <li>• Auto-sliding movie carousel</li>
                       <li>• Real-time movie data from TMDB</li>
@@ -94,7 +109,8 @@ const HelpCenter = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-gray-300 leading-relaxed">
-                  MovieVerse uses the <strong>The Movie Database (TMDB)</strong> API to fetch real movie information including:
+                  MovieVerse uses the <strong>The Movie Database (TMDB)</strong>{" "}
+                  API to fetch real movie information including:
                 </p>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
                   <li>Movie titles, descriptions, and release dates</li>
@@ -104,7 +120,9 @@ const HelpCenter = () => {
                 </ul>
                 <div className="mt-4 p-4 bg-gray-800/50 rounded-lg">
                   <p className="text-sm text-gray-400">
-                    <strong>Note:</strong> This project is for educational purposes only and is not affiliated with or endorsed by TMDB.
+                    <strong>Note:</strong> This project is for educational
+                    purposes only and is not affiliated with or endorsed by
+                    TMDB.
                   </p>
                 </div>
               </CardContent>
@@ -122,14 +140,19 @@ const HelpCenter = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-gray-300 leading-relaxed">
-                  MovieVerse is designed as a movie discovery platform where you can:
+                  MovieVerse is designed as a movie discovery platform where you
+                  can:
                 </p>
                 <ol className="list-decimal list-inside text-gray-300 space-y-2 ml-4">
                   <li>Browse featured movies in the hero carousel</li>
                   <li>Explore popular movies in the featured section</li>
-                  <li>Navigate through different sections using the top navigation</li>
+                  <li>
+                    Navigate through different sections using the top navigation
+                  </li>
                   <li>Toggle between day and night themes</li>
-                  <li>Click "Enter the Verse" to access the main application</li>
+                  <li>
+                    Click "Enter the Verse" to access the main application
+                  </li>
                 </ol>
               </CardContent>
             </Card>
@@ -171,7 +194,7 @@ const HelpCenter = () => {
 
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default HelpCenter
+export default HelpCenter;

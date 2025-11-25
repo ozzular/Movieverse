@@ -78,7 +78,10 @@ const Awards = () => {
               <Trophy className="w-4 h-4" />
               Academy Awards
             </TabsTrigger>
-            <TabsTrigger value="golden-globe" className="flex items-center gap-2">
+            <TabsTrigger
+              value="golden-globe"
+              className="flex items-center gap-2"
+            >
               <Award className="w-4 h-4" />
               Golden Globes
             </TabsTrigger>
@@ -94,19 +97,19 @@ const Awards = () => {
 
           {/* Oscar Winners Tab */}
           <TabsContent value="oscars" className="space-y-8">
-            <MovieRow 
+            <MovieRow
               title={`${currentYear} Oscar Contenders`}
               endpoint={`discover/movie?primary_release_year=${currentYear}&sort_by=vote_average.desc&vote_count.gte=500`}
             />
-            <MovieRow 
+            <MovieRow
               title={`${currentYear - 1} Award Winners`}
               endpoint={`discover/movie?primary_release_year=${currentYear - 1}&sort_by=vote_average.desc&vote_count.gte=1000`}
             />
-            <MovieRow 
+            <MovieRow
               title="Best Picture Winners (All Time)"
               endpoint="discover/movie?sort_by=vote_average.desc&vote_count.gte=5000&with_keywords=210024"
             />
-            <MovieRow 
+            <MovieRow
               title="Oscar-Winning Performances"
               endpoint="discover/movie?sort_by=popularity.desc&with_keywords=158718"
             />
@@ -114,15 +117,15 @@ const Awards = () => {
 
           {/* Golden Globe Tab */}
           <TabsContent value="golden-globe" className="space-y-8">
-            <MovieRow 
+            <MovieRow
               title="Golden Globe Drama Winners"
               endpoint="discover/movie?sort_by=vote_average.desc&vote_count.gte=1000&with_genres=18"
             />
-            <MovieRow 
+            <MovieRow
               title="Golden Globe Comedy/Musical Winners"
               endpoint="discover/movie?sort_by=vote_average.desc&vote_count.gte=500&with_genres=35"
             />
-            <MovieRow 
+            <MovieRow
               title="Foreign Language Film Winners"
               endpoint="discover/movie?sort_by=vote_average.desc&vote_count.gte=300&with_original_language=fr|es|de|it|ja|ko"
             />
@@ -130,19 +133,19 @@ const Awards = () => {
 
           {/* Film Festivals Tab */}
           <TabsContent value="cannes" className="space-y-8">
-            <MovieRow 
+            <MovieRow
               title="Cannes Palme d'Or Winners"
               endpoint="discover/movie?sort_by=vote_average.desc&vote_count.gte=500&with_keywords=9714"
             />
-            <MovieRow 
+            <MovieRow
               title="Sundance Festival Winners"
               endpoint="discover/movie?sort_by=popularity.desc&vote_count.gte=200&with_keywords=262090"
             />
-            <MovieRow 
+            <MovieRow
               title="Venice Film Festival Winners"
               endpoint="discover/movie?sort_by=vote_average.desc&vote_count.gte=300&with_keywords=10028"
             />
-            <MovieRow 
+            <MovieRow
               title="Berlin Film Festival Winners"
               endpoint="discover/movie?sort_by=vote_average.desc&vote_count.gte=200&with_keywords=158636"
             />
@@ -150,15 +153,15 @@ const Awards = () => {
 
           {/* Critics Choice Tab */}
           <TabsContent value="critics" className="space-y-8">
-            <MovieRow 
+            <MovieRow
               title="Critics' Top Rated Films"
               endpoint="movie/top_rated?vote_count.gte=2000"
             />
-            <MovieRow 
+            <MovieRow
               title="Critically Acclaimed Recent Releases"
               endpoint={`discover/movie?primary_release_date.gte=${currentYear - 2}-01-01&sort_by=vote_average.desc&vote_count.gte=500`}
             />
-            <MovieRow 
+            <MovieRow
               title="Hidden Gems (High Ratings, Lower Popularity)"
               endpoint="discover/movie?sort_by=vote_average.desc&vote_count.gte=100&vote_count.lte=500"
             />

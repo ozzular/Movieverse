@@ -1,128 +1,128 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { Search } from 'lucide-react'
-import MovieCard from '../components/MovieCard'
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
+import MovieCard from "../components/MovieCard";
 // Navbar and Sidebar are provided by the app layout; remove local imports to avoid duplication
 
 const SearchResults: React.FC = () => {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const searchParams = new URLSearchParams(location.search)
-  const query = searchParams.get('q') || ''
+  const location = useLocation();
+  const navigate = useNavigate();
+  const searchParams = new URLSearchParams(location.search);
+  const query = searchParams.get("q") || "";
 
-  const [results, setResults] = useState<any[]>([])
-  const [suggestions, setSuggestions] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
-  const [suggestionsLoading, setSuggestionsLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true)
-  const [totalResults, setTotalResults] = useState(0)
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
-  const [currentQuery, setCurrentQuery] = useState(query)
+  const [results, setResults] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalResults, setTotalResults] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [currentQuery, setCurrentQuery] = useState(query);
 
-  const observerRef = useRef<IntersectionObserver>()
+  const observerRef = useRef<IntersectionObserver>();
 
   // Search function
   useEffect(() => {
-    if (query.trim() === '') {
-      setResults([])
-      setSuggestions([])
-      return
+    if (query.trim() === "") {
+      setResults([]);
+      setSuggestions([]);
+      return;
     }
 
-    setCurrentQuery(query)
-    setResults([])
-    setCurrentPage(1)
-    setHasMore(true)
-    searchMovies(query, 1)
-  }, [query])
+    setCurrentQuery(query);
+    setResults([]);
+    setCurrentPage(1);
+    setHasMore(true);
+    searchMovies(query, 1);
+  }, [query]);
 
   const searchMovies = async (searchQuery: string, page: number) => {
     if (page === 1) {
-      setLoading(true)
+      setLoading(true);
     } else {
-      setIsLoadingMore(true)
+      setIsLoadingMore(true);
     }
-    setError('')
+    setError("");
 
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/search/movie?api_key=${import.meta.env.VITE_TMDB_API_KEY}&query=${encodeURIComponent(searchQuery)}&page=${page}`
-      )
+        `https://api.themoviedb.org/3/search/movie?api_key=${import.meta.env.VITE_TMDB_API_KEY}&query=${encodeURIComponent(searchQuery)}&page=${page}`,
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch search results')
+        throw new Error("Failed to fetch search results");
       }
 
-      const data = await response.json()
-      setTotalResults(data.total_results)
+      const data = await response.json();
+      setTotalResults(data.total_results);
 
       if (page === 1) {
-        setResults(data.results)
+        setResults(data.results);
       } else {
-        setResults(prev => [...prev, ...data.results])
+        setResults((prev) => [...prev, ...data.results]);
       }
 
-      setHasMore(data.page < data.total_pages && data.results.length > 0)
+      setHasMore(data.page < data.total_pages && data.results.length > 0);
     } catch (err) {
-      console.error('Search error:', err)
-      setError('Failed to search movies. Please try again.')
+      console.error("Search error:", err);
+      setError("Failed to search movies. Please try again.");
     } finally {
-      setLoading(false)
-      setIsLoadingMore(false)
+      setLoading(false);
+      setIsLoadingMore(false);
     }
-  }
+  };
 
   // Get movie suggestions as user types
   const handleSearchInput = async (searchQuery: string) => {
     if (searchQuery.trim().length === 0) {
-      setSuggestions([])
-      return
+      setSuggestions([]);
+      return;
     }
 
-    setSuggestionsLoading(true)
+    setSuggestionsLoading(true);
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/search/movie?api_key=${import.meta.env.VITE_TMDB_API_KEY}&query=${encodeURIComponent(searchQuery)}&page=1&limit=5`
-      )
+        `https://api.themoviedb.org/3/search/movie?api_key=${import.meta.env.VITE_TMDB_API_KEY}&query=${encodeURIComponent(searchQuery)}&page=1&limit=5`,
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch suggestions')
+        throw new Error("Failed to fetch suggestions");
       }
 
-      const data = await response.json()
-      setSuggestions(data.results.slice(0, 5))
+      const data = await response.json();
+      setSuggestions(data.results.slice(0, 5));
     } catch (err) {
-      console.error('Suggestions error:', err)
-      setSuggestions([])
+      console.error("Suggestions error:", err);
+      setSuggestions([]);
     } finally {
-      setSuggestionsLoading(false)
+      setSuggestionsLoading(false);
     }
-  }
+  };
 
   // Infinite scroll setup
   const lastMovieElementRef = useCallback(
     (node: HTMLDivElement) => {
-      if (loading) return
-      if (observerRef.current) observerRef.current.disconnect()
+      if (loading) return;
+      if (observerRef.current) observerRef.current.disconnect();
 
-      observerRef.current = new IntersectionObserver(entries => {
+      observerRef.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
-          const nextPage = currentPage + 1
-          setCurrentPage(nextPage)
-          searchMovies(currentQuery, nextPage)
+          const nextPage = currentPage + 1;
+          setCurrentPage(nextPage);
+          searchMovies(currentQuery, nextPage);
         }
-      })
+      });
 
-      if (node) observerRef.current.observe(node)
+      if (node) observerRef.current.observe(node);
     },
-    [loading, hasMore, isLoadingMore, currentPage, currentQuery]
-  )
+    [loading, hasMore, isLoadingMore, currentPage, currentQuery],
+  );
 
   const handleSuggestionClick = (suggestion: any) => {
-    navigate(`/movie/${suggestion.id}`)
-  }
+    navigate(`/movie/${suggestion.id}`);
+  };
 
   const SearchSkeleton = () => (
     <>
@@ -134,7 +134,7 @@ const SearchResults: React.FC = () => {
         </div>
       ))}
     </>
-  )
+  );
 
   return (
     <div className="min-h-screen">
@@ -150,7 +150,9 @@ const SearchResults: React.FC = () => {
               <p className="text-gray-400 mt-1">
                 Discover movies, TV shows, and people
                 {totalResults > 0 && (
-                  <span className="text-cyan-400 ml-1">• {totalResults} results for "{currentQuery}"</span>
+                  <span className="text-cyan-400 ml-1">
+                    • {totalResults} results for "{currentQuery}"
+                  </span>
                 )}
               </p>
             </div>
@@ -163,18 +165,22 @@ const SearchResults: React.FC = () => {
               type="text"
               value={currentQuery}
               onChange={(e) => {
-                const q = e.target.value
-                setCurrentQuery(q)
-                if (q.trim() !== '') {
-                  navigate(`/search?q=${encodeURIComponent(q)}`, { replace: true })
-                  handleSearchInput(q)
+                const q = e.target.value;
+                setCurrentQuery(q);
+                if (q.trim() !== "") {
+                  navigate(`/search?q=${encodeURIComponent(q)}`, {
+                    replace: true,
+                  });
+                  handleSearchInput(q);
                 } else {
-                  setSuggestions([])
+                  setSuggestions([]);
                 }
               }}
               onKeyPress={(e) => {
-                if (e.key === 'Enter' && currentQuery.trim() !== '') {
-                  navigate(`/search?q=${encodeURIComponent(currentQuery.trim())}`)
+                if (e.key === "Enter" && currentQuery.trim() !== "") {
+                  navigate(
+                    `/search?q=${encodeURIComponent(currentQuery.trim())}`,
+                  );
                 }
               }}
               placeholder="Search for movies, TV shows, people..."
@@ -199,8 +205,8 @@ const SearchResults: React.FC = () => {
                           alt={movie.title}
                           className="w-10 h-15 object-cover rounded"
                           onError={(e) => {
-                            const target = e.target as HTMLImageElement
-                            target.style.display = 'none'
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = "none";
                           }}
                         />
                       ) : (
@@ -209,9 +215,13 @@ const SearchResults: React.FC = () => {
                         </div>
                       )}
                       <div className="flex-1">
-                        <p className="text-white font-medium truncate">{movie.title}</p>
+                        <p className="text-white font-medium truncate">
+                          {movie.title}
+                        </p>
                         <p className="text-gray-400 text-sm">
-                          {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
+                          {movie.release_date
+                            ? new Date(movie.release_date).getFullYear()
+                            : "N/A"}
                         </p>
                       </div>
                     </div>
@@ -230,12 +240,20 @@ const SearchResults: React.FC = () => {
           <div className="mt-6">
             <h3 className="text-white font-semibold mb-3">Trending Searches</h3>
             <div className="flex flex-wrap gap-2">
-              {['Action Movies', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Romance', 'Documentary'].map(trending => (
+              {[
+                "Action Movies",
+                "Comedy",
+                "Drama",
+                "Horror",
+                "Sci-Fi",
+                "Romance",
+                "Documentary",
+              ].map((trending) => (
                 <button
                   key={trending}
                   onClick={() => {
-                    setCurrentQuery(trending)
-                    navigate(`/search?q=${encodeURIComponent(trending)}`)
+                    setCurrentQuery(trending);
+                    navigate(`/search?q=${encodeURIComponent(trending)}`);
                   }}
                   className="bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white px-4 py-2 rounded-full border border-white/10 transition-colors text-sm"
                 >
@@ -265,7 +283,7 @@ const SearchResults: React.FC = () => {
           </div>
         )}
 
-        {!error && !loading && currentQuery.trim() !== '' && (
+        {!error && !loading && currentQuery.trim() !== "" && (
           <>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
               {results.map((movie, index) => {
@@ -275,9 +293,9 @@ const SearchResults: React.FC = () => {
                     <div ref={lastMovieElementRef} key={movie.id}>
                       <MovieCard movie={movie} />
                     </div>
-                  )
+                  );
                 } else {
-                  return <MovieCard key={movie.id} movie={movie} />
+                  return <MovieCard key={movie.id} movie={movie} />;
                 }
               })}
             </div>
@@ -305,13 +323,13 @@ const SearchResults: React.FC = () => {
                 </p>
                 <div className="flex flex-wrap gap-3 justify-center">
                   <button
-                    onClick={() => navigate('/genres')}
+                    onClick={() => navigate("/genres")}
                     className="glass-card hover:bg-white/10 px-6 py-2 rounded-lg transition-colors text-white"
                   >
                     Browse Genres
                   </button>
                   <button
-                    onClick={() => navigate('/app')}
+                    onClick={() => navigate("/app")}
                     className="glass-card hover:bg-white/10 px-6 py-2 rounded-lg transition-colors text-white"
                   >
                     Popular Movies
@@ -323,7 +341,7 @@ const SearchResults: React.FC = () => {
         )}
 
         {/* Initial state - suggest search */}
-        {!error && !loading && currentQuery.trim() === '' && (
+        {!error && !loading && currentQuery.trim() === "" && (
           <div className="max-w-4xl mx-auto text-center py-16">
             <div className="w-20 h-20 bg-white/5 backdrop-blur-sm rounded-full flex items-center justify-center mb-8 mx-auto">
               <Search className="w-10 h-10 text-gray-400" />
@@ -332,25 +350,30 @@ const SearchResults: React.FC = () => {
               Search for Movies
             </h2>
             <p className="text-gray-400 mb-8 text-lg">
-              Discover new movies to watch from our extensive collection. Start typing in the search bar above.
+              Discover new movies to watch from our extensive collection. Start
+              typing in the search bar above.
             </p>
 
             <div className="grid md:grid-cols-3 gap-6 mt-12">
               <div className="glass-card p-6 rounded-xl">
-                <h3 className="text-white font-semibold mb-3">Popular Searches</h3>
+                <h3 className="text-white font-semibold mb-3">
+                  Popular Searches
+                </h3>
                 <div className="space-y-2">
-                  {['Avengers', 'Spider-Man', 'Batman', 'Harry Potter'].map(title => (
-                    <button
-                      key={title}
-                      onClick={() => {
-                        setCurrentQuery(title)
-                        navigate(`/search?q=${encodeURIComponent(title)}`)
-                      }}
-                      className="block w-full text-left p-2 rounded hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
-                    >
-                      {title}
-                    </button>
-                  ))}
+                  {["Avengers", "Spider-Man", "Batman", "Harry Potter"].map(
+                    (title) => (
+                      <button
+                        key={title}
+                        onClick={() => {
+                          setCurrentQuery(title);
+                          navigate(`/search?q=${encodeURIComponent(title)}`);
+                        }}
+                        className="block w-full text-left p-2 rounded hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
+                      >
+                        {title}
+                      </button>
+                    ),
+                  )}
                 </div>
               </div>
 
@@ -358,15 +381,17 @@ const SearchResults: React.FC = () => {
                 <h3 className="text-white font-semibold mb-3">By Genre</h3>
                 <div className="space-y-2">
                   {[
-                    { name: 'Action', query: 'action movies' },
-                    { name: 'Comedy', query: 'comedy movies' },
-                    { name: 'Drama', query: 'drama movies' }
-                  ].map(genre => (
+                    { name: "Action", query: "action movies" },
+                    { name: "Comedy", query: "comedy movies" },
+                    { name: "Drama", query: "drama movies" },
+                  ].map((genre) => (
                     <button
                       key={genre.name}
                       onClick={() => {
-                        setCurrentQuery(genre.query)
-                        navigate(`/search?q=${encodeURIComponent(genre.query)}`)
+                        setCurrentQuery(genre.query);
+                        navigate(
+                          `/search?q=${encodeURIComponent(genre.query)}`,
+                        );
                       }}
                       className="block w-full text-left p-2 rounded hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
                     >
@@ -380,13 +405,13 @@ const SearchResults: React.FC = () => {
                 <h3 className="text-white font-semibold mb-3">Quick Browse</h3>
                 <div className="space-y-2">
                   <button
-                    onClick={() => navigate('/genres')}
+                    onClick={() => navigate("/genres")}
                     className="block w-full text-left p-2 rounded hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
                   >
                     Browse All Genres
                   </button>
                   <button
-                    onClick={() => navigate('/movies')}
+                    onClick={() => navigate("/movies")}
                     className="block w-full text-left p-2 rounded hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
                   >
                     Popular Movies
@@ -398,7 +423,7 @@ const SearchResults: React.FC = () => {
         )}
       </main>
     </div>
-  )
-}
+  );
+};
 
-export default SearchResults
+export default SearchResults;

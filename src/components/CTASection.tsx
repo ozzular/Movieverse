@@ -5,7 +5,7 @@ const CTASection = () => {
   const navigate = useNavigate();
 
   const handleEnterTheVerse = () => {
-    navigate('/app');
+    navigate("/app");
   };
 
   return (

@@ -1,68 +1,134 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useGenres } from '../contexts/GenreContext'
-import { useFilters } from '../contexts/FilterContext'
-import { useSelectedMovie } from '../contexts/SelectedMovieContext'
-import MovieCard from '../components/MovieCard'
-import type { Movie } from '@/types'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useGenres } from "../contexts/GenreContext";
+import { useFilters } from "../contexts/FilterContext";
+import { useSelectedMovie } from "../contexts/SelectedMovieContext";
+import MovieCard from "../components/MovieCard";
+import type { Movie } from "@/types";
 
 const FiltersPage: React.FC = () => {
-  const navigate = useNavigate()
-  const { genres, isLoading: genresLoading } = useGenres()
-  const { filters, toggleGenre, toggleRegion, clearAllFilters } = useFilters()
-  const { selectedMovie, showHero, hideHero } = useSelectedMovie()
+  const navigate = useNavigate();
+  const { genres, isLoading: genresLoading } = useGenres();
+  const { filters, toggleGenre, toggleRegion, clearAllFilters } = useFilters();
+  const { selectedMovie, showHero, hideHero } = useSelectedMovie();
 
-  const [filteredMovies, setFilteredMovies] = useState<Movie[]>([])
-  const [isApplyingFilters, setIsApplyingFilters] = useState(false)
-  const [hasAppliedFilters, setHasAppliedFilters] = useState(false)
+  const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
+  const [isApplyingFilters, setIsApplyingFilters] = useState(false);
+  const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
 
   const handleApplyFilters = async () => {
-    setIsApplyingFilters(true)
+    setIsApplyingFilters(true);
 
     try {
       // Get movies based on selected filters
-      let movies: Movie[] = []
+      let movies: Movie[] = [];
 
       if (filters.genres.length > 0) {
         // Get movies from the first selected genre as example
-        const firstGenreId = filters.genres[0]
-        movies = await import('../services/tmdbApi').then(({ tmdbApi }) =>
-          tmdbApi.getMoviesByGenre(firstGenreId)
-        )
+        const firstGenreId = filters.genres[0];
+        movies = await import("../services/tmdbApi").then(({ tmdbApi }) =>
+          tmdbApi.getMoviesByGenre(firstGenreId),
+        );
       } else {
         // Get popular movies as default
-        movies = await import('../services/tmdbApi').then(({ tmdbApi }) =>
-          tmdbApi.getPopularMovies()
-        )
+        movies = await import("../services/tmdbApi").then(({ tmdbApi }) =>
+          tmdbApi.getPopularMovies(),
+        );
       }
 
       // Apply region filtering if selected
       if (filters.regions.length > 0) {
         const regionLanguageMap: { [key: string]: string[] } = {
-          'Hollywood': ['en'],
-          'Bollywood': ['hi', 'ta', 'te'],
-          'Europe': ['fr', 'de', 'it', 'es', 'ru', 'sv', 'da', 'no', 'fi', 'nl', 'pl', 'cs', 'hu', 'ro', 'bg', 'hr', 'sk', 'sl', 'et', 'lv', 'lt', 'mt'],
-          'Asia': ['ja', 'ko', 'zh', 'th', 'vi', 'id', 'ms', 'tl', 'ur', 'bn', 'gu', 'kn', 'ml', 'mr', 'or', 'pa', 'sd', 'si', 'ne', 'dv'],
-          'Latin America': ['es', 'pt'],
-          'Africa': ['ar', 'sw', 'am', 'om', 'ti', 'so', 'af', 'zu', 'xh', 'tn', 'st', 'rw', 'rn', 'ny', 'mg', 'ln', 'lg', 'ki', 'ha', 'ff', 'ee']
-        }
+          Hollywood: ["en"],
+          Bollywood: ["hi", "ta", "te"],
+          Europe: [
+            "fr",
+            "de",
+            "it",
+            "es",
+            "ru",
+            "sv",
+            "da",
+            "no",
+            "fi",
+            "nl",
+            "pl",
+            "cs",
+            "hu",
+            "ro",
+            "bg",
+            "hr",
+            "sk",
+            "sl",
+            "et",
+            "lv",
+            "lt",
+            "mt",
+          ],
+          Asia: [
+            "ja",
+            "ko",
+            "zh",
+            "th",
+            "vi",
+            "id",
+            "ms",
+            "tl",
+            "ur",
+            "bn",
+            "gu",
+            "kn",
+            "ml",
+            "mr",
+            "or",
+            "pa",
+            "sd",
+            "si",
+            "ne",
+            "dv",
+          ],
+          "Latin America": ["es", "pt"],
+          Africa: [
+            "ar",
+            "sw",
+            "am",
+            "om",
+            "ti",
+            "so",
+            "af",
+            "zu",
+            "xh",
+            "tn",
+            "st",
+            "rw",
+            "rn",
+            "ny",
+            "mg",
+            "ln",
+            "lg",
+            "ki",
+            "ha",
+            "ff",
+            "ee",
+          ],
+        };
 
-        movies = movies.filter(movie => {
-          return filters.regions.some(region => {
-            const languages = regionLanguageMap[region] || []
-            return languages.includes(movie.original_language)
-          })
-        })
+        movies = movies.filter((movie) => {
+          return filters.regions.some((region) => {
+            const languages = regionLanguageMap[region] || [];
+            return languages.includes(movie.original_language);
+          });
+        });
       }
 
-      setFilteredMovies(movies)
-      setHasAppliedFilters(true)
+      setFilteredMovies(movies);
+      setHasAppliedFilters(true);
     } catch (error) {
-      console.error('Error applying filters:', error)
+      console.error("Error applying filters:", error);
     } finally {
-      setIsApplyingFilters(false)
+      setIsApplyingFilters(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen">
@@ -89,7 +155,7 @@ const FiltersPage: React.FC = () => {
                     {[...Array(5)].map((_, i) => (
                       <svg
                         key={i}
-                        className={`w-5 h-5 ${i < Math.floor(selectedMovie.vote_average / 2) ? 'text-galaxy-red' : 'text-gray-600'}`}
+                        className={`w-5 h-5 ${i < Math.floor(selectedMovie.vote_average / 2) ? "text-galaxy-red" : "text-gray-600"}`}
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -103,11 +169,24 @@ const FiltersPage: React.FC = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
-                    onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(selectedMovie.title)}+trailer`, '_blank')}
+                    onClick={() =>
+                      window.open(
+                        `https://www.youtube.com/results?search_query=${encodeURIComponent(selectedMovie.title)}+trailer`,
+                        "_blank",
+                      )
+                    }
                     className="bg-galaxy-red hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2"
                   >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     <span>Watch Trailer</span>
                   </button>
@@ -131,16 +210,30 @@ const FiltersPage: React.FC = () => {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Advanced Filters</h1>
-                <p className="text-gray-400">Find movies with specific criteria</p>
+                <h1 className="text-3xl font-bold text-white mb-2">
+                  Advanced Filters
+                </h1>
+                <p className="text-gray-400">
+                  Find movies with specific criteria
+                </p>
               </div>
 
               <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate("/")}
                 className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
                 <span>Back to Home</span>
               </button>
@@ -154,11 +247,16 @@ const FiltersPage: React.FC = () => {
               <div className="flex flex-col lg:flex-row gap-8">
                 {/* Genres Column */}
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-white mb-4">Genres</h3>
+                  <h3 className="text-xl font-semibold text-white mb-4">
+                    Genres
+                  </h3>
                   {genresLoading ? (
                     <div className="animate-pulse space-y-2">
                       {[...Array(3)].map((_, i) => (
-                        <div key={i} className="h-10 bg-galaxy-gray rounded"></div>
+                        <div
+                          key={i}
+                          className="h-10 bg-galaxy-gray rounded"
+                        ></div>
                       ))}
                     </div>
                   ) : (
@@ -169,8 +267,8 @@ const FiltersPage: React.FC = () => {
                           onClick={() => toggleGenre(genre.id)}
                           className={`p-3 text-sm rounded-lg transition-all duration-300 font-medium ${
                             filters.genres.includes(genre.id)
-                              ? 'bg-galaxy-purple text-white shadow-lg'
-                              : 'text-gray-300 hover:text-white hover:bg-galaxy-purple/30 border border-galaxy-purple/20 hover:border-galaxy-purple/50'
+                              ? "bg-galaxy-purple text-white shadow-lg"
+                              : "text-gray-300 hover:text-white hover:bg-galaxy-purple/30 border border-galaxy-purple/20 hover:border-galaxy-purple/50"
                           }`}
                         >
                           {genre.name}
@@ -182,9 +280,18 @@ const FiltersPage: React.FC = () => {
 
                 {/* Release Year Column */}
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-white mb-4">Release Year</h3>
+                  <h3 className="text-xl font-semibold text-white mb-4">
+                    Release Year
+                  </h3>
                   <div className="grid grid-cols-2 gap-2">
-                    {['2024', '2020-2023', '2010-2019', '2000-2009', '1990-1999', 'Before 1990'].map((range) => (
+                    {[
+                      "2024",
+                      "2020-2023",
+                      "2010-2019",
+                      "2000-2009",
+                      "1990-1999",
+                      "Before 1990",
+                    ].map((range) => (
                       <button
                         key={range}
                         className="p-3 text-sm rounded-lg transition-all duration-300 font-medium text-gray-300 hover:text-white hover:bg-galaxy-purple/30 border border-galaxy-purple/20 hover:border-galaxy-purple/50"
@@ -197,16 +304,25 @@ const FiltersPage: React.FC = () => {
 
                 {/* Regions Column */}
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-white mb-4">Regions</h3>
+                  <h3 className="text-xl font-semibold text-white mb-4">
+                    Regions
+                  </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {['Hollywood', 'Bollywood', 'Europe', 'Asia', 'Latin America', 'Africa'].map((region) => (
+                    {[
+                      "Hollywood",
+                      "Bollywood",
+                      "Europe",
+                      "Asia",
+                      "Latin America",
+                      "Africa",
+                    ].map((region) => (
                       <button
                         key={region}
                         onClick={() => toggleRegion(region)}
                         className={`p-3 text-sm rounded-lg transition-all duration-300 font-medium ${
                           filters.regions.includes(region)
-                            ? 'bg-galaxy-purple text-white shadow-lg'
-                            : 'text-gray-300 hover:text-white hover:bg-galaxy-purple/30 border border-galaxy-purple/20 hover:border-galaxy-purple/50'
+                            ? "bg-galaxy-purple text-white shadow-lg"
+                            : "text-gray-300 hover:text-white hover:bg-galaxy-purple/30 border border-galaxy-purple/20 hover:border-galaxy-purple/50"
                         }`}
                       >
                         {region}
@@ -229,8 +345,18 @@ const FiltersPage: React.FC = () => {
                       </>
                     ) : (
                       <>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
                         </svg>
                         <span>Apply Filters</span>
                       </>
@@ -241,8 +367,18 @@ const FiltersPage: React.FC = () => {
                     onClick={clearAllFilters}
                     className="glass-button border-2 border-galaxy-red text-galaxy-red hover:bg-galaxy-red hover:text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center space-x-2"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                     <span>Clear All</span>
                   </button>
@@ -260,19 +396,26 @@ const FiltersPage: React.FC = () => {
                     </h2>
 
                     {/* Active Filters Display */}
-                    {(filters.genres.length > 0 || filters.regions.length > 0) && (
+                    {(filters.genres.length > 0 ||
+                      filters.regions.length > 0) && (
                       <div className="flex items-center space-x-2">
                         <span className="text-sm text-gray-400">Active:</span>
-                        {filters.genres.map(genreId => {
-                          const genre = genres.find(g => g.id === genreId)
+                        {filters.genres.map((genreId) => {
+                          const genre = genres.find((g) => g.id === genreId);
                           return genre ? (
-                            <span key={genreId} className="px-2 py-1 bg-galaxy-purple/20 text-galaxy-purple text-sm rounded-full">
+                            <span
+                              key={genreId}
+                              className="px-2 py-1 bg-galaxy-purple/20 text-galaxy-purple text-sm rounded-full"
+                            >
                               {genre.name}
                             </span>
-                          ) : null
+                          ) : null;
                         })}
-                        {filters.regions.map(region => (
-                          <span key={region} className="px-2 py-1 bg-galaxy-red/20 text-galaxy-red text-sm rounded-full">
+                        {filters.regions.map((region) => (
+                          <span
+                            key={region}
+                            className="px-2 py-1 bg-galaxy-red/20 text-galaxy-red text-sm rounded-full"
+                          >
                             {region}
                           </span>
                         ))}
@@ -287,16 +430,25 @@ const FiltersPage: React.FC = () => {
                       ))}
                     </div>
                   ) : (
-                <div className="text-center py-16">
-                  <h3 className="text-xl font-semibold text-white mb-2">No movies found</h3>
-                  <p className="text-gray-400">Try adjusting your filters to see more results.</p>
-                </div>
+                    <div className="text-center py-16">
+                      <h3 className="text-xl font-semibold text-white mb-2">
+                        No movies found
+                      </h3>
+                      <p className="text-gray-400">
+                        Try adjusting your filters to see more results.
+                      </p>
+                    </div>
                   )}
                 </div>
               ) : (
                 <div className="text-center py-16">
-                  <h3 className="text-xl font-semibold text-white mb-2">Apply Filters</h3>
-                  <p className="text-gray-400">Select your preferred genres, release years, and regions to find movies.</p>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    Apply Filters
+                  </h3>
+                  <p className="text-gray-400">
+                    Select your preferred genres, release years, and regions to
+                    find movies.
+                  </p>
                 </div>
               )}
             </div>
@@ -304,7 +456,7 @@ const FiltersPage: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FiltersPage
+export default FiltersPage;

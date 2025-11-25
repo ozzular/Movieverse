@@ -1,72 +1,80 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { tmdbApi } from '../services/tmdbApi'
-import type { Movie } from '@/types'
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { tmdbApi } from "../services/tmdbApi";
+import type { Movie } from "@/types";
 
 interface HeroBannerProps {
-  className?: string
+  className?: string;
 }
 
-const HeroBanner: React.FC<HeroBannerProps> = ({ className = '' }) => {
-  const [movies, setMovies] = useState<Movie[]>([])
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isPaused, setIsPaused] = useState(false)
+const HeroBanner: React.FC<HeroBannerProps> = ({ className = "" }) => {
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Fetch trending movies for hero rotation
   useEffect(() => {
     const fetchHeroMovies = async () => {
       try {
-        setIsLoading(true)
-        const trendingMovies = await tmdbApi.getTrendingMovies()
+        setIsLoading(true);
+        const trendingMovies = await tmdbApi.getTrendingMovies();
         // Get 5-8 movies for rotation
-        const heroMovies = trendingMovies.slice(0, 6).filter(movie => movie.backdrop_path)
-        setMovies(heroMovies)
+        const heroMovies = trendingMovies
+          .slice(0, 6)
+          .filter((movie) => movie.backdrop_path);
+        setMovies(heroMovies);
       } catch (error) {
-        console.error('Error fetching hero movies:', error)
+        console.error("Error fetching hero movies:", error);
         // Fallback to popular movies if trending fails
         try {
-          const popularMovies = await tmdbApi.getPopularMovies()
-          const heroMovies = popularMovies.slice(0, 6).filter(movie => movie.backdrop_path)
-          setMovies(heroMovies)
+          const popularMovies = await tmdbApi.getPopularMovies();
+          const heroMovies = popularMovies
+            .slice(0, 6)
+            .filter((movie) => movie.backdrop_path);
+          setMovies(heroMovies);
         } catch (fallbackError) {
-          console.error('Error fetching fallback hero movies:', fallbackError)
+          console.error("Error fetching fallback hero movies:", fallbackError);
         }
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchHeroMovies()
-  }, [])
+    fetchHeroMovies();
+  }, []);
 
   // Auto-slide functionality
   useEffect(() => {
-    if (movies.length === 0 || isPaused) return
+    if (movies.length === 0 || isPaused) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % movies.length)
-    }, 6000) // 6 seconds per slide
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % movies.length);
+    }, 6000); // 6 seconds per slide
 
-    return () => clearInterval(interval)
-  }, [movies.length, isPaused])
+    return () => clearInterval(interval);
+  }, [movies.length, isPaused]);
 
   const goToSlide = (index: number) => {
-    setCurrentIndex(index)
-  }
+    setCurrentIndex(index);
+  };
 
   const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + movies.length) % movies.length)
-  }
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + movies.length) % movies.length,
+    );
+  };
 
   const goToNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % movies.length)
-  }
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % movies.length);
+  };
 
   if (isLoading || movies.length === 0) {
     return (
-      <div className={`relative h-96 w-full overflow-hidden bg-galaxy-gray animate-pulse ${className}`}>
+      <div
+        className={`relative h-96 w-full overflow-hidden bg-galaxy-gray animate-pulse ${className}`}
+      >
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
         <div className="relative z-20 container mx-auto px-4 py-8 h-full flex items-end">
           <div className="max-w-2xl">
@@ -77,11 +85,11 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ className = '' }) => {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
-  const currentMovie = movies[currentIndex]
-  const backdropUrl = `https://image.tmdb.org/t/p/original${currentMovie.backdrop_path}`
+  const currentMovie = movies[currentIndex];
+  const backdropUrl = `https://image.tmdb.org/t/p/original${currentMovie.backdrop_path}`;
 
   return (
     <div
@@ -104,7 +112,7 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ className = '' }) => {
             alt={currentMovie.title}
             className="w-full h-full object-cover"
             onError={(e) => {
-              e.currentTarget.src = `https://image.tmdb.org/t/p/original${currentMovie.poster_path || '/placeholder-movie.jpg'}`
+              e.currentTarget.src = `https://image.tmdb.org/t/p/original${currentMovie.poster_path || "/placeholder-movie.jpg"}`;
             }}
           />
           {/* Gradient Overlay */}
@@ -118,8 +126,18 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ className = '' }) => {
         className="absolute left-4 top-1/2 transform -translate-y-1/2 z-30 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-300 opacity-70 hover:opacity-100"
         aria-label="Previous movie"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
       </button>
 
@@ -128,8 +146,18 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ className = '' }) => {
         className="absolute right-4 top-1/2 transform -translate-y-1/2 z-30 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-300 opacity-70 hover:opacity-100"
         aria-label="Next movie"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 5l7 7-7 7"
+          />
         </svg>
       </button>
 
@@ -157,7 +185,7 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ className = '' }) => {
                 {[...Array(5)].map((_, i) => (
                   <svg
                     key={i}
-                    className={`w-5 h-5 ${i < Math.floor(currentMovie.vote_average / 2) ? 'text-galaxy-red' : 'text-gray-600'}`}
+                    className={`w-5 h-5 ${i < Math.floor(currentMovie.vote_average / 2) ? "text-galaxy-red" : "text-gray-600"}`}
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -184,7 +212,11 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ className = '' }) => {
               className="bg-galaxy-red hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                  clipRule="evenodd"
+                />
               </svg>
               <span>Watch Trailer</span>
             </Link>
@@ -193,8 +225,18 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ className = '' }) => {
               to={`/movie/${currentMovie.id}`}
               className="border-2 border-galaxy-purple text-galaxy-purple hover:bg-galaxy-purple hover:text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center space-x-2"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <span>More Info</span>
             </Link>
@@ -210,8 +252,8 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ className = '' }) => {
             onClick={() => goToSlide(index)}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
               index === currentIndex
-                ? 'bg-white scale-125'
-                : 'bg-white/50 hover:bg-white/75'
+                ? "bg-white scale-125"
+                : "bg-white/50 hover:bg-white/75"
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />
@@ -223,7 +265,7 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ className = '' }) => {
         {currentIndex + 1} / {movies.length}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default HeroBanner
+export default HeroBanner;

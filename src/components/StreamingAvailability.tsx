@@ -1,65 +1,72 @@
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { justWatchApi } from '../services/justWatchApi'
-import type { StreamingProvider } from '@/types'
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { justWatchApi } from "../services/justWatchApi";
+import type { StreamingProvider } from "@/types";
 
 interface StreamingAvailabilityProps {
-  movieTitle: string
-  releaseYear?: number
-  className?: string
+  movieTitle: string;
+  releaseYear?: number;
+  className?: string;
 }
 
 const StreamingAvailability: React.FC<StreamingAvailabilityProps> = ({
   movieTitle,
   releaseYear,
-  className = ''
+  className = "",
 }) => {
-  const [providers, setProviders] = useState<StreamingProvider[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [providers, setProviders] = useState<StreamingProvider[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (movieTitle) {
-      fetchProviders()
+      fetchProviders();
     }
-  }, [movieTitle, releaseYear])
+  }, [movieTitle, releaseYear]);
 
   const fetchProviders = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
-      const streamingProviders = await justWatchApi.getStreamingProviders(movieTitle, releaseYear)
-      setProviders(streamingProviders)
+      const streamingProviders = await justWatchApi.getStreamingProviders(
+        movieTitle,
+        releaseYear,
+      );
+      setProviders(streamingProviders);
     } catch (err) {
-      console.error('Error fetching streaming providers:', err)
-      setError('Unable to load streaming information')
+      console.error("Error fetching streaming providers:", err);
+      setError("Unable to load streaming information");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className={`glassmorphism p-6 rounded-xl ${className}`}>
-        <h3 className="text-xl font-semibold mb-4 text-white">Where to Watch</h3>
+        <h3 className="text-xl font-semibold mb-4 text-white">
+          Where to Watch
+        </h3>
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 border-2 border-galaxy-purple border-t-transparent rounded-full animate-spin"></div>
           <span className="text-gray-300">Loading streaming info...</span>
         </div>
       </div>
-    )
+    );
   }
 
   if (error || providers.length === 0) {
     return (
       <div className={`glassmorphism p-6 rounded-xl ${className}`}>
-        <h3 className="text-xl font-semibold mb-4 text-white">Where to Watch</h3>
+        <h3 className="text-xl font-semibold mb-4 text-white">
+          Where to Watch
+        </h3>
         <p className="text-gray-400">
-          {error || 'Not available on major streaming platforms'}
+          {error || "Not available on major streaming platforms"}
         </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -73,7 +80,7 @@ const StreamingAvailability: React.FC<StreamingAvailabilityProps> = ({
             className="flex flex-col items-center space-y-2 group cursor-pointer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => window.open(provider.url, '_blank')}
+            onClick={() => window.open(provider.url, "_blank")}
           >
             <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center p-2 group-hover:bg-white/20 transition-colors">
               <img
@@ -81,15 +88,16 @@ const StreamingAvailability: React.FC<StreamingAvailabilityProps> = ({
                 alt={`${provider.name} logo`}
                 className="w-full h-full object-contain"
                 onError={(e) => {
-                  const target = e.target as HTMLImageElement
-                  target.style.display = 'none'
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = "none";
                   // Show text fallback if image fails to load
-                  const parent = target.parentElement
-                  if (parent && !parent.querySelector('.fallback-text')) {
-                    const fallback = document.createElement('span')
-                    fallback.className = 'fallback-text text-white text-xs font-medium'
-                    fallback.textContent = provider.name.split(' ')[0] // Show first word only
-                    parent.appendChild(fallback)
+                  const parent = target.parentElement;
+                  if (parent && !parent.querySelector(".fallback-text")) {
+                    const fallback = document.createElement("span");
+                    fallback.className =
+                      "fallback-text text-white text-xs font-medium";
+                    fallback.textContent = provider.name.split(" ")[0]; // Show first word only
+                    parent.appendChild(fallback);
                   }
                 }}
               />
@@ -107,7 +115,7 @@ const StreamingAvailability: React.FC<StreamingAvailabilityProps> = ({
         </p>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default StreamingAvailability
+export default StreamingAvailability;

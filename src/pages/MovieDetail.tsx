@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Play, Star, Bookmark, BookmarkCheck, Award, Film, Tv2 } from "lucide-react";
+import {
+  Play,
+  Star,
+  Bookmark,
+  BookmarkCheck,
+  Award,
+  Film,
+  Tv2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -78,7 +86,7 @@ const MovieDetail = () => {
   const fetchMovieDetails = async () => {
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}?api_key=${import.meta.env.VITE_TMDB_API_KEY}`
+        `https://api.themoviedb.org/3/movie/${id}?api_key=${import.meta.env.VITE_TMDB_API_KEY}`,
       );
       const data = await response.json();
       setMovie(data);
@@ -90,11 +98,11 @@ const MovieDetail = () => {
   const fetchTrailer = async () => {
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}/videos?api_key=${import.meta.env.VITE_TMDB_API_KEY}`
+        `https://api.themoviedb.org/3/movie/${id}/videos?api_key=${import.meta.env.VITE_TMDB_API_KEY}`,
       );
       const data = await response.json();
       const trailer = data.results.find(
-        (video: Video) => video.type === "Trailer" && video.site === "YouTube"
+        (video: Video) => video.type === "Trailer" && video.site === "YouTube",
       );
       if (trailer) {
         setTrailerKey(trailer.key);
@@ -107,10 +115,12 @@ const MovieDetail = () => {
   const fetchCredits = async () => {
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${import.meta.env.VITE_TMDB_API_KEY}`
+        `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${import.meta.env.VITE_TMDB_API_KEY}`,
       );
       const data = await response.json();
-      const directorsList = data.crew.filter((member: CrewMember) => member.job === "Director");
+      const directorsList = data.crew.filter(
+        (member: CrewMember) => member.job === "Director",
+      );
       setDirectors(directorsList);
     } catch (error) {
       console.error("Error fetching credits:", error);
@@ -120,7 +130,7 @@ const MovieDetail = () => {
   const fetchWatchProviders = async () => {
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}/watch/providers?api_key=${import.meta.env.VITE_TMDB_API_KEY}`
+        `https://api.themoviedb.org/3/movie/${id}/watch/providers?api_key=${import.meta.env.VITE_TMDB_API_KEY}`,
       );
       const data = await response.json();
       // Get US providers (you can change to detect user region)
@@ -132,7 +142,7 @@ const MovieDetail = () => {
 
   const handleWatchlistToggle = () => {
     if (!movie) return;
-    
+
     if (inWatchlist) {
       removeFromWatchlist(movie.id);
       toast({
@@ -155,7 +165,11 @@ const MovieDetail = () => {
   };
 
   if (!movie) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
   return (
@@ -169,11 +183,12 @@ const MovieDetail = () => {
         <div
           className="absolute inset-0"
           style={{
-            background: "linear-gradient(to top, hsl(0 0% 8%) 0%, transparent 60%)",
+            background:
+              "linear-gradient(to top, hsl(0 0% 8%) 0%, transparent 60%)",
           }}
         />
 
-        <div className="absolute bottom-0 left-0 right-0 p-8 ml-20">
+        <div className="absolute bottom-0 left-0 right-0 p-8">
           <div className="container mx-auto">
             <h1 className="text-5xl font-bold mb-4">{movie.title}</h1>
             <div className="flex items-center gap-6 mb-4">
@@ -186,21 +201,28 @@ const MovieDetail = () => {
             </div>
             <div className="flex gap-2 mb-6">
               {movie.genres.map((genre) => (
-                <span key={genre.id} className="px-3 py-1 bg-secondary rounded-full text-sm">
+                <span
+                  key={genre.id}
+                  className="px-3 py-1 bg-secondary rounded-full text-sm"
+                >
                   {genre.name}
                 </span>
               ))}
             </div>
             <div className="flex items-center gap-3">
               {trailerKey && (
-                <Button size="lg" onClick={() => setShowTrailer(true)} className="gap-2">
+                <Button
+                  size="lg"
+                  onClick={() => setShowTrailer(true)}
+                  className="gap-2"
+                >
                   <Play className="w-5 h-5" fill="currentColor" />
                   Watch Trailer
                 </Button>
               )}
-              <Button 
-                size="lg" 
-                variant="outline" 
+              <Button
+                size="lg"
+                variant="outline"
                 onClick={handleWatchlistToggle}
                 className="gap-2"
               >
@@ -244,12 +266,14 @@ const MovieDetail = () => {
         </div>
       )}
 
-      <div className="container mx-auto px-8 py-12 ml-20">
+      <div className="container mx-auto px-8 py-12">
         <div className="grid md:grid-cols-3 gap-8">
           <div className="md:col-span-2 space-y-8">
             <div>
               <h2 className="text-2xl font-bold mb-4">Overview</h2>
-              <p className="text-foreground/80 leading-relaxed">{movie.overview}</p>
+              <p className="text-foreground/80 leading-relaxed">
+                {movie.overview}
+              </p>
             </div>
 
             {/* Directors Section */}
@@ -282,7 +306,9 @@ const MovieDetail = () => {
                           <p className="font-semibold group-hover:text-primary transition-colors">
                             {director.name}
                           </p>
-                          <p className="text-xs text-muted-foreground">{director.job}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {director.job}
+                          </p>
                         </div>
                       </Link>
                     ))}
@@ -292,17 +318,21 @@ const MovieDetail = () => {
             )}
 
             {/* Streaming Availability */}
-            {(watchProviders.flatrate || watchProviders.rent || watchProviders.buy) && (
+            {(watchProviders.flatrate ||
+              watchProviders.rent ||
+              watchProviders.buy) && (
               <Card className="glass-effect border-border">
                 <CardContent className="p-6">
                   <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                     <Tv2 className="w-5 h-5 text-primary" />
                     Where to Watch
                   </h3>
-                  
+
                   {watchProviders.flatrate && (
                     <div className="mb-4">
-                      <p className="text-sm text-muted-foreground mb-2">Stream</p>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Stream
+                      </p>
                       <div className="flex flex-wrap gap-3">
                         {watchProviders.flatrate.map((provider) => (
                           <div
@@ -387,8 +417,9 @@ const MovieDetail = () => {
                     <div>
                       <h3 className="text-lg font-bold">Highly Acclaimed</h3>
                       <p className="text-sm text-muted-foreground">
-                        This film has received critical acclaim with a {movie.vote_average.toFixed(1)}/10 rating
-                        from {movie.vote_count.toLocaleString()} reviews
+                        This film has received critical acclaim with a{" "}
+                        {movie.vote_average.toFixed(1)}/10 rating from{" "}
+                        {movie.vote_count.toLocaleString()} reviews
                       </p>
                       <Link to="/awards">
                         <Badge className="mt-2 cursor-pointer hover:bg-primary/80">
@@ -407,7 +438,7 @@ const MovieDetail = () => {
             <img
               src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
               alt={movie.title}
-              className="w-full rounded-lg shadow-2xl"
+              className="w-full rounded-lg"
             />
           </div>
         </div>
@@ -422,18 +453,26 @@ const MovieDetail = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
               <div className="absolute bottom-4 left-4">
-                <h3 className="text-2xl font-bold">{movie.belongs_to_collection.name}</h3>
+                <h3 className="text-2xl font-bold">
+                  {movie.belongs_to_collection.name}
+                </h3>
               </div>
             </div>
           </div>
         )}
 
         <div className="mt-12">
-          <MovieRow title="Similar Movies" endpoint={`movie/${movie.id}/similar`} />
+          <MovieRow
+            title="Similar Movies"
+            endpoint={`movie/${movie.id}/similar`}
+          />
         </div>
 
         <div className="mt-8">
-          <MovieRow title="Recommendations" endpoint={`movie/${movie.id}/recommendations`} />
+          <MovieRow
+            title="Recommendations"
+            endpoint={`movie/${movie.id}/recommendations`}
+          />
         </div>
       </div>
     </div>

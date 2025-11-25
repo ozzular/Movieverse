@@ -5,6 +5,7 @@ A modern, cinematic movie explorer web application for searching, discovering, a
 ## ✨ Features
 
 ### Current Features ✅
+
 - **Responsive Design**: Works perfectly on desktop and mobile devices
 - **Modern UI**: Dark galaxy-themed interface with purple and red accents
 - **Movie Discovery**: Browse trending and top-rated movies
@@ -14,6 +15,7 @@ A modern, cinematic movie explorer web application for searching, discovering, a
 - **Trailer Support**: UI prepared for movie trailer integration
 
 ### Upcoming Features 🔄
+
 - TMDb API Integration (in progress)
 - User Authentication
 - Advanced Filtering
@@ -31,23 +33,27 @@ A modern, cinematic movie explorer web application for searching, discovering, a
 ## 🛠️ Installation & Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone <your-repo-url>
    cd movieverse-app
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
    Create a `.env` file in the root directory:
+
    ```env
    VITE_TMDB_API_KEY=your_tmdb_api_key_here
    ```
 
 4. **Start development server**
+
    ```bash
    npm run dev
    ```
@@ -91,6 +97,7 @@ movieverse-app/
 ## 🎨 Design System
 
 ### Colors
+
 - **Primary Dark**: `#0a0a0a` - Main background
 - **Secondary Dark**: `#1a1a1a` - Cards and sections
 - **Galaxy Purple**: `#9333ea` - Accents and highlights
@@ -98,6 +105,7 @@ movieverse-app/
 - **Galaxy Pink**: `#ec4899` - Special highlights
 
 ### Typography
+
 - **Font Family**: Inter (system-ui fallback)
 - **Headings**: Bold with glow effects
 - **Body Text**: Clean and readable on dark backgrounds
@@ -105,24 +113,28 @@ movieverse-app/
 ## 🌟 Component Architecture
 
 ### Header Component
+
 - Responsive navigation bar
 - MovieVerse branding
 - Search functionality (UI ready)
 - Mobile-friendly hamburger menu
 
 ### HeroBanner Component
+
 - Full-screen featured movie display
 - Gradient overlays for text readability
 - Action buttons (Watch Now, Add to Favorites)
 - Scroll indicator
 
 ### MovieCard Component
+
 - Movie poster display
 - Hover effects and animations
 - Rating badges
 - Click-through to details
 
 ### MovieRow Component
+
 - Horizontal scrolling movie lists
 - Navigation arrows
 - Responsive design
@@ -131,6 +143,7 @@ movieverse-app/
 ## 🔧 Development Progress
 
 ### Part 3 Capstone Progress ✅
+
 - ✅ Project structure and setup
 - ✅ Core React application with TypeScript
 - ✅ Responsive UI components

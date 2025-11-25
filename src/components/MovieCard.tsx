@@ -45,7 +45,7 @@ const MovieCard = ({ movie, title, image, rating, genre }: MovieCardProps) => {
         const names = await tmdbApi.getGenreNames(movie.genre_ids);
         setGenreNames(names);
       } catch (error) {
-        console.error('Failed to fetch genre names:', error);
+        console.error("Failed to fetch genre names:", error);
         setGenreNames([]);
       }
     };
@@ -69,7 +69,10 @@ const MovieCard = ({ movie, title, image, rating, genre }: MovieCardProps) => {
   return (
     <div
       className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 cursor-pointer"
-      style={{ minWidth: 'var(--card-min-width)', maxWidth: 'var(--card-max-width)' }}
+      style={{
+        minWidth: "var(--card-min-width)",
+        maxWidth: "var(--card-max-width)",
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => navigate(`/movie/${movie.id}`)}
@@ -81,31 +84,36 @@ const MovieCard = ({ movie, title, image, rating, genre }: MovieCardProps) => {
           className="w-full h-full object-cover transition-all duration-300"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            target.src = 'https://via.placeholder.com/300x450/1f2937/ffffff?text=No+Image';
+            target.src =
+              "https://via.placeholder.com/300x450/1f2937/ffffff?text=No+Image";
           }}
         />
 
         {/* Favorite indicator */}
-          <div className="absolute top-3 right-3 z-20">
+        <div className="absolute top-3 right-3 z-20">
           <Button
             size="icon"
             variant="ghost"
-            className={`w-8 h-8 rounded-full transition-all duration-300 ${favorited ? 'bg-[var(--accent)] text-white' : 'bg-black/50 text-white hover:bg-black/70 backdrop-blur-sm'}`}
+            className={`w-8 h-8 rounded-full transition-all duration-300 ${favorited ? "bg-[var(--accent)] text-white" : "bg-black/50 text-white hover:bg-black/70 backdrop-blur-sm"}`}
             onClick={handleFavoriteClick}
           >
-            <Heart className={`h-4 w-4 ${favorited ? 'text-white' : ''}`} />
+            <Heart className={`h-4 w-4 ${favorited ? "text-white" : ""}`} />
           </Button>
         </div>
 
         {/* Enhanced gradient overlay */}
-        <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent transition-opacity duration-500 ${
-          isHovered ? 'opacity-100' : 'opacity-80'
-        }`} />
+        <div
+          className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent transition-opacity duration-500 ${
+            isHovered ? "opacity-100" : "opacity-80"
+          }`}
+        />
 
         {/* Movie metadata overlay - top */}
-        <div className={`absolute top-0 left-0 right-0 p-3 transition-transform duration-300 ${
-          isHovered ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'
-        }`}>
+        <div
+          className={`absolute top-0 left-0 right-0 p-3 transition-transform duration-300 ${
+            isHovered ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
               {/* Movie Rating */}
@@ -134,9 +142,11 @@ const MovieCard = ({ movie, title, image, rating, genre }: MovieCardProps) => {
         </div>
 
         {/* Movie title and genre ribbons - bottom */}
-        <div className={`absolute bottom-0 left-0 right-0 p-4 transition-transform duration-300 ${
-          isHovered ? 'translate-y-0' : 'translate-y-4'
-        }`}>
+        <div
+          className={`absolute bottom-0 left-0 right-0 p-4 transition-transform duration-300 ${
+            isHovered ? "translate-y-0" : "translate-y-4"
+          }`}
+        >
           {/* Movie Title */}
           <h3 className="text-lg font-bold text-white mb-2 line-clamp-1">
             {title || movie.title}

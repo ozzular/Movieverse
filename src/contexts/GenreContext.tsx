@@ -1,61 +1,61 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
-import type { ReactNode } from 'react'
-import { tmdbApi } from '../services/tmdbApi'
-import type { Genre } from '@/types'
+import React, { createContext, useContext, useState, useEffect } from "react";
+import type { ReactNode } from "react";
+import { tmdbApi } from "../services/tmdbApi";
+import type { Genre } from "@/types";
 
 interface GenreContextType {
-  genres: Genre[]
-  selectedGenres: number[]
-  toggleGenre: (genreId: number) => void
-  clearFilters: () => void
-  isLoading: boolean
+  genres: Genre[];
+  selectedGenres: number[];
+  toggleGenre: (genreId: number) => void;
+  clearFilters: () => void;
+  isLoading: boolean;
 }
 
-const GenreContext = createContext<GenreContextType | undefined>(undefined)
+const GenreContext = createContext<GenreContextType | undefined>(undefined);
 
 export const useGenres = () => {
-  const context = useContext(GenreContext)
+  const context = useContext(GenreContext);
   if (context === undefined) {
-    throw new Error('useGenres must be used within a GenreProvider')
+    throw new Error("useGenres must be used within a GenreProvider");
   }
-  return context
-}
+  return context;
+};
 
 interface GenreProviderProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export const GenreProvider: React.FC<GenreProviderProps> = ({ children }) => {
-  const [genres, setGenres] = useState<Genre[]>([])
-  const [selectedGenres, setSelectedGenres] = useState<number[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [genres, setGenres] = useState<Genre[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const genresData = await tmdbApi.getGenres() as { genres: Genre[] }
-        setGenres(genresData.genres)
+        const genresData = (await tmdbApi.getGenres()) as { genres: Genre[] };
+        setGenres(genresData.genres);
       } catch (error) {
-        console.error('Error fetching genres:', error)
+        console.error("Error fetching genres:", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchGenres()
-  }, [])
+    fetchGenres();
+  }, []);
 
   const toggleGenre = (genreId: number) => {
-    setSelectedGenres(prev =>
+    setSelectedGenres((prev) =>
       prev.includes(genreId)
-        ? prev.filter(id => id !== genreId)
-        : [...prev, genreId]
-    )
-  }
+        ? prev.filter((id) => id !== genreId)
+        : [...prev, genreId],
+    );
+  };
 
   const clearFilters = () => {
-    setSelectedGenres([])
-  }
+    setSelectedGenres([]);
+  };
 
   const value: GenreContextType = {
     genres,
@@ -63,11 +63,9 @@ export const GenreProvider: React.FC<GenreProviderProps> = ({ children }) => {
     toggleGenre,
     clearFilters,
     isLoading,
-  }
+  };
 
   return (
-    <GenreContext.Provider value={value}>
-      {children}
-    </GenreContext.Provider>
-  )
-}
+    <GenreContext.Provider value={value}>{children}</GenreContext.Provider>
+  );
+};

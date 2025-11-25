@@ -23,7 +23,7 @@ const Actors = () => {
   useEffect(() => {
     if (searchQuery) {
       const filtered = actors.filter((actor) =>
-        actor.name.toLowerCase().includes(searchQuery.toLowerCase())
+        actor.name.toLowerCase().includes(searchQuery.toLowerCase()),
       );
       setFilteredActors(filtered);
     } else {
@@ -40,7 +40,7 @@ const Actors = () => {
       }
 
       const response = await fetch(
-        `https://api.themoviedb.org/3/person/popular?api_key=${apiKey}`
+        `https://api.themoviedb.org/3/person/popular?api_key=${apiKey}`,
       );
       const data = await response.json();
       setActors(data.results || []);

@@ -1,12 +1,12 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { useRegion } from '../contexts/RegionContext'
-import MovieCard from './MovieCard'
+import React from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useRegion } from "../contexts/RegionContext";
+import MovieCard from "./MovieCard";
 // Using simple SVG instead of lucide icon
 
 const RegionalHighlights: React.FC = () => {
-  const { regionalContent, userLocation, isLoading } = useRegion()
+  const { regionalContent, userLocation, isLoading } = useRegion();
 
   if (isLoading) {
     return (
@@ -21,10 +21,10 @@ const RegionalHighlights: React.FC = () => {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
-  if (!regionalContent || !userLocation) return null
+  if (!regionalContent || !userLocation) return null;
 
   return (
     <motion.section
@@ -36,9 +36,24 @@ const RegionalHighlights: React.FC = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <div className="flex items-center space-x-2 mb-2">
-            <svg className="w-5 h-5 text-galaxy-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            <svg
+              className="w-5 h-5 text-galaxy-purple"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
             <h2 className="text-2xl font-bold text-white">
               Trending in {userLocation.country}
@@ -53,9 +68,24 @@ const RegionalHighlights: React.FC = () => {
           className="flex items-center space-x-2 text-gray-400 text-sm bg-galaxy-purple/10 backdrop-blur px-3 py-1 rounded-full border border-galaxy-purple/20"
           whileHover={{ scale: 1.05 }}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+            />
           </svg>
           <span>{userLocation.city}</span>
         </motion.div>
@@ -103,7 +133,7 @@ const RegionalHighlights: React.FC = () => {
         </div>
       </motion.div>
     </motion.section>
-  )
-}
+  );
+};
 
-export default RegionalHighlights
+export default RegionalHighlights;

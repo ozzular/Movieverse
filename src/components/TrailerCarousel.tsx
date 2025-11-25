@@ -26,11 +26,13 @@ export const TrailerCarousel = ({ movieId }: TrailerCarouselProps) => {
   const fetchVideos = async () => {
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${import.meta.env.VITE_TMDB_API_KEY}`
+        `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${import.meta.env.VITE_TMDB_API_KEY}`,
       );
       const data = await response.json();
       const trailers = data.results.filter(
-        (video: Video) => video.site === "YouTube" && (video.type === "Trailer" || video.type === "Teaser")
+        (video: Video) =>
+          video.site === "YouTube" &&
+          (video.type === "Trailer" || video.type === "Teaser"),
       );
       setVideos(trailers);
       if (trailers.length > 0) {
@@ -45,9 +47,10 @@ export const TrailerCarousel = ({ movieId }: TrailerCarouselProps) => {
     const container = document.getElementById("trailer-thumbnails");
     if (container) {
       const scrollAmount = 300;
-      const newPosition = direction === "left" 
-        ? scrollPosition - scrollAmount 
-        : scrollPosition + scrollAmount;
+      const newPosition =
+        direction === "left"
+          ? scrollPosition - scrollAmount
+          : scrollPosition + scrollAmount;
       container.scrollTo({ left: newPosition, behavior: "smooth" });
       setScrollPosition(newPosition);
     }
@@ -58,7 +61,7 @@ export const TrailerCarousel = ({ movieId }: TrailerCarouselProps) => {
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold">Trailers & Videos</h2>
-      
+
       {/* Main video player */}
       {selectedVideo && (
         <div className="relative w-full aspect-video rounded-lg overflow-hidden">

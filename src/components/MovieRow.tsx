@@ -38,7 +38,7 @@ export const MovieRow = ({ title, endpoint }: MovieRowProps) => {
 
   const fetchMovies = async (pageNum: number = 1) => {
     if (isLoading || (!hasMore && pageNum > 1)) return;
-    
+
     setIsLoading(true);
     try {
       const apiKey = import.meta.env.VITE_TMDB_API_KEY;
@@ -46,18 +46,19 @@ export const MovieRow = ({ title, endpoint }: MovieRowProps) => {
         console.error("TMDB API key is not configured");
         return;
       }
-      
+
+      const sep = endpoint.includes("?") ? "&" : "?";
       const response = await fetch(
-        `https://api.themoviedb.org/3/${endpoint}?api_key=${apiKey}&page=${pageNum}`
+        `https://api.themoviedb.org/3/${endpoint}${sep}api_key=${apiKey}&page=${pageNum}`,
       );
       const data = await response.json();
-      
+
       if (pageNum === 1) {
         setMovies(data.results || []);
       } else {
-        setMovies(prev => [...prev, ...(data.results || [])]);
+        setMovies((prev) => [...prev, ...(data.results || [])]);
       }
-      
+
       setHasMore(pageNum < data.total_pages);
     } catch (error) {
       console.error("Error fetching movies:", error);
@@ -99,26 +100,26 @@ export const MovieRow = ({ title, endpoint }: MovieRowProps) => {
   };
 
   return (
-    <div className="relative group mb-8">
-      <h2 className="text-2xl font-bold mb-4 px-4 ml-20">{title}</h2>
+    <div className="relative group mb-8 overflow-hidden">
+      <h2 className="text-2xl font-bold mb-4 px-4">{title}</h2>
 
-      <div className="relative ml-20">
+      <div className="relative">
         {canScrollPrev && (
           <Button
             variant="ghost"
             size="icon"
-            className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/20 text-white opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
+            className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/10 text-black opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
             onClick={scrollPrev}
             style={{
-              backdropFilter: 'blur(10px)',
-              WebkitBackdropFilter: 'blur(10px)',
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
             }}
           >
             <ChevronLeft className="w-8 h-8" />
           </Button>
         )}
 
-        <div className="overflow-hidden" ref={emblaRef}>
+        <div className="overflow-x-hidden overflow-y-visible" ref={emblaRef}>
           <div className="flex gap-4 px-4">
             {movies?.map((movie) => (
               <div
@@ -132,18 +133,24 @@ export const MovieRow = ({ title, endpoint }: MovieRowProps) => {
                     alt={movie.title || movie.name}
                     loading="lazy"
                     className="w-full h-[300px] object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "/movie-1.jpg"; // fallback to a generic placeholder
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity duration-300" />
                   <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover/item:translate-y-0 group-hover/item:opacity-100 transition-all duration-300">
                     <p className="text-sm font-semibold line-clamp-2 mb-1">
                       {movie.title || movie.name}
                     </p>
-                    <p className="text-xs text-primary font-medium">⭐ {movie.vote_average.toFixed(1)}</p>
+                    <p className="text-xs text-primary font-medium">
+                      ⭐ {movie.vote_average.toFixed(1)}
+                    </p>
                   </div>
                 </div>
               </div>
             ))}
-            
+
             {isLoading && (
               <>
                 {[...Array(5)].map((_, i) => (
@@ -160,11 +167,11 @@ export const MovieRow = ({ title, endpoint }: MovieRowProps) => {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/20 text-white opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
+            className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/10 text-black opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
             onClick={scrollNext}
             style={{
-              backdropFilter: 'blur(10px)',
-              WebkitBackdropFilter: 'blur(10px)',
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
             }}
           >
             <ChevronRight className="w-8 h-8" />

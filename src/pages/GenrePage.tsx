@@ -1,44 +1,44 @@
-import React, { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { tmdbApi } from '../services/tmdbApi'
-import { useGenres } from '../contexts/GenreContext'
-import { useSelectedMovie } from '../contexts/SelectedMovieContext'
-import MovieCard from '../components/MovieCard'
-import type { Movie } from '@/types'
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { tmdbApi } from "../services/tmdbApi";
+import { useGenres } from "../contexts/GenreContext";
+import { useSelectedMovie } from "../contexts/SelectedMovieContext";
+import MovieCard from "../components/MovieCard";
+import type { Movie } from "@/types";
 
 const GenresPage: React.FC = () => {
-  const navigate = useNavigate()
-  const { genres, isLoading: genresLoading } = useGenres()
-  const { selectedMovie, showHero, hideHero } = useSelectedMovie()
+  const navigate = useNavigate();
+  const { genres, isLoading: genresLoading } = useGenres();
+  const { selectedMovie, showHero, hideHero } = useSelectedMovie();
 
-  const [selectedGenre, setSelectedGenre] = useState<number | null>(null)
-  const [genreMovies, setGenreMovies] = useState<Movie[]>([])
-  const [loadingMovies, setLoadingMovies] = useState(false)
-  const [movieError, setMovieError] = useState<string | null>(null)
+  const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
+  const [genreMovies, setGenreMovies] = useState<Movie[]>([]);
+  const [loadingMovies, setLoadingMovies] = useState(false);
+  const [movieError, setMovieError] = useState<string | null>(null);
 
   const handleGenreClick = async (genreId: number) => {
     // If clicking the same genre, collapse it
     if (selectedGenre === genreId) {
-      setSelectedGenre(null)
-      setGenreMovies([])
-      return
+      setSelectedGenre(null);
+      setGenreMovies([]);
+      return;
     }
 
-    setSelectedGenre(genreId)
-    setLoadingMovies(true)
-    setMovieError(null)
+    setSelectedGenre(genreId);
+    setLoadingMovies(true);
+    setMovieError(null);
 
     try {
-      const movies = await tmdbApi.getMoviesByGenre(genreId)
-      setGenreMovies(movies)
+      const movies = await tmdbApi.getMoviesByGenre(genreId);
+      setGenreMovies(movies);
     } catch (err) {
-      console.error(`Error fetching movies for genre ${genreId}:`, err)
-      setMovieError('Failed to load movies for this genre')
-      setGenreMovies([])
+      console.error(`Error fetching movies for genre ${genreId}:`, err);
+      setMovieError("Failed to load movies for this genre");
+      setGenreMovies([]);
     } finally {
-      setLoadingMovies(false)
+      setLoadingMovies(false);
     }
-  }
+  };
 
   // Loading state
   if (genresLoading) {
@@ -49,7 +49,7 @@ const GenresPage: React.FC = () => {
           <p className="text-white text-lg">Loading genres...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -77,7 +77,7 @@ const GenresPage: React.FC = () => {
                     {[...Array(5)].map((_, i) => (
                       <svg
                         key={i}
-                        className={`w-5 h-5 ${i < Math.floor(selectedMovie.vote_average / 2) ? 'text-galaxy-red' : 'text-gray-600'}`}
+                        className={`w-5 h-5 ${i < Math.floor(selectedMovie.vote_average / 2) ? "text-galaxy-red" : "text-gray-600"}`}
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -94,8 +94,16 @@ const GenresPage: React.FC = () => {
                     to={`/movie/${selectedMovie.id}`}
                     className="bg-galaxy-red hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2"
                   >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     <span>Watch Trailer</span>
                   </Link>
@@ -125,11 +133,21 @@ const GenresPage: React.FC = () => {
 
               <div className="flex space-x-4">
                 <button
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate("/")}
                   className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
                   </svg>
                   <span>Back</span>
                 </button>
@@ -139,7 +157,9 @@ const GenresPage: React.FC = () => {
 
           {/* Genres List - Text Only */}
           <div className="glass-card rounded-xl p-6 mb-8">
-            <h2 className="text-2xl font-semibold text-white mb-6">Select a Genre</h2>
+            <h2 className="text-2xl font-semibold text-white mb-6">
+              Select a Genre
+            </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
               {genres.map((genre) => (
                 <div key={genre.id} className="relative">
@@ -147,8 +167,8 @@ const GenresPage: React.FC = () => {
                     onClick={() => handleGenreClick(genre.id)}
                     className={`p-4 rounded-lg transition-all duration-300 font-medium text-center ${
                       selectedGenre === genre.id
-                        ? 'bg-galaxy-purple text-white shadow-lg transform scale-105'
-                        : 'text-gray-300 hover:text-white hover:bg-galaxy-purple/30 border border-galaxy-purple/20 hover:border-galaxy-purple/50'
+                        ? "bg-galaxy-purple text-white shadow-lg transform scale-105"
+                        : "text-gray-300 hover:text-white hover:bg-galaxy-purple/30 border border-galaxy-purple/20 hover:border-galaxy-purple/50"
                     }`}
                   >
                     {genre.name}
@@ -189,14 +209,24 @@ const GenresPage: React.FC = () => {
                 <>
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-2xl font-semibold text-white">
-                      {genres.find(g => g.id === selectedGenre)?.name} Movies
+                      {genres.find((g) => g.id === selectedGenre)?.name} Movies
                     </h3>
                     <button
                       onClick={() => handleGenreClick(selectedGenre)}
                       className="text-gray-400 hover:text-white transition-colors"
                     >
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -212,7 +242,7 @@ const GenresPage: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default GenresPage
+export default GenresPage;

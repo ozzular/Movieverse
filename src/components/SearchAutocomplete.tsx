@@ -14,11 +14,15 @@ interface SearchResult {
 
 const highlightMatch = (text: string, query: string) => {
   if (!query) return text;
-  const parts = text.split(new RegExp(`(${query})`, 'gi'));
-  return parts.map((part, i) => 
-    part.toLowerCase() === query.toLowerCase() 
-      ? <mark key={i} className="bg-primary/30 text-foreground font-semibold">{part}</mark>
-      : part
+  const parts = text.split(new RegExp(`(${query})`, "gi"));
+  return parts.map((part, i) =>
+    part.toLowerCase() === query.toLowerCase() ? (
+      <mark key={i} className="bg-primary/30 text-foreground font-semibold">
+        {part}
+      </mark>
+    ) : (
+      part
+    ),
   );
 };
 
@@ -32,7 +36,10 @@ export const SearchAutocomplete = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         setShowResults(false);
       }
     };
@@ -62,7 +69,7 @@ export const SearchAutocomplete = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(query)}&include_adult=false`
+        `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(query)}&include_adult=false`,
       );
       const data = await response.json();
       setResults(data.results?.slice(0, 6) || []);
@@ -75,9 +82,10 @@ export const SearchAutocomplete = () => {
   };
 
   const handleResultClick = (result: SearchResult) => {
-    const path = result.media_type === "person" 
-      ? `/actor/${result.id}` 
-      : `/movie/${result.id}`;
+    const path =
+      result.media_type === "person"
+        ? `/actor/${result.id}`
+        : `/movie/${result.id}`;
     navigate(path);
     setQuery("");
     setShowResults(false);
@@ -98,6 +106,17 @@ export const SearchAutocomplete = () => {
           placeholder="Search movies, series, actors..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              const q = query.trim();
+              if (q) {
+                navigate(`/search?q=${encodeURIComponent(q)}`);
+                setShowResults(false);
+                // keep query so user can edit on results page
+              }
+            }
+          }}
           onFocus={() => query.length >= 2 && setShowResults(true)}
           className="pl-10 pr-10 bg-secondary/50 border-border"
         />
@@ -112,7 +131,7 @@ export const SearchAutocomplete = () => {
       </div>
 
       {showResults && results.length > 0 && (
-        <div className="absolute top-full mt-2 w-full glass-effect rounded-lg shadow-lg overflow-hidden z-50 backdrop-blur-xl animate-fade-in">
+        <div className="absolute top-full mt-2 w-full glass-effect rounded-lg overflow-hidden z-50 backdrop-blur-xl animate-fade-in">
           {results.map((result) => (
             <button
               key={result.id}
@@ -131,7 +150,7 @@ export const SearchAutocomplete = () => {
               />
               <div className="flex-1 min-w-0">
                 <p className="font-medium truncate">
-                  {highlightMatch(result.title || result.name || '', query)}
+                  {highlightMatch(result.title || result.name || "", query)}
                 </p>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <span className="capitalize">{result.media_type}</span>
@@ -149,7 +168,7 @@ export const SearchAutocomplete = () => {
       )}
 
       {showResults && isLoading && (
-        <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-lg shadow-lg p-4 text-center text-muted-foreground">
+        <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-lg p-4 text-center text-muted-foreground">
           Loading...
         </div>
       )}

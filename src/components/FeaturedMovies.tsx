@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react'
-import MovieCard from './MovieCard'
-import { Button } from './ui/button'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { tmdbApi } from '../services/tmdbApi'
+import { useState, useEffect, useRef } from "react";
+import MovieCard from "./MovieCard";
+import { Button } from "./ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { tmdbApi } from "../services/tmdbApi";
 
 // Define Movie interface locally to completely bypass import issues
 interface Movie {
@@ -23,40 +23,40 @@ interface Movie {
 }
 
 const FeaturedMovies = () => {
-  const [movies, setMovies] = useState<Movie[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const carouselRef = useRef<HTMLDivElement>(null)
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchFeaturedMovies = async () => {
       try {
-        setIsLoading(true)
+        setIsLoading(true);
         // Get popular movies for the featured section
-        const popularMovies = await tmdbApi.getPopularMovies()
+        const popularMovies = await tmdbApi.getPopularMovies();
         // Show 15 movies in horizontal carousel
-        setMovies(popularMovies.slice(0, 15))
+        setMovies(popularMovies.slice(0, 15));
       } catch (error) {
-        console.error('Failed to fetch featured movies:', error)
-        setMovies([])
+        console.error("Failed to fetch featured movies:", error);
+        setMovies([]);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchFeaturedMovies()
-  }, [])
+    fetchFeaturedMovies();
+  }, []);
 
   const scrollLeft = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -320, behavior: 'smooth' })
+      carouselRef.current.scrollBy({ left: -320, behavior: "smooth" });
     }
-  }
+  };
 
   const scrollRight = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 320, behavior: 'smooth' })
+      carouselRef.current.scrollBy({ left: 320, behavior: "smooth" });
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -106,13 +106,13 @@ const FeaturedMovies = () => {
           </div>
         </div>
       </section>
-    )
+    );
   }
 
   return (
     <section className="py-24 relative w-full my-8">
       <div className="w-full px-24 relative z-10">
-  <div className="text-center mb-12 p-6 border-2 border-[var(--glass-border)] bg-[var(--glass)] backdrop-blur-[24px] rounded-xl w-full">
+        <div className="text-center mb-12 p-6 border-2 border-[var(--glass-border)] bg-[var(--glass)] backdrop-blur-[24px] rounded-xl w-full">
           <h2 className="text-3xl md:text-4xl font-bold mb-3 animate-fade-in text-white">
             Featured Movies
           </h2>
@@ -147,7 +147,7 @@ const FeaturedMovies = () => {
           <div
             ref={carouselRef}
             className="overflow-x-auto scrollbar-hide scroll-smooth"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             <div className="flex space-x-6 p-4 min-w-max">
               {movies.map((movie, index) => (
@@ -164,7 +164,7 @@ const FeaturedMovies = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default FeaturedMovies
+export default FeaturedMovies;

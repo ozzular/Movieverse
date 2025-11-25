@@ -25,13 +25,13 @@ export const useWatchlist = () => {
   };
 
   const removeFromWatchlist = (id: number) => {
-    const updated = watchlist.filter(item => item.id !== id);
+    const updated = watchlist.filter((item) => item.id !== id);
     setWatchlist(updated);
     localStorage.setItem("watchlist", JSON.stringify(updated));
   };
 
   const isInWatchlist = (id: number) => {
-    return watchlist.some(item => item.id === id);
+    return watchlist.some((item) => item.id === id);
   };
 
   return {

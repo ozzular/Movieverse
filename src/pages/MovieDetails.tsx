@@ -1,84 +1,106 @@
-import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { tmdbApi } from '../services/tmdbApi'
-import TrailerPlayer from '../components/TrailerPlayer'
-import StreamingAvailability from '../components/StreamingAvailability'
-import CastMember from '../components/CastMember'
-import { useFavorites } from '../contexts/FavoritesContext'
-import type { MovieDetails as MovieDetailsType, Cast, Crew } from '@/types'
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Play, Info } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { tmdbApi } from "../services/tmdbApi";
+import TrailerPlayer from "../components/TrailerPlayer";
+import StreamingAvailability from "../components/StreamingAvailability";
+import CastMember from "../components/CastMember";
+import { useFavorites } from "../contexts/FavoritesContext";
+import { useToast } from "@/hooks/use-toast";
+import type { MovieDetails as MovieDetailsType, Cast, Crew } from "@/types";
 
 const MovieDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+  const { toast } = useToast();
 
-  const [movie, setMovie] = useState<MovieDetailsType | null>(null)
-  const [cast, setCast] = useState<Cast[]>([])
-  const [crew, setCrew] = useState<Crew[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [movie, setMovie] = useState<MovieDetailsType | null>(null);
+  const [cast, setCast] = useState<Cast[]>([]);
+  const [crew, setCrew] = useState<Crew[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
-      if (!id) return
+      if (!id) return;
 
       try {
-        setLoading(true)
-        setError(null)
+        setLoading(true);
+        setError(null);
 
         // Fetch movie details, cast, and crew in parallel
         const [movieData, castCrewData] = await Promise.all([
           tmdbApi.getMovieDetails(parseInt(id)),
-          fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${import.meta.env.VITE_TMDB_API_KEY}`)
-            .then(res => res.json())
-        ])
+          fetch(
+            `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${import.meta.env.VITE_TMDB_API_KEY}`,
+          ).then((res) => res.json()),
+        ]);
 
-        setMovie(movieData)
-        setCast(castCrewData.cast || [])
-        setCrew(castCrewData.crew || [])
+        setMovie(movieData);
+        setCast(castCrewData.cast || []);
+        setCrew(castCrewData.crew || []);
       } catch (err) {
-        console.error('Error fetching movie details:', err)
-        setError('Failed to load movie details')
-      } finally {
-        setLoading(false)
-      }
-    }
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to load movie details";
+        setError(errorMessage);
+        console.error("Error fetching movie details:", err);
 
-    fetchMovieDetails()
-  }, [id])
+        // Show user-friendly error toast
+        toast({
+          title: "Failed to load movie",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovieDetails();
+  }, [id, toast]);
 
   const handleActorTap = (personId: number) => {
-    navigate(`/person/${personId}`)
-  }
+    navigate(`/person/${personId}`);
+  };
 
   const handleFavoriteToggle = () => {
-    if (!movie) return
+    if (!movie) return;
 
     if (isFavorite(movie.id)) {
-      removeFromFavorites(movie.id)
+      removeFromFavorites(movie.id);
+      toast({
+        title: "Removed from favorites",
+        description: `${movie.title} has been removed from your favorites`,
+      });
     } else {
-      addToFavorites(movie)
+      addToFavorites(movie);
+      toast({
+        title: "Added to favorites",
+        description: `${movie.title} has been added to your favorites`,
+      });
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-white text-xl">Loading movie details...</div>
       </div>
-    )
+    );
   }
 
   if (error || !movie) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-red-500 text-xl">{error || 'Movie not found'}</div>
+        <div className="text-red-500 text-xl">{error || "Movie not found"}</div>
       </div>
-    )
+    );
   }
 
-  const posterUrl = `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-  const backdropUrl = `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
+  const posterUrl = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+  const backdropUrl = `https://image.tmdb.org/t/p/original${movie.backdrop_path}`;
 
   return (
     <div className="min-h-screen">
@@ -89,6 +111,10 @@ const MovieDetails: React.FC = () => {
           src={backdropUrl}
           alt={movie.title}
           className="w-full h-full object-cover"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = "/hero-bg.jpg"; // fallback to hero background
+          }}
         />
       </div>
 
@@ -100,16 +126,18 @@ const MovieDetails: React.FC = () => {
             <img
               src={posterUrl}
               alt={movie.title}
-              className="w-64 rounded-lg shadow-2xl"
+              className="w-64 rounded-lg"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "/m-logo.png"; // fallback to logo
+              }}
             />
           </div>
 
           {/* Movie Details */}
           <div className="flex-1 text-white">
             {/* Title and Year */}
-            <h1 className="text-4xl font-bold mb-2">
-              {movie.title}
-            </h1>
+            <h1 className="text-4xl font-bold mb-2">{movie.title}</h1>
             <p className="text-gray-400 text-lg mb-4">
               {new Date(movie.release_date).getFullYear()} • {movie.runtime} min
             </p>
@@ -117,12 +145,12 @@ const MovieDetails: React.FC = () => {
             {/* Genres */}
             <div className="flex flex-wrap gap-2 mb-6">
               {movie.genres.map((genre) => (
-              <span
-                key={genre.id}
-                className="px-3 py-1 bg-red-600/20 border border-red-600/30 rounded-full text-red-400 text-sm"
-              >
-                {genre.name}
-              </span>
+                <span
+                  key={genre.id}
+                  className="px-3 py-1 bg-red-600/20 border border-red-600/30 rounded-full text-red-400 text-sm"
+                >
+                  {genre.name}
+                </span>
               ))}
             </div>
 
@@ -135,7 +163,7 @@ const MovieDetails: React.FC = () => {
                 {[...Array(5)].map((_, i) => (
                   <svg
                     key={i}
-                    className={`w-6 h-6 ${i < Math.floor(movie.vote_average / 2) ? 'text-red-400' : 'text-gray-600'}`}
+                    className={`w-6 h-6 ${i < Math.floor(movie.vote_average / 2) ? "text-red-400" : "text-gray-600"}`}
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -165,21 +193,33 @@ const MovieDetails: React.FC = () => {
               </div>
             </div>
 
-            {/* Action Buttons - Enhanced */}
+            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <button
-                onClick={handleFavoriteToggle}
-                className={`border-2 px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center justify-center space-x-2 ${
-                  isFavorite(movie.id)
-                    ? 'bg-red-600 border-red-600 text-white'
-                    : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
-                }`}
+              <Button
+                size="lg"
+                className="gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/20 text-white hover:scale-105 active:scale-95 transition-all"
+                style={{
+                  backdropFilter: "blur(10px)",
+                  WebkitBackdropFilter: "blur(10px)",
+                }}
               >
-                <svg className="w-6 h-6" fill={isFavorite(movie.id) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-                <span>{isFavorite(movie.id) ? 'Remove from Favorites' : 'Add to Favorites'}</span>
-              </button>
+                <Play className="w-5 h-5" fill="currentColor" />
+                Play
+              </Button>
+              <Button
+                size="lg"
+                onClick={handleFavoriteToggle}
+                className={`gap-2 bg-black/40 hover:bg-black/50 backdrop-blur-md border border-white/20 text-white hover:scale-105 active:scale-95 transition-all ${
+                  isFavorite(movie.id) ? "bg-red-600/80" : ""
+                }`}
+                style={{
+                  backdropFilter: "blur(10px)",
+                  WebkitBackdropFilter: "blur(10px)",
+                }}
+              >
+                <Info className="w-5 h-5" />
+                {isFavorite(movie.id) ? "Remove from Favorites" : "More Info"}
+              </Button>
             </div>
           </div>
         </div>
@@ -236,11 +276,23 @@ const MovieDetails: React.FC = () => {
             <h2 className="text-2xl font-bold text-white mb-6">Crew</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {crew
-                .filter(member => ['Director', 'Writer', 'Producer', 'Cinematographer'].includes(member.job))
+                .filter((member) =>
+                  [
+                    "Director",
+                    "Writer",
+                    "Producer",
+                    "Cinematographer",
+                  ].includes(member.job),
+                )
                 .slice(0, 4)
                 .map((member) => (
-                  <div key={member.id} className="bg-glassmorphism rounded-xl p-4 text-center">
-                    <h3 className="text-white font-semibold text-sm">{member.name}</h3>
+                  <div
+                    key={member.id}
+                    className="bg-glassmorphism rounded-xl p-4 text-center"
+                  >
+                    <h3 className="text-white font-semibold text-sm">
+                      {member.name}
+                    </h3>
                     <p className="text-gray-400 text-xs">{member.job}</p>
                   </div>
                 ))}
@@ -249,7 +301,7 @@ const MovieDetails: React.FC = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MovieDetails
+export default MovieDetails;

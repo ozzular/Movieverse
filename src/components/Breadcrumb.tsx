@@ -16,13 +16,13 @@ export const Breadcrumb = () => {
 
   return (
     <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-4 px-4 ml-20">
-      <Link 
-        to="/" 
+      <Link
+        to="/"
         className="flex items-center hover:text-foreground transition-colors hover-scale"
       >
         <Home className="w-4 h-4" />
       </Link>
-      
+
       {pathnames.map((name, index) => {
         const routeTo = `/${pathnames.slice(0, index + 1).join("/")}`;
         const isLast = index === pathnames.length - 1;

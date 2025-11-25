@@ -3,9 +3,9 @@ import { MovieRow } from "@/components/MovieRow";
 const Series = () => {
   return (
     <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4 ml-20">
+      <div className="container mx-auto px-4">
         <h1 className="text-4xl font-bold mb-8">TV Series</h1>
-        
+
         <div className="space-y-8">
           <MovieRow title="Trending Now" endpoint="trending/tv/week" />
           <MovieRow title="Popular" endpoint="tv/popular" />

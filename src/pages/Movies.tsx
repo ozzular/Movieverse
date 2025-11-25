@@ -1,6 +1,7 @@
+import type { FilterOptions } from "@/components/FilterBar";
 import { useState } from "react";
 import { MovieRow } from "@/components/MovieRow";
-import { FilterBar, FilterOptions } from "@/components/FilterBar";
+import { FilterBar } from "@/components/FilterBar";
 
 const Movies = () => {
   const [filters, setFilters] = useState<FilterOptions>({
@@ -26,17 +27,36 @@ const Movies = () => {
 
   return (
     <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4 ml-20">
+      <div className="container mx-auto px-4">
         <h1 className="text-4xl font-bold mb-8">Movies</h1>
-        
+
         <FilterBar onFilterChange={setFilters} />
-        
+
         <div className="space-y-8">
-          <MovieRow title="Trending Now" endpoint={buildFilteredEndpoint("trending/movie/week")} />
-          <MovieRow title="Popular" endpoint={buildFilteredEndpoint("discover/movie?sort_by=popularity.desc")} />
-          <MovieRow title="Top Rated" endpoint={buildFilteredEndpoint("discover/movie?sort_by=vote_average.desc&vote_count.gte=1000")} />
-          <MovieRow title="Now Playing" endpoint={buildFilteredEndpoint("movie/now_playing")} />
-          <MovieRow title="Upcoming" endpoint={buildFilteredEndpoint("movie/upcoming")} />
+          <MovieRow
+            title="Trending Now"
+            endpoint={buildFilteredEndpoint("trending/movie/week")}
+          />
+          <MovieRow
+            title="Popular"
+            endpoint={buildFilteredEndpoint(
+              "discover/movie?sort_by=popularity.desc",
+            )}
+          />
+          <MovieRow
+            title="Top Rated"
+            endpoint={buildFilteredEndpoint(
+              "discover/movie?sort_by=vote_average.desc&vote_count.gte=1000",
+            )}
+          />
+          <MovieRow
+            title="Now Playing"
+            endpoint={buildFilteredEndpoint("movie/now_playing")}
+          />
+          <MovieRow
+            title="Upcoming"
+            endpoint={buildFilteredEndpoint("movie/upcoming")}
+          />
         </div>
       </div>
     </div>

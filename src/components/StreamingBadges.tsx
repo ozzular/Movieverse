@@ -1,162 +1,166 @@
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface StreamingPlatform {
-  platform: string
-  name: string
-  icon: string
-  color: string
-  url?: string
+  platform: string;
+  name: string;
+  icon: string;
+  color: string;
+  url?: string;
 }
 
 interface StreamingBadgesProps {
-  movieId: number
-  movieTitle: string
-  className?: string
+  movieId: number;
+  movieTitle: string;
+  className?: string;
 }
 
-const StreamingBadges: React.FC<StreamingBadgesProps> = ({ movieId, movieTitle, className = '' }) => {
-  const [streamingData, setStreamingData] = useState<StreamingPlatform[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [expanded, setExpanded] = useState(false)
+const StreamingBadges: React.FC<StreamingBadgesProps> = ({
+  movieId,
+  movieTitle,
+  className = "",
+}) => {
+  const [streamingData, setStreamingData] = useState<StreamingPlatform[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     // Only load when expanded to avoid API calls for all movies
     if (expanded) {
-      fetchStreamingInfo()
+      fetchStreamingInfo();
     }
-  }, [expanded, movieId])
+  }, [expanded, movieId]);
 
   const fetchStreamingInfo = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
       // Using JustWatch API via RapidAPI
-      const url = `https://streaming-availability.p.rapidapi.com/search/title?title=${encodeURIComponent(movieTitle)}&type=movie&country=us&output_language=en`
-      const apiKey = import.meta.env.VITE_RAPIDAPI_KEY
+      const url = `https://streaming-availability.p.rapidapi.com/search/title?title=${encodeURIComponent(movieTitle)}&type=movie&country=us&output_language=en`;
+      const apiKey = import.meta.env.VITE_RAPIDAPI_KEY;
 
       if (!apiKey) {
-        setError('Streaming API key not configured')
-        return
+        setError("Streaming API key not configured");
+        return;
       }
 
       const response = await fetch(url, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'x-rapidapi-key': apiKey,
-          'x-rapidapi-host': 'streaming-availability.p.rapidapi.com',
+          "x-rapidapi-key": apiKey,
+          "x-rapidapi-host": "streaming-availability.p.rapidapi.com",
         },
-      })
+      });
 
       if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`)
+        throw new Error(`API Error: ${response.status}`);
       }
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!data.result || data.result.length === 0) {
-        setStreamingData([])
-        return
+        setStreamingData([]);
+        return;
       }
 
-      const movieData = data.result[0]
+      const movieData = data.result[0];
 
       // Extract streaming platforms
-      const platforms: StreamingPlatform[] = []
+      const platforms: StreamingPlatform[] = [];
 
       // Map common platforms
       const platformMappings: { [key: string]: StreamingPlatform } = {
-        'netflix': {
-          platform: 'netflix',
-          name: 'Netflix',
-          icon: '🏠',
-          color: '#E50914',
-          url: movieData.streamingInfo?.netflix?.us?.link
+        netflix: {
+          platform: "netflix",
+          name: "Netflix",
+          icon: "🏠",
+          color: "#E50914",
+          url: movieData.streamingInfo?.netflix?.us?.link,
         },
-        'disney': {
-          platform: 'disney',
-          name: 'Disney+',
-          icon: '🎬',
-          color: '#FF0000',
-          url: movieData.streamingInfo?.disney?.us?.link
+        disney: {
+          platform: "disney",
+          name: "Disney+",
+          icon: "🎬",
+          color: "#FF0000",
+          url: movieData.streamingInfo?.disney?.us?.link,
         },
-        'hbo': {
-          platform: 'hbo',
-          name: 'HBO',
-          icon: '💎',
-          color: '#0000FF',
-          url: movieData.streamingInfo?.hbo?.us?.link
+        hbo: {
+          platform: "hbo",
+          name: "HBO",
+          icon: "💎",
+          color: "#0000FF",
+          url: movieData.streamingInfo?.hbo?.us?.link,
         },
-        'prime': {
-          platform: 'prime',
-          name: 'Amazon Prime',
-          icon: '📦',
-          color: '#00A8E1',
-          url: movieData.streamingInfo?.prime?.us?.link
+        prime: {
+          platform: "prime",
+          name: "Amazon Prime",
+          icon: "📦",
+          color: "#00A8E1",
+          url: movieData.streamingInfo?.prime?.us?.link,
         },
-        'apple': {
-          platform: 'apple',
-          name: 'Apple TV+',
-          icon: '🍎',
-          color: '#111111',
-          url: movieData.streamingInfo?.apple?.us?.link
+        apple: {
+          platform: "apple",
+          name: "Apple TV+",
+          icon: "🍎",
+          color: "#111111",
+          url: movieData.streamingInfo?.apple?.us?.link,
         },
-        'hulu': {
-          platform: 'hulu',
-          name: 'Hulu',
-          icon: '🟢',
-          color: '#1CE783',
-          url: movieData.streamingInfo?.hulu?.us?.link
+        hulu: {
+          platform: "hulu",
+          name: "Hulu",
+          icon: "🟢",
+          color: "#1CE783",
+          url: movieData.streamingInfo?.hulu?.us?.link,
         },
-        'max': {
-          platform: 'max',
-          name: 'Max',
-          icon: '💎',
-          color: '#00F6FF',
-          url: movieData.streamingInfo?.max?.us?.link
-        }
-      }
+        max: {
+          platform: "max",
+          name: "Max",
+          icon: "💎",
+          color: "#00F6FF",
+          url: movieData.streamingInfo?.max?.us?.link,
+        },
+      };
 
       // Check each streaming service
       if (movieData.streamingInfo?.netflix?.us?.available) {
-        platforms.push(platformMappings.netflix)
+        platforms.push(platformMappings.netflix);
       }
       if (movieData.streamingInfo?.disney?.us?.available) {
-        platforms.push(platformMappings.disney)
+        platforms.push(platformMappings.disney);
       }
       if (movieData.streamingInfo?.hbo?.us?.available) {
-        platforms.push(platformMappings.hbo)
+        platforms.push(platformMappings.hbo);
       }
       if (movieData.streamingInfo?.prime?.us?.available) {
-        platforms.push(platformMappings.prime)
+        platforms.push(platformMappings.prime);
       }
       if (movieData.streamingInfo?.apple?.us?.available) {
-        platforms.push(platformMappings.apple)
+        platforms.push(platformMappings.apple);
       }
       if (movieData.streamingInfo?.hulu?.us?.available) {
-        platforms.push(platformMappings.hulu)
+        platforms.push(platformMappings.hulu);
       }
       if (movieData.streamingInfo?.max?.us?.available) {
-        platforms.push(platformMappings.max)
+        platforms.push(platformMappings.max);
       }
 
-      setStreamingData(platforms.slice(0, 4)) // Limit to 4 platforms for UI
+      setStreamingData(platforms.slice(0, 4)); // Limit to 4 platforms for UI
     } catch (error) {
-      console.error('Error fetching streaming info:', error)
+      console.error("Error fetching streaming info:", error);
       // Fallback to mock data for demonstration
       setStreamingData([
-        { platform: 'netflix', name: 'Netflix', icon: '🏠', color: '#E50914' }
-      ])
+        { platform: "netflix", name: "Netflix", icon: "🏠", color: "#E50914" },
+      ]);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const toggleExpanded = () => {
-    setExpanded(!expanded)
-  }
+    setExpanded(!expanded);
+  };
 
   if (streamingData.length === 0 && !loading && !error) {
     return (
@@ -168,7 +172,7 @@ const StreamingBadges: React.FC<StreamingBadgesProps> = ({ movieId, movieTitle, 
         <span>🎬</span>
         <span className="text-gray-300">Where to Watch</span>
       </motion.button>
-    )
+    );
   }
 
   return (
@@ -178,8 +182,8 @@ const StreamingBadges: React.FC<StreamingBadgesProps> = ({ movieId, movieTitle, 
         onClick={toggleExpanded}
         className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs transition-all duration-300 ${
           streamingData.length > 0
-            ? 'bg-galaxy-purple/20 hover:bg-galaxy-purple/40 border border-galaxy-purple/30'
-            : 'bg-gray-700/50 hover:bg-gray-600/50'
+            ? "bg-galaxy-purple/20 hover:bg-galaxy-purple/40 border border-galaxy-purple/30"
+            : "bg-gray-700/50 hover:bg-gray-600/50"
         }`}
         whileHover={{ scale: 1.05 }}
         animate={{ rotate: expanded ? 180 : 0 }}
@@ -196,8 +200,18 @@ const StreamingBadges: React.FC<StreamingBadgesProps> = ({ movieId, movieTitle, 
           <span>🎬</span>
         )}
         <span className="text-gray-300">Where to Watch</span>
-        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        <svg
+          className="w-3 h-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </motion.button>
 
@@ -239,11 +253,13 @@ const StreamingBadges: React.FC<StreamingBadgesProps> = ({ movieId, movieTitle, 
                   >
                     <div className="flex items-center space-x-2">
                       <span className="text-lg">{platform.icon}</span>
-                      <span className="text-xs text-white font-medium">{platform.name}</span>
+                      <span className="text-xs text-white font-medium">
+                        {platform.name}
+                      </span>
                     </div>
                     {platform.url && (
                       <button
-                        onClick={() => window.open(platform.url, '_blank')}
+                        onClick={() => window.open(platform.url, "_blank")}
                         className="text-xs px-2 py-1 rounded bg-galaxy-purple hover:bg-galaxy-purple/80 text-white transition-colors"
                       >
                         Watch
@@ -258,7 +274,12 @@ const StreamingBadges: React.FC<StreamingBadgesProps> = ({ movieId, movieTitle, 
                   Not available on major platforms
                 </p>
                 <button
-                  onClick={() => window.open(`https://www.justwatch.com/us/search?q=${encodeURIComponent(movieTitle)}`, '_blank')}
+                  onClick={() =>
+                    window.open(
+                      `https://www.justwatch.com/us/search?q=${encodeURIComponent(movieTitle)}`,
+                      "_blank",
+                    )
+                  }
                   className="text-xs px-3 py-1 bg-galaxy-red hover:bg-red-700 text-white rounded transition-colors"
                 >
                   Check JustWatch
@@ -269,7 +290,7 @@ const StreamingBadges: React.FC<StreamingBadgesProps> = ({ movieId, movieTitle, 
         )}
       </AnimatePresence>
     </div>
-  )
-}
+  );
+};
 
-export default StreamingBadges
+export default StreamingBadges;

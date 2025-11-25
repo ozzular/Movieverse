@@ -34,27 +34,29 @@ const DirectorDetail = () => {
     const fetchDirectorDetails = async () => {
       try {
         const apiKey = import.meta.env.VITE_TMDB_API_KEY;
-        
+
         // Fetch director details
         const directorResponse = await fetch(
-          `https://api.themoviedb.org/3/person/${id}?api_key=${apiKey}`
+          `https://api.themoviedb.org/3/person/${id}?api_key=${apiKey}`,
         );
         const directorData = await directorResponse.json();
         setDirector(directorData);
 
         // Fetch director's filmography
         const creditsResponse = await fetch(
-          `https://api.themoviedb.org/3/person/${id}/movie_credits?api_key=${apiKey}`
+          `https://api.themoviedb.org/3/person/${id}/movie_credits?api_key=${apiKey}`,
         );
         const creditsData = await creditsResponse.json();
-        
+
         // Filter for director roles and sort by release date
         const directedMovies = creditsData.crew
           .filter((credit: any) => credit.job === "Director")
-          .sort((a: any, b: any) => 
-            new Date(b.release_date).getTime() - new Date(a.release_date).getTime()
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.release_date).getTime() -
+              new Date(a.release_date).getTime(),
           );
-        
+
         setMovies(directedMovies);
       } catch (error) {
         console.error("Error fetching director details:", error);
@@ -99,24 +101,28 @@ const DirectorDetail = () => {
                 />
               )}
               <h1 className="text-3xl font-bold mb-4">{director.name}</h1>
-              
+
               <div className="space-y-3 mb-4">
                 {director.birthday && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Calendar className="w-4 h-4" />
-                    <span>{new Date(director.birthday).toLocaleDateString()}</span>
+                    <span>
+                      {new Date(director.birthday).toLocaleDateString()}
+                    </span>
                   </div>
                 )}
-                
+
                 {director.place_of_birth && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <span>📍 {director.place_of_birth}</span>
                   </div>
                 )}
-                
+
                 <div className="flex items-center gap-2">
                   <Film className="w-4 h-4" />
-                  <Badge variant="secondary">{movies.length} Films Directed</Badge>
+                  <Badge variant="secondary">
+                    {movies.length} Films Directed
+                  </Badge>
                 </div>
               </div>
             </CardContent>

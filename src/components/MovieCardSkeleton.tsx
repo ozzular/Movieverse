@@ -1,10 +1,12 @@
-import React from 'react'
+import React from "react";
 
 interface MovieCardSkeletonProps {
-  className?: string
+  className?: string;
 }
 
-const MovieCardSkeleton: React.FC<MovieCardSkeletonProps> = ({ className = '' }) => {
+const MovieCardSkeleton: React.FC<MovieCardSkeletonProps> = ({
+  className = "",
+}) => {
   return (
     <div className={`movie-card-skeleton ${className}`}>
       {/* Poster Skeleton */}
@@ -27,7 +29,7 @@ const MovieCardSkeleton: React.FC<MovieCardSkeletonProps> = ({ className = '' })
         <div className="h-3 bg-gray-700 rounded w-12 animate-pulse"></div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MovieCardSkeleton
+export default MovieCardSkeleton;

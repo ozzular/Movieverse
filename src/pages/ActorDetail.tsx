@@ -50,7 +50,7 @@ const ActorDetail = () => {
       if (!apiKey) return;
 
       const response = await fetch(
-        `https://api.themoviedb.org/3/person/${actorId}?api_key=${apiKey}`
+        `https://api.themoviedb.org/3/person/${actorId}?api_key=${apiKey}`,
       );
       const data = await response.json();
       setActor(data);
@@ -65,7 +65,7 @@ const ActorDetail = () => {
       if (!apiKey) return;
 
       const response = await fetch(
-        `https://api.themoviedb.org/3/person/${actorId}/combined_credits?api_key=${apiKey}`
+        `https://api.themoviedb.org/3/person/${actorId}/combined_credits?api_key=${apiKey}`,
       );
       const data = await response.json();
       setCredits(data);
@@ -121,7 +121,9 @@ const ActorDetail = () => {
               {actor.birthday && (
                 <div className="flex items-center gap-2 text-foreground/80">
                   <Calendar className="w-4 h-4" />
-                  <span>Born: {new Date(actor.birthday).toLocaleDateString()}</span>
+                  <span>
+                    Born: {new Date(actor.birthday).toLocaleDateString()}
+                  </span>
                 </div>
               )}
               {actor.place_of_birth && (

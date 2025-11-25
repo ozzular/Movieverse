@@ -1,46 +1,49 @@
-import React, { useState } from 'react'
-import { useFavorites } from '../contexts/FavoritesContext'
-import type { Movie } from '@/types'
+import React, { useState } from "react";
+import { useFavorites } from "../contexts/FavoritesContext";
+import type { Movie } from "@/types";
 
 interface FavoriteButtonProps {
-  movie: Movie
-  className?: string
+  movie: Movie;
+  className?: string;
 }
 
-const FavoriteButton: React.FC<FavoriteButtonProps> = ({ movie, className = '' }) => {
-  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
-  const [isAnimating, setIsAnimating] = useState(false)
-  const favorite = isFavorite(movie.id)
+const FavoriteButton: React.FC<FavoriteButtonProps> = ({
+  movie,
+  className = "",
+}) => {
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+  const [isAnimating, setIsAnimating] = useState(false);
+  const favorite = isFavorite(movie.id);
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
 
-    setIsAnimating(true)
+    setIsAnimating(true);
 
     // Trigger animation
-    setTimeout(() => setIsAnimating(false), 600)
+    setTimeout(() => setIsAnimating(false), 600);
 
     if (favorite) {
-      removeFromFavorites(movie.id)
+      removeFromFavorites(movie.id);
     } else {
-      addToFavorites(movie)
+      addToFavorites(movie);
     }
-  }
+  };
 
   return (
     <button
       onClick={handleToggleFavorite}
       className={`p-2 rounded-full transition-all duration-300 hover:scale-110 backdrop-blur-sm border border-white/20 ${className} ${
         favorite
-          ? 'text-red-500 hover:text-red-400 bg-red-500/20 shadow-lg shadow-red-500/30'
-          : 'text-gray-400 hover:text-red-500 bg-white/10 hover:bg-red-500/20'
-      } ${isAnimating ? 'animate-pulse scale-125' : ''}`}
-      title={favorite ? 'Remove from favorites' : 'Add to favorites'}
+          ? "text-red-500 hover:text-red-400 bg-red-500/20"
+          : "text-gray-400 hover:text-red-500 bg-white/10 hover:bg-red-500/20"
+      } ${isAnimating ? "animate-pulse scale-125" : ""}`}
+      title={favorite ? "Remove from favorites" : "Add to favorites"}
     >
       <svg
-        className={`w-6 h-6 transition-all duration-300 ${isAnimating ? 'scale-110' : ''}`}
-        fill={favorite ? 'currentColor' : 'none'}
+        className={`w-6 h-6 transition-all duration-300 ${isAnimating ? "scale-110" : ""}`}
+        fill={favorite ? "currentColor" : "none"}
         stroke="currentColor"
         strokeWidth={favorite ? 0 : 2}
         viewBox="0 0 24 24"
@@ -52,7 +55,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ movie, className = '' }
         />
       </svg>
     </button>
-  )
-}
+  );
+};
 
-export default FavoriteButton
+export default FavoriteButton;

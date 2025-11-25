@@ -28,14 +28,14 @@ export const ShareButtons = ({ title, id }: ShareButtonsProps) => {
   const shareToTwitter = () => {
     window.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
-      "_blank"
+      "_blank",
     );
   };
 
   const shareToFacebook = () => {
     window.open(
       `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-      "_blank"
+      "_blank",
     );
   };
 

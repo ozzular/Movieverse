@@ -38,14 +38,14 @@ const IndexGlass = () => {
         const [trending, popular, topRated] = await Promise.all([
           tmdbApi.getPopularMovies(), // Using popular as trending proxy
           tmdbApi.getPopularMovies(),
-          tmdbApi.getTopRatedMovies()
+          tmdbApi.getTopRatedMovies(),
         ]);
 
         setTrendingMovies(trending.slice(0, 12));
         setPopularMovies(popular.slice(12, 24)); // Different slice for variety
         setTopRatedMovies(topRated.slice(0, 12));
       } catch (error) {
-        console.error('Failed to fetch movies:', error);
+        console.error("Failed to fetch movies:", error);
       }
     };
 
@@ -54,9 +54,16 @@ const IndexGlass = () => {
 
   return (
     // Rely on global landing gradient for consistent background; use full-bleed gradient
-    <div className="min-h-screen" style={{ background: 'var(--landing-gradient)' }}>
-  {/* Restore navbar on landing page (hamburger hidden) */}
-  <Navbar isSidebarOpen={false} onSidebarToggle={() => {}} hideHamburger={true} />
+    <div
+      className="min-h-screen"
+      style={{ background: "var(--landing-gradient)" }}
+    >
+      {/* Restore navbar on landing page (hamburger hidden) */}
+      <Navbar
+        isSidebarOpen={false}
+        onSidebarToggle={() => {}}
+        hideHamburger={true}
+      />
       <Hero />
       <FeaturedMovies />
 

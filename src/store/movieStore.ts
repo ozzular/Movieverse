@@ -1,44 +1,44 @@
-import { create } from 'zustand'
-import type { Movie, Genre } from '../types'
+import { create } from "zustand";
+import type { Movie, Genre } from "../types";
 
 interface MovieState {
   // Search state
-  searchQuery: string
-  searchResults: Movie[]
-  isSearching: boolean
+  searchQuery: string;
+  searchResults: Movie[];
+  isSearching: boolean;
 
   // Genre filtering
-  selectedGenres: number[]
-  genres: Genre[]
+  selectedGenres: number[];
+  genres: Genre[];
 
   // Favorites
-  favorites: Movie[]
+  favorites: Movie[];
 
   // Loading states
-  isLoadingMovies: boolean
-  isLoadingGenres: boolean
+  isLoadingMovies: boolean;
+  isLoadingGenres: boolean;
 
   // Error states
-  error: string | null
+  error: string | null;
 
   // Actions
-  setSearchQuery: (query: string) => void
-  setSearchResults: (results: Movie[]) => void
-  setIsSearching: (searching: boolean) => void
-  toggleGenre: (genreId: number) => void
-  setGenres: (genres: Genre[]) => void
-  addToFavorites: (movie: Movie) => void
-  removeFromFavorites: (movieId: number) => void
-  setLoadingMovies: (loading: boolean) => void
-  setLoadingGenres: (loading: boolean) => void
-  setError: (error: string | null) => void
-  clearFilters: () => void
-  clearError: () => void
+  setSearchQuery: (query: string) => void;
+  setSearchResults: (results: Movie[]) => void;
+  setIsSearching: (searching: boolean) => void;
+  toggleGenre: (genreId: number) => void;
+  setGenres: (genres: Genre[]) => void;
+  addToFavorites: (movie: Movie) => void;
+  removeFromFavorites: (movieId: number) => void;
+  setLoadingMovies: (loading: boolean) => void;
+  setLoadingGenres: (loading: boolean) => void;
+  setError: (error: string | null) => void;
+  clearFilters: () => void;
+  clearError: () => void;
 }
 
 export const useMovieStore = create<MovieState>((set) => ({
   // Initial state
-  searchQuery: '',
+  searchQuery: "",
   searchResults: [],
   isSearching: false,
   selectedGenres: [],
@@ -55,32 +55,43 @@ export const useMovieStore = create<MovieState>((set) => ({
 
   setIsSearching: (searching) => set({ isSearching: searching }),
 
-  toggleGenre: (genreId) => set((state) => ({
-    selectedGenres: state.selectedGenres.includes(genreId)
-      ? state.selectedGenres.filter(id => id !== genreId)
-      : [...state.selectedGenres, genreId]
-  })),
+  toggleGenre: (genreId) =>
+    set((state) => ({
+      selectedGenres: state.selectedGenres.includes(genreId)
+        ? state.selectedGenres.filter((id) => id !== genreId)
+        : [...state.selectedGenres, genreId],
+    })),
 
   setGenres: (genres) => set({ genres }),
 
-  addToFavorites: (movie) => set((state) => {
-    const exists = state.favorites.find(fav => fav.id === movie.id)
-    if (exists) return state
+  addToFavorites: (movie) =>
+    set((state) => {
+      const exists = state.favorites.find((fav) => fav.id === movie.id);
+      if (exists) return state;
 
-    const newFavorites = [...state.favorites, movie]
-    // Persist to localStorage
-    localStorage.setItem('movieverse-favorites', JSON.stringify(newFavorites))
+      const newFavorites = [...state.favorites, movie];
+      // Persist to localStorage
+      localStorage.setItem(
+        "movieverse-favorites",
+        JSON.stringify(newFavorites),
+      );
 
-    return { favorites: newFavorites }
-  }),
+      return { favorites: newFavorites };
+    }),
 
-  removeFromFavorites: (movieId) => set((state) => {
-    const newFavorites = state.favorites.filter(movie => movie.id !== movieId)
-    // Persist to localStorage
-    localStorage.setItem('movieverse-favorites', JSON.stringify(newFavorites))
+  removeFromFavorites: (movieId) =>
+    set((state) => {
+      const newFavorites = state.favorites.filter(
+        (movie) => movie.id !== movieId,
+      );
+      // Persist to localStorage
+      localStorage.setItem(
+        "movieverse-favorites",
+        JSON.stringify(newFavorites),
+      );
 
-    return { favorites: newFavorites }
-  }),
+      return { favorites: newFavorites };
+    }),
 
   setLoadingMovies: (loading) => set({ isLoadingMovies: loading }),
 
@@ -91,15 +102,15 @@ export const useMovieStore = create<MovieState>((set) => ({
   clearFilters: () => set({ selectedGenres: [] }),
 
   clearError: () => set({ error: null }),
-}))
+}));
 
 // Load favorites from localStorage on store creation
-const savedFavorites = localStorage.getItem('movieverse-favorites')
+const savedFavorites = localStorage.getItem("movieverse-favorites");
 if (savedFavorites) {
   try {
-    const favorites = JSON.parse(savedFavorites)
-    useMovieStore.setState({ favorites })
+    const favorites = JSON.parse(savedFavorites);
+    useMovieStore.setState({ favorites });
   } catch (error) {
-    console.error('Error loading favorites from localStorage:', error)
+    console.error("Error loading favorites from localStorage:", error);
   }
 }

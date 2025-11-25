@@ -1,6 +1,5 @@
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { MovieRow } from "@/components/MovieRow";
-import { RegionalTrending } from "@/components/RegionalTrending";
 
 const Home = () => {
   return (
@@ -8,10 +7,7 @@ const Home = () => {
       <HeroCarousel />
 
       <div className="py-8 space-y-8">
-        <div className="ml-20">
-          <RegionalTrending />
-        </div>
-        
+        <MovieRow title="Coming Soon" endpoint="movie/upcoming" />
         <MovieRow title="Trending Movies" endpoint="trending/movie/week" />
         <MovieRow title="Popular Movies" endpoint="movie/popular" />
         <MovieRow title="Top Rated Movies" endpoint="movie/top_rated" />

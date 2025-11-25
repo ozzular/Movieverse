@@ -15,7 +15,8 @@ export const Chatbot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hi! I'm MovieVerse AI. I can help you discover movies and TV shows. What are you in the mood for today?",
+      content:
+        "Hi! I'm MovieVerse AI. I can help you discover movies and TV shows. What are you in the mood for today?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -31,7 +32,7 @@ export const Chatbot = () => {
 
   const streamChat = async (userMessage: string) => {
     const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/movie-chat`;
-    
+
     try {
       const response = await fetch(CHAT_URL, {
         method: "POST",
@@ -92,17 +93,22 @@ export const Chatbot = () => {
           try {
             const parsed = JSON.parse(jsonStr);
             const content = parsed.choices?.[0]?.delta?.content;
-            
+
             if (content) {
               assistantMessage += content;
               setMessages((prev) => {
                 const last = prev[prev.length - 1];
                 if (last?.role === "assistant" && prev.length > 1) {
                   return prev.map((m, i) =>
-                    i === prev.length - 1 ? { ...m, content: assistantMessage } : m
+                    i === prev.length - 1
+                      ? { ...m, content: assistantMessage }
+                      : m,
                   );
                 }
-                return [...prev, { role: "assistant", content: assistantMessage }];
+                return [
+                  ...prev,
+                  { role: "assistant", content: assistantMessage },
+                ];
               });
             }
           } catch (e) {
@@ -144,7 +150,7 @@ export const Chatbot = () => {
       <Button
         onClick={() => setIsOpen(true)}
         size="icon"
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full z-50 bg-primary hover:bg-primary/90"
       >
         <MessageSquare className="w-6 h-6" />
       </Button>
@@ -152,7 +158,7 @@ export const Chatbot = () => {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-96 h-[600px] glass-effect rounded-lg shadow-2xl z-50 flex flex-col">
+    <div className="fixed bottom-6 right-6 w-96 h-[600px] glass-effect rounded-lg z-50 flex flex-col">
       <div className="flex items-center justify-between p-4 border-b border-border">
         <div className="flex items-center gap-2">
           <MessageSquare className="w-5 h-5 text-primary" />
@@ -201,7 +207,11 @@ export const Chatbot = () => {
             disabled={isLoading}
             className="flex-1"
           />
-          <Button onClick={handleSend} disabled={isLoading || !input.trim()} size="icon">
+          <Button
+            onClick={handleSend}
+            disabled={isLoading || !input.trim()}
+            size="icon"
+          >
             <Send className="w-4 h-4" />
           </Button>
         </div>

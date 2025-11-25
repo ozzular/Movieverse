@@ -1,46 +1,48 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import MovieRow from '../components/MovieRow'
-import { tmdbApi } from '../services/tmdbApi'
-import { useSelectedMovie } from '../contexts/SelectedMovieContext'
-import type { Movie } from '@/types'
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import MovieRow from "../components/MovieRow";
+import { tmdbApi } from "../services/tmdbApi";
+import { useSelectedMovie } from "../contexts/SelectedMovieContext";
+import type { Movie } from "@/types";
 
 const MoviesPage: React.FC = () => {
-  const { selectedMovie, showHero, hideHero } = useSelectedMovie()
-  const [trendingMovies, setTrendingMovies] = useState<Movie[]>([])
-  const [popularMovies, setPopularMovies] = useState<Movie[]>([])
-  const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([])
-  const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { selectedMovie, showHero, hideHero } = useSelectedMovie();
+  const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]);
+  const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
+  const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]);
+  const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        setLoading(true)
-        setError(null)
+        setLoading(true);
+        setError(null);
 
         const [trending, popular, topRated, upcoming] = await Promise.all([
           tmdbApi.getTrendingMovies(),
           tmdbApi.getPopularMovies(),
           tmdbApi.getTopRatedMovies(),
-          tmdbApi.getNowPlayingMovies() // Using now playing as "Latest Releases"
-        ])
+          tmdbApi.getNowPlayingMovies(), // Using now playing as "Latest Releases"
+        ]);
 
-        setTrendingMovies(trending)
-        setPopularMovies(popular)
-        setTopRatedMovies(topRated)
-        setUpcomingMovies(upcoming)
+        setTrendingMovies(trending);
+        setPopularMovies(popular);
+        setTopRatedMovies(topRated);
+        setUpcomingMovies(upcoming);
       } catch (err) {
-        console.error('Error fetching movies:', err)
-        setError('Failed to load movies. Please check your API key and try again.')
+        console.error("Error fetching movies:", err);
+        setError(
+          "Failed to load movies. Please check your API key and try again.",
+        );
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchMovies()
-  }, [])
+    fetchMovies();
+  }, []);
 
   // Loading state
   if (loading) {
@@ -51,7 +53,7 @@ const MoviesPage: React.FC = () => {
           <p className="text-white text-lg">Loading movies...</p>
         </div>
       </div>
-    )
+    );
   }
 
   // Error state
@@ -69,7 +71,7 @@ const MoviesPage: React.FC = () => {
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -97,7 +99,7 @@ const MoviesPage: React.FC = () => {
                     {[...Array(5)].map((_, i) => (
                       <svg
                         key={i}
-                        className={`w-5 h-5 ${i < Math.floor(selectedMovie.vote_average / 2) ? 'text-galaxy-red' : 'text-gray-600'}`}
+                        className={`w-5 h-5 ${i < Math.floor(selectedMovie.vote_average / 2) ? "text-galaxy-red" : "text-gray-600"}`}
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -111,11 +113,24 @@ const MoviesPage: React.FC = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
-                    onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(selectedMovie.title)}+trailer`, '_blank')}
+                    onClick={() =>
+                      window.open(
+                        `https://www.youtube.com/results?search_query=${encodeURIComponent(selectedMovie.title)}+trailer`,
+                        "_blank",
+                      )
+                    }
                     className="bg-galaxy-red hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2"
                   >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     <span>Watch Trailer</span>
                   </button>
@@ -138,36 +153,26 @@ const MoviesPage: React.FC = () => {
           {/* Page Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">Movies</h1>
-            <p className="text-gray-400">Discover trending, popular, and classic movies</p>
+            <p className="text-gray-400">
+              Discover trending, popular, and classic movies
+            </p>
           </div>
 
           {/* Trending Movies */}
-          <MovieRow
-            title="Trending Movies"
-            movies={trendingMovies}
-          />
+          <MovieRow title="Trending Movies" movies={trendingMovies} />
 
           {/* Popular Movies */}
-          <MovieRow
-            title="Popular Movies"
-            movies={popularMovies}
-          />
+          <MovieRow title="Popular Movies" movies={popularMovies} />
 
           {/* Top Rated Movies (Classic Movies) */}
-          <MovieRow
-            title="Classic Movies"
-            movies={topRatedMovies}
-          />
+          <MovieRow title="Classic Movies" movies={topRatedMovies} />
 
           {/* Now Playing Movies (Latest Releases) */}
-          <MovieRow
-            title="Latest Releases"
-            movies={upcomingMovies}
-          />
+          <MovieRow title="Latest Releases" movies={upcomingMovies} />
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MoviesPage
+export default MoviesPage;

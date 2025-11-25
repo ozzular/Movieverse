@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion'
-import { Play, Film, Zap, Sparkles } from 'lucide-react'
-import Hero from '../components/Hero'
-import ThemeToggle from '../components/ThemeToggle'
+import { motion } from "framer-motion";
+import { Play, Film, Zap, Sparkles } from "lucide-react";
+import Hero from "../components/Hero";
+import ThemeToggle from "../components/ThemeToggle";
 
 const LandingPage = () => {
   return (
@@ -16,7 +16,15 @@ const LandingPage = () => {
         transition={{ duration: 0.8, delay: 0.6 }}
         className="features-section"
       >
-        <h2 style={{ color: 'var(--color-text-primary)', textAlign: 'center', marginBottom: '2rem' }}>Why Choose MovieVerse?</h2>
+        <h2
+          style={{
+            color: "var(--color-text-primary)",
+            textAlign: "center",
+            marginBottom: "2rem",
+          }}
+        >
+          Why Choose MovieVerse?
+        </h2>
         <div className="features-grid">
           <div className="feature-card glass">
             <Film className="feature-icon" />
@@ -36,7 +44,7 @@ const LandingPage = () => {
         </div>
       </motion.div>
     </div>
-  )
-}
+  );
+};
 
-export default LandingPage
+export default LandingPage;

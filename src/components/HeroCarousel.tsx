@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { ChevronLeft, ChevronRight, Play, Info } from "lucide-react";
 import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import hero1 from "@/assets/hero-1.jpg";
@@ -15,6 +16,8 @@ interface Movie {
   backdrop_path: string;
   overview: string;
   vote_average: number;
+  runtime?: number;
+  release_date?: string;
   isLocal?: boolean;
 }
 
@@ -23,7 +26,8 @@ const localHeroMovies: Movie[] = [
     id: 1,
     title: "Explosive Action",
     backdrop_path: hero1,
-    overview: "Experience heart-pounding action with stunning visual effects and non-stop excitement.",
+    overview:
+      "Experience heart-pounding action with stunning visual effects and non-stop excitement.",
     vote_average: 8.5,
     isLocal: true,
   },
@@ -31,7 +35,8 @@ const localHeroMovies: Movie[] = [
     id: 2,
     title: "Timeless Romance",
     backdrop_path: hero2,
-    overview: "A beautiful love story that transcends time and captures the essence of true connection.",
+    overview:
+      "A beautiful love story that transcends time and captures the essence of true connection.",
     vote_average: 8.2,
     isLocal: true,
   },
@@ -39,7 +44,8 @@ const localHeroMovies: Movie[] = [
     id: 3,
     title: "Cyber Future",
     backdrop_path: hero3,
-    overview: "Dive into a thrilling cyberpunk world where technology and humanity collide.",
+    overview:
+      "Dive into a thrilling cyberpunk world where technology and humanity collide.",
     vote_average: 8.8,
     isLocal: true,
   },
@@ -47,7 +53,8 @@ const localHeroMovies: Movie[] = [
     id: 4,
     title: "Dark Mysteries",
     backdrop_path: hero4,
-    overview: "Uncover the secrets hidden in the shadows in this spine-chilling horror experience.",
+    overview:
+      "Uncover the secrets hidden in the shadows in this spine-chilling horror experience.",
     vote_average: 7.9,
     isLocal: true,
   },
@@ -55,7 +62,8 @@ const localHeroMovies: Movie[] = [
     id: 5,
     title: "Epic Quest",
     backdrop_path: hero5,
-    overview: "Embark on an unforgettable fantasy adventure filled with magic and wonder.",
+    overview:
+      "Embark on an unforgettable fantasy adventure filled with magic and wonder.",
     vote_average: 8.6,
     isLocal: true,
   },
@@ -64,6 +72,7 @@ const localHeroMovies: Movie[] = [
 export const HeroCarousel = () => {
   const [movies, setMovies] = useState<Movie[]>(localHeroMovies);
   const [scrollY, setScrollY] = useState(0);
+  const navigate = useNavigate();
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
     Autoplay({ delay: 5000, stopOnInteraction: false }),
   ]);
@@ -89,31 +98,63 @@ export const HeroCarousel = () => {
       }
 
       const response = await fetch(
-        `https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`
+        `https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`,
       );
       const data = await response.json();
       if (data.results && data.results.length > 0) {
-        setMovies(data.results.slice(0, 5));
+        const top = data.results.slice(0, 5);
+
+        // Fetch details (runtime, release_date) for each movie in parallel
+        const detailed = await Promise.all(
+          top.map(async (m: any) => {
+            try {
+              const res = await fetch(
+                `https://api.themoviedb.org/3/movie/${m.id}?api_key=${apiKey}`,
+              );
+              const details = await res.json();
+              return {
+                ...m,
+                runtime: details.runtime,
+                release_date: details.release_date,
+              };
+            } catch (e) {
+              return m;
+            }
+          }),
+        );
+
+        setMovies(detailed as Movie[]);
       }
     } catch (error) {
       console.error("Error fetching hero movies:", error);
     }
   };
 
+  const handlePlayClick = (movie: Movie) => {
+    navigate(`/movie/${movie.id}`);
+  };
+
+  const handleMoreInfoClick = (movie: Movie) => {
+    navigate(`/movie/${movie.id}`);
+  };
+
   const scrollPrev = () => emblaApi?.scrollPrev();
   const scrollNext = () => emblaApi?.scrollNext();
 
   return (
-    <div className="relative w-full h-[80vh] overflow-hidden -mt-16 pt-16">
-      <div className="embla" ref={emblaRef}>
+    <div className="relative w-full max-w-full h-[85vh] overflow-hidden -mt-16 pt-16">
+      <div className="embla w-full max-w-full overflow-hidden" ref={emblaRef}>
         <div className="embla__container flex">
           {movies.map((movie) => (
-            <div key={movie.id} className="embla__slide flex-[0_0_100%] relative">
-              <div 
+            <div
+              key={movie.id}
+              className="embla__slide flex-[0_0_100%] relative"
+            >
+              <div
                 className="absolute inset-0"
                 style={{
                   transform: `translateY(${scrollY * 0.5}px)`,
-                  transition: 'transform 0.1s ease-out'
+                  transition: "transform 0.1s ease-out",
                 }}
               >
                 <img
@@ -124,46 +165,65 @@ export const HeroCarousel = () => {
                   }
                   alt={movie.title}
                   loading="lazy"
-                  className="w-full h-full object-cover"
+                  className="w-full max-w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/hero-bg.jpg"; // fallback to hero background
+                  }}
                 />
                 <div
                   className="absolute inset-0"
                   style={{
-                    background: "linear-gradient(to top, hsl(0 0% 8%) 0%, transparent 60%, hsl(0 0% 8% / 0.6) 100%)",
+                    background:
+                      "linear-gradient(to top, hsl(0 0% 8%) 0%, transparent 60%, hsl(0 0% 8% / 0.6) 100%)",
                   }}
                 />
               </div>
 
               <div className="relative h-full flex items-end">
-                <div className="container mx-auto px-4 pb-20 ml-20">
+                <div className="container mx-auto px-4 pb-20">
                   <div className="max-w-2xl space-y-4">
-                    <h1 className="text-4xl md:text-6xl font-bold">{movie.title}</h1>
+                    <h1 className="text-4xl md:text-6xl font-bold">
+                      {movie.title}
+                    </h1>
                     <div className="flex items-center gap-4">
                       <span className="text-primary font-semibold">
                         ⭐ {movie.vote_average.toFixed(1)}
                       </span>
+                      {movie.release_date && (
+                        <span className="text-sm text-foreground/70">
+                          {new Date(movie.release_date).getFullYear()}
+                        </span>
+                      )}
+                      {movie.runtime && (
+                        <span className="text-sm text-foreground/70">
+                          • {movie.runtime} min
+                        </span>
+                      )}
                     </div>
                     <p className="text-lg text-foreground/90 line-clamp-3">
                       {movie.overview}
                     </p>
                     <div className="flex gap-4 pt-4">
-                      <Button 
-                        size="lg" 
-                        className="gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/20 text-white hover:scale-105 active:scale-95 transition-all shadow-lg"
+                      <Button
+                        size="lg"
+                        onClick={() => handlePlayClick(movie)}
+                        className="gap-2 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md border border-white/30 hover:scale-105 active:scale-95 transition-all font-semibold shadow-lg"
                         style={{
-                          backdropFilter: 'blur(10px)',
-                          WebkitBackdropFilter: 'blur(10px)',
+                          backdropFilter: "blur(10px)",
+                          WebkitBackdropFilter: "blur(10px)",
                         }}
                       >
-                        <Play className="w-5 h-5" fill="currentColor" />
+                        <Play className="w-5 h-5" />
                         Play
                       </Button>
-                      <Button 
-                        size="lg" 
-                        className="gap-2 bg-black/40 hover:bg-black/50 backdrop-blur-md border border-white/20 text-white hover:scale-105 active:scale-95 transition-all shadow-lg"
+                      <Button
+                        size="lg"
+                        onClick={() => handleMoreInfoClick(movie)}
+                        className="gap-2 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md border border-white/30 hover:scale-105 active:scale-95 transition-all font-semibold shadow-lg"
                         style={{
-                          backdropFilter: 'blur(10px)',
-                          WebkitBackdropFilter: 'blur(10px)',
+                          backdropFilter: "blur(10px)",
+                          WebkitBackdropFilter: "blur(10px)",
                         }}
                       >
                         <Info className="w-5 h-5" />
